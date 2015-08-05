@@ -21,6 +21,14 @@ public:
     void DoInit();
     UINT GetControlFlags() const;
 
+/*Add by whmiao begin :show user specified string */
+	void SetExText(CDuiString str);
+	CDuiString  GetExText();
+	void SetExTextShow(BOOL bShow);
+	BOOL GetExTextShow();
+	BOOL m_bShowExText;
+/*Add by whmiao end*/
+
     CDuiString GetText() const;
     void SetEnabled(bool bEnable = true);
 
@@ -31,6 +39,7 @@ public:
 
     int GetCurSel() const;  
     bool SelectItem(int iIndex, bool bTakeFocus = false);
+    bool SelectItemActivate(int iIndex);    // ???¡Â???D
 
     bool SetItemIndex(CControlUI* pControl, int iIndex);
     bool Add(CControlUI* pControl);
@@ -39,8 +48,8 @@ public:
     bool RemoveAt(int iIndex);
     void RemoveAll();
 
-    bool Activate();
-
+    bool Activate(BOOL bTakeFocus=TRUE);/* ¡ä¡ä?¡§¡ä¡ã?¨² ¨º?¡¤? ??¨¨??1¦Ì?*/
+	void  InActivate();
     RECT GetTextPadding() const;
     void SetTextPadding(RECT rc);
     LPCTSTR GetNormalImage() const;
@@ -116,6 +125,8 @@ protected:
     TDrawInfo m_diDisabled;
 
     TListInfoUI m_ListInfo;
+
+	CDuiString m_sExText;
 };
 
 } // namespace DuiLib

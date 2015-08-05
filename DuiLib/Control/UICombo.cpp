@@ -9,7 +9,7 @@ namespace DuiLib {
 class CComboWnd : public CWindowWnd
 {
 public:
-    void Init(CComboUI* pOwner);
+    void Init(CComboUI* pOwner,BOOL child=FALSE);
     LPCTSTR GetWindowClassName() const;
     void OnFinalMessage(HWND hWnd);
 
@@ -17,6 +17,8 @@ public:
 
     void EnsureVisible(int iIndex);
     void Scroll(int dx, int dy);
+
+	void ReSize(CComboUI* pOwner);
 
 #if(_WIN32_WINNT >= 0x0501)
 	virtual UINT GetClassStyle() const;
@@ -30,7 +32,7 @@ public:
 };
 
 
-void CComboWnd::Init(CComboUI* pOwner)
+void CComboWnd::Init(CComboUI* pOwner,BOOL child)
 {
     m_pOwner = pOwner;
     m_pLayout = NULL;
@@ -53,8 +55,14 @@ void CComboWnd::Init(CComboUI* pOwner)
         cyFixed += sz.cy;
     }
     cyFixed += 4; // CVerticalLayoutUI 默认的Inset 调整
-    rc.bottom = rc.top + MIN(cyFixed, szDrop.cy);
 
+    rc.bottom = rc.top + MIN(cyFixed, szDrop.cy);
+	if (rc.bottom -rc.top<24)
+	{
+		rc.bottom = rc.top + 24;
+	}
+
+	if(!child)
     ::MapWindowRect(pOwner->GetManager()->GetPaintWindow(), HWND_DESKTOP, &rc);
 
     MONITORINFO oMonitor = {};
@@ -67,10 +75,14 @@ void CComboWnd::Init(CComboUI* pOwner)
         if( szDrop.cx > 0 ) rc.right = rc.left + szDrop.cx;
         rc.top = rcOwner.top - MIN(cyFixed, szDrop.cy);
         rc.bottom = rcOwner.top;
-        ::MapWindowRect(pOwner->GetManager()->GetPaintWindow(), HWND_DESKTOP, &rc);
+        if(!child)
+       ::MapWindowRect(pOwner->GetManager()->GetPaintWindow(), HWND_DESKTOP, &rc);
     }
-    
-    Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, WS_EX_TOOLWINDOW, rc);
+
+    if(!child)
+    Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP,  WS_EX_TOOLWINDOW, rc);
+    else
+	Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_CHILD,  WS_EX_TOOLWINDOW, rc);
     // HACK: Don't deselect the parent's caption
     HWND hWndParent = m_hWnd;
     while( ::GetParent(hWndParent) != NULL ) hWndParent = ::GetParent(hWndParent);
@@ -78,6 +90,32 @@ void CComboWnd::Init(CComboUI* pOwner)
     ::SendMessage(hWndParent, WM_NCACTIVATE, TRUE, 0L);
 }
 
+void   CComboWnd::ReSize(CComboUI* pOwner)
+{
+	SIZE szDrop = m_pOwner->GetDropBoxSize();
+	RECT rcOwner = pOwner->GetPos();
+	RECT rc = rcOwner;
+	rc.top = rc.bottom;		// 父窗口left、bottom位置作为弹出窗口起点
+	rc.bottom = rc.top + szDrop.cy;	// 计算弹出窗口高度
+	if (szDrop.cx > 0) rc.right = rc.left + szDrop.cx;	// 计算弹出窗口宽度
+
+	SIZE szAvailable = { rc.right - rc.left, rc.bottom - rc.top };
+	int cyFixed = 0;
+	for (int it = 0; it < pOwner->GetCount(); it++) {
+		CControlUI* pControl = static_cast<CControlUI*>(pOwner->GetItemAt(it));
+		if (!pControl->IsVisible()) continue;
+		SIZE sz = pControl->EstimateSize(szAvailable);
+		cyFixed += sz.cy;
+	}
+
+	rc.bottom = rc.top + MIN(cyFixed, szDrop.cy);
+	if (cyFixed<24)
+	{
+		cyFixed =  24;
+	}
+
+	::MoveWindow(GetHWND(), rc.left, rc.top, rc.right - rc.left, cyFixed, true);
+}
 LPCTSTR CComboWnd::GetWindowClassName() const
 {
     return _T("ComboWnd");
@@ -99,6 +137,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         // reassigned by this operation - which is why it is important to reassign
         // the items back to the righfull owner/manager when the window closes.
         m_pLayout = new CVerticalLayoutUI;
+         //m_pm.UseParentResource(m_pOwner->GetManager());
         m_pLayout->SetManager(&m_pm, NULL, true);
         LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("VerticalLayout"));
         if( pDefaultAttributes ) {
@@ -150,7 +189,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
     }
     else if( uMsg == WM_MOUSEWHEEL ) {
-        int zDelta = (int) (short) HIWORD(wParam);
+       /* int zDelta = (int) (short) HIWORD(wParam);
         TEventUI event = { 0 };
         event.Type = UIEVENT_SCROLLWHEEL;
         event.wParam = MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
@@ -158,10 +197,14 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         event.dwTimestamp = ::GetTickCount();
         m_pOwner->DoEvent(event);
         EnsureVisible(m_pOwner->GetCurSel());
-        return 0;
+        return 0;*/
     }
     else if( uMsg == WM_KILLFOCUS ) {
-        if( m_hWnd != (HWND) wParam ) PostMessage(WM_CLOSE);
+		if (m_hWnd != (HWND)wParam)
+		{
+			m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_KILLFOCUS);
+			PostMessage(WM_CLOSE);
+		}
     }
 
     LRESULT lRes = 0;
@@ -223,6 +266,8 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     m_ListInfo.bMultiExpandable = false;
     ::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
     ::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
+
+	m_bShowExText = FALSE;
 }
 
 LPCTSTR CComboUI::GetClass() const
@@ -253,7 +298,7 @@ int CComboUI::GetCurSel() const
 
 bool CComboUI::SelectItem(int iIndex, bool bTakeFocus)
 {
-    if( m_pWindow != NULL ) m_pWindow->Close();
+    //if( m_pWindow != NULL ) m_pWindow->Close();
     if( iIndex == m_iCurSel ) return true;
     int iOldSel = m_iCurSel;
     if( m_iCurSel >= 0 ) {
@@ -271,11 +316,16 @@ bool CComboUI::SelectItem(int iIndex, bool bTakeFocus)
     IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
     if( pListItem == NULL ) return false;
     m_iCurSel = iIndex;
-    if( m_pWindow != NULL || bTakeFocus ) pControl->SetFocus();
+    if( m_pWindow != NULL && bTakeFocus ) pControl->SetFocus();
     pListItem->Select(true);
     if( m_pManager != NULL ) m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMSELECT, m_iCurSel, iOldSel);
     Invalidate();
 
+    return true;
+}
+
+bool CComboUI::SelectItemActivate(int iIndex)
+{
     return true;
 }
 
@@ -404,6 +454,7 @@ void CComboUI::DoEvent(TEventUI& event)
     {
         if( IsEnabled() ) {
             Activate();
+			m_pManager->SendNotify(this, DUI_MSGTYPE_BUTTONDOWN);
             m_uButtonState |= UISTATE_PUSHED | UISTATE_CAPTURED;
         }
         return;
@@ -481,14 +532,29 @@ SIZE CComboUI::EstimateSize(SIZE szAvailable)
     if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetDefaultFontInfo()->tm.tmHeight + 12);
     return CControlUI::EstimateSize(szAvailable);
 }
-
-bool CComboUI::Activate()
+void  CComboUI::InActivate()
+{
+	if (m_pWindow != NULL)
+	{
+		::PostMessage(m_pWindow->GetHWND(),WM_KILLFOCUS, 0,0);
+	}
+}
+bool CComboUI::Activate(BOOL bTakeFocus)
 {
     if( !CControlUI::Activate() ) return false;
-    if( m_pWindow ) return true;
+	if (m_pWindow)
+	{
+		if (!bTakeFocus)
+			m_pWindow->ReSize(this);
+		return true;
+	}
     m_pWindow = new CComboWnd();
     ASSERT(m_pWindow);
-    m_pWindow->Init(this);
+
+    if(bTakeFocus)
+    m_pWindow->Init(this,FALSE);
+    else
+    m_pWindow->Init(this,TRUE);
     if( m_pManager != NULL ) m_pManager->SendNotify(this, DUI_MSGTYPE_DROPDOWN);
     Invalidate();
     return true;
@@ -498,7 +564,30 @@ CDuiString CComboUI::GetText() const
 {
     if( m_iCurSel < 0 ) return _T("");
     CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
-    return pControl->GetText();
+	return pControl->GetText();
+}
+void CComboUI::SetExText(CDuiString str)
+{
+	if (str == "")
+	{
+		return;
+	}
+
+	m_sExText = str;
+	Invalidate();	
+}
+
+void CComboUI::SetExTextShow(BOOL bShow)
+{
+	m_bShowExText = bShow;
+}
+BOOL CComboUI::GetExTextShow()
+{
+	return m_bShowExText;
+}
+CDuiString  CComboUI::GetExText()
+{
+	return m_sExText;
 }
 
 void CComboUI::SetEnabled(bool bEnable)
@@ -954,6 +1043,18 @@ void CComboUI::PaintText(HDC hDC)
     rcText.top += m_rcTextPadding.top;
     rcText.bottom -= m_rcTextPadding.bottom;
 
+	/*whmiao Modify text will cover combo image*/
+	rcText.right -= 20;
+
+	if (m_bShowExText)
+	{
+		DWORD clrColor = 0xFF000000;
+		int iFont = 3;
+		UINT  m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_LEFT;;
+		CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sExText, clrColor, \
+			iFont, m_uTextStyle);
+		return;
+	}
     if( m_iCurSel >= 0 ) {
         CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
         IListItemUI* pElement = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));

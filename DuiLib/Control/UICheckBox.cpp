@@ -14,9 +14,9 @@ namespace DuiLib
 		return COptionUI::GetInterface(pstrName);
 	}
 
-	void CCheckBoxUI::SetCheck(bool bCheck)
+	void CCheckBoxUI::SetCheck(bool bCheck, bool emitEvent)
 	{
-		Selected(bCheck);
+		Selected(bCheck, emitEvent);
 	}
 
 	bool  CCheckBoxUI::GetCheck() const
