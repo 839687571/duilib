@@ -57,6 +57,10 @@ namespace DuiLib
 		void PaintStatusImage(HDC hDC);
 		void PaintText(HDC hDC);
 
+		// zoominla added on 2015-07-30
+		void SetEnableTextChangeEvent(bool bEnabled);
+		bool GetEnableTextChangeEvent();
+
 	protected:
 		CEditWnd* m_pWindow;
 
@@ -65,6 +69,8 @@ namespace DuiLib
 		bool m_bPasswordMode;
 		TCHAR m_cPasswordChar;
 		UINT m_uButtonState;
+		// zoominla added on 2015-07-30
+		bool m_enableTextChangeEvent;
 		DWORD m_dwEditbkColor;
 		int m_iWindowStyls;
 

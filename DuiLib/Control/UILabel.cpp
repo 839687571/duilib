@@ -37,7 +37,8 @@ namespace DuiLib
 		m_TransStroke(255),
 		m_dwStrokeColor(0),
 		m_EnabledShadow(false),
-		m_GradientLength(0)
+		m_GradientLength(0),
+        m_EnableAutoTip(false)
 	{
 		m_ShadowOffset.X		= 0.0f;
 		m_ShadowOffset.Y		= 0.0f;
@@ -147,6 +148,17 @@ namespace DuiLib
 		Invalidate();
 	}
 
+    void CLabelUI::SetEnableAutoTip(bool bAutoTip)
+    {
+        if( m_EnableAutoTip == bAutoTip ) return;
+        m_EnableAutoTip = bAutoTip;
+        Invalidate();
+    }
+
+    bool CLabelUI::GetEnableAutoTip() const
+    {
+        return m_EnableAutoTip;
+    }
 	SIZE CLabelUI::EstimateSize(SIZE szAvailable)
 	{
 		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);
@@ -276,6 +288,7 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetStrokeColor(clrColor);
 		}
+        else if( _tcscmp(pstrName, _T("autotip")) == 0 ) SetEnableAutoTip(_tcscmp(pstrValue, _T("true")) == 0);
 		else CControlUI::SetAttribute(pstrName, pstrValue);
 	}
 
@@ -548,6 +561,22 @@ namespace DuiLib
 			throw "CLabelUI::SetText";
 		}
 	}
+
+    CDuiString CLabelUI::GetToolTip() const
+    {
+        RECT rc = m_rcItem;
+        rc.left += m_rcTextPadding.left;
+        rc.right -= m_rcTextPadding.right;
+        rc.top += m_rcTextPadding.top;
+        rc.bottom -= m_rcTextPadding.bottom;
+        SIZE sz = CRenderEngine::GetTextSize(GetManager()->GetPaintDC(), m_pManager, m_sText, m_iFont, DT_SINGLELINE | m_uTextStyle);
+        if (sz.cx > (rc.right - rc.left) && GetEnableAutoTip())
+        {
+            return m_sText;
+        }
+
+        return __super::GetToolTip();
+    }
 
 	//************************************
 	// Method:    GetText
