@@ -131,7 +131,7 @@ namespace DuiLib
 	class UILIB_API CDuiString
 	{
 	public:
-		enum { MAX_LOCAL_STRING_LEN = 63 };
+		enum { MAX_LOCAL_STRING_LEN = 200 };
 
 		CDuiString();
 		CDuiString(const TCHAR ch);
