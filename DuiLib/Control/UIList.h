@@ -442,7 +442,7 @@ public:
 
 	//add by whmiao 
 	// 每个列表项和表头对齐.
- 	void SetPos(RECT rc)
+ 	void SetPos(RECT rc, bool bNeedInvalidate=true)
 	{
 		CContainerUI::SetPos(rc);
 		if( m_pOwner == NULL ) return;		
