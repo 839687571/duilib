@@ -23,6 +23,9 @@ public:
     virtual LPVOID GetInterface(LPCTSTR pstrName);
     virtual UINT GetControlFlags() const;
 
+	//ADD BYwhmiao clistui画出分割线使用
+	RECT  GetItemRect(){return m_rcItem;}
+
     virtual bool Activate();
     virtual CPaintManagerUI* GetManager() const;
     virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
@@ -73,6 +76,7 @@ public:
 	// 只有控件为float的时候，外部调用SetPos和Move才是有效的，位置参数是相对父控件的位置
     virtual void SetPos(RECT rc, bool bNeedInvalidate = true);
 	virtual void Move(SIZE szOffset, bool bNeedInvalidate = true);
+
     virtual int GetWidth() const;
     virtual int GetHeight() const;
     virtual int GetX() const;

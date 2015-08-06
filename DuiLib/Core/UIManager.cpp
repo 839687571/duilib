@@ -643,6 +643,8 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 ::GetClientRect(m_hWndPaint, &rcClient);
                 if( !::IsRectEmpty(&rcClient) ) {
                     if( m_pRoot->IsUpdateNeeded() ) {
+						if (!::IsIconic(m_hWndPaint))  //redrainÐÞ¸´bug
+							m_pRoot->SetPos(rcClient,true);
                         if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
                         if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
                         if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
@@ -651,7 +653,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                         m_hDcBackground = NULL;
                         m_hbmpOffscreen = NULL;
                         m_hbmpBackground = NULL;
-						m_pRoot->SetPos(rcClient, true);
                     }
                     else {
 						CControlUI* pControl = NULL;
@@ -661,6 +662,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 							pControl = static_cast<CControlUI*>(m_aFoundControls[it]);
 							if( !pControl->IsFloat() ) pControl->SetPos(pControl->GetPos(), true);
 							else pControl->SetPos(pControl->GetRelativePos(), true);
+
 						}
                     }
                     // We'll want to notify the window when it is first initialized
