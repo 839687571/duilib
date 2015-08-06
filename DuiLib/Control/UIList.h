@@ -285,8 +285,6 @@ public:
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
     RECT GetThumbRect() const;
 
-//add whmiao test
-	void SetPos(RECT rc);
 
     void PaintText(HDC hDC);
     void PaintStatusImage(HDC hDC);

@@ -1486,10 +1486,7 @@ void CListHeaderItemUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("sepimage")) == 0 ) SetSepImage(pstrValue);
     else CControlUI::SetAttribute(pstrName, pstrValue);
 }
-void CListHeaderItemUI::SetPos(RECT rc)
-{
-       __super::SetPos(rc);
-}
+
 void CListHeaderItemUI::DoEvent(TEventUI& event)
 {
     if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
