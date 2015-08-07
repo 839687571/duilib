@@ -736,12 +736,6 @@ void CControlUI::DoEvent(TEventUI& event)
             return;
         }
     }
-    if( event.Type == UIEVENT_DBLCLICK )
-    {
-        m_pManager->SendNotify(this, DUI_MSGTYPE_DBCLICK, event.wParam, event.lParam);
-        //return;
-    }
-    
     if( m_pParent != NULL ) m_pParent->DoEvent(event);
 }
 
@@ -779,7 +773,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         rcPos.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
         rcPos.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
         rcPos.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
-        SIZE szXY = {rcPos.left >= 0 ? rcPos.left : rcPos.right, rcPos.top >= 0 ? rcPos.top : rcPos.bottom};
+        SIZE szXY = {rcPos.left, rcPos.top};
         SetFixedXY(szXY);
 		//ASSERT(rcPos.right - rcPos.left >= 0);
 		//ASSERT(rcPos.bottom - rcPos.top >= 0);
@@ -877,8 +871,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("visible")) == 0 ) SetVisible(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("float")) == 0 ) {
 		CDuiString nValue = pstrValue;
-		if(nValue.Find(',') < 0) 
-		{
+		if(nValue.Find(',') < 0) {
 			SetFloat(_tcscmp(pstrValue, _T("true")) == 0);
 		}
 		else {

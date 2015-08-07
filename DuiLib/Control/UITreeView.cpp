@@ -29,7 +29,7 @@ namespace DuiLib
 		pItemButton		= new COptionUI();
 
 		this->SetFixedHeight(18);
-		this->SetFixedWidth(250);
+		//this->SetFixedWidth(250);
 		pFolderButton->SetFixedWidth(GetFixedHeight());
 		pDottedLine->SetFixedWidth(2);
 		pCheckBox->SetFixedWidth(GetFixedHeight());

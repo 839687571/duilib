@@ -101,6 +101,7 @@ typedef struct UILIB_API tagTImageInfo
 	LPBYTE pSrcBits;
     int nX;
     int nY;
+	int delay;
     bool alphaChannel;
     bool bUseHSL;
     CDuiString sResType;

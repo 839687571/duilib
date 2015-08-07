@@ -106,5 +106,6 @@
 
 #include "Control/UIActiveX.h"
 #include "Control/UIWebBrowser.h"
+#include "Control/UIGifButton.h"
 //#include "Control/UIFlash.h"
 

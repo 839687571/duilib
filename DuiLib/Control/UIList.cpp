@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 
 namespace DuiLib {
 
@@ -234,91 +234,39 @@ void CListUI::RemoveAll()
 
 void CListUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
-	if( m_pHeader != NULL ) { // 设置header各子元素x坐标,因为有些listitem的setpos需要用到(临时修复)
-		int iLeft = rc.left + m_rcInset.left;
-		int iRight = rc.right - m_rcInset.right;
+    CVerticalLayoutUI::SetPos(rc);
+    if( m_pHeader == NULL ) return;
+    // Determine general list information and the size of header columns
+    m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
+    // The header/columns may or may not be visible at runtime. In either case
+    // we should determine the correct dimensions...
 
-		m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
+    if( !m_pHeader->IsVisible() ) {
+        for( int it = 0; it < m_pHeader->GetCount(); it++ ) {
+            static_cast<CControlUI*>(m_pHeader->GetItemAt(it))->SetInternVisible(true);
+        }
+        m_pHeader->SetPos(CDuiRect(rc.left, 0, rc.right, 0),false);
+    }
+    int iOffset = m_pList->GetScrollPos().cx;
+    for( int i = 0; i < m_ListInfo.nColumns; i++ ) {
+        CControlUI* pControl = static_cast<CControlUI*>(m_pHeader->GetItemAt(i));
+        if( !pControl->IsVisible() ) continue;
+        if( pControl->IsFloat() ) continue;
 
-		if( !m_pHeader->IsVisible() ) {
-			for( int it = m_pHeader->GetCount() - 1; it >= 0; it-- ) {
-				static_cast<CControlUI*>(m_pHeader->GetItemAt(it))->SetInternVisible(true);
-			}
-		}
-		m_pHeader->SetPos(CDuiRect(iLeft, 0, iRight, 0), false);
-		int iOffset = m_pList->GetScrollPos().cx;
-		for( int i = 0; i < m_ListInfo.nColumns; i++ ) {
-			CControlUI* pControl = static_cast<CControlUI*>(m_pHeader->GetItemAt(i));
-			if( !pControl->IsVisible() ) continue;
-			if( pControl->IsFloat() ) continue;
+        RECT rcPos = pControl->GetPos();
+        if( iOffset > 0 ) {
+            rcPos.left -= iOffset;
+            rcPos.right -= iOffset;
+            pControl->SetPos(rcPos,false);
+        }
+        m_ListInfo.rcColumn[i] = pControl->GetPos();
+    }
+    if( !m_pHeader->IsVisible() ) {
+        for( int it = 0; it < m_pHeader->GetCount(); it++ ) {
+            static_cast<CControlUI*>(m_pHeader->GetItemAt(it))->SetInternVisible(false);
+        }
+    }
 
-			RECT rcPos = pControl->GetPos();
-			if( iOffset > 0 ) {
-				rcPos.left -= iOffset;
-				rcPos.right -= iOffset;
-				pControl->SetPos(rcPos, false);
-			}
-			m_ListInfo.rcColumn[i] = pControl->GetPos();
-		}
-		if( !m_pHeader->IsVisible() ) {
-			for( int it = m_pHeader->GetCount() - 1; it >= 0; it-- ) {
-				static_cast<CControlUI*>(m_pHeader->GetItemAt(it))->SetInternVisible(false);
-			}
-			m_pHeader->SetInternVisible(false);
-		}
-	}
-
-	CVerticalLayoutUI::SetPos(rc, bNeedInvalidate);
-
-	if( m_pHeader == NULL ) return;
-
-	rc = m_rcItem;
-	rc.left += m_rcInset.left;
-	rc.top += m_rcInset.top;
-	rc.right -= m_rcInset.right;
-	rc.bottom -= m_rcInset.bottom;
-
-	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
-		rc.top -= m_pVerticalScrollBar->GetScrollPos();
-		rc.bottom -= m_pVerticalScrollBar->GetScrollPos();
-		rc.bottom += m_pVerticalScrollBar->GetScrollRange();
-		rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-	}
-	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
-		rc.left -= m_pHorizontalScrollBar->GetScrollPos();
-		rc.right -= m_pHorizontalScrollBar->GetScrollPos();
-		rc.right += m_pHorizontalScrollBar->GetScrollRange();
-		rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
-	}
-
-	m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
-
-	if( !m_pHeader->IsVisible() ) {
-		for( int it = m_pHeader->GetCount() - 1; it >= 0; it-- ) {
-			static_cast<CControlUI*>(m_pHeader->GetItemAt(it))->SetInternVisible(true);
-		}
-		m_pHeader->SetPos(CDuiRect(rc.left, 0, rc.right, 0), false);
-	}
-	int iOffset = m_pList->GetScrollPos().cx;
-	for( int i = 0; i < m_ListInfo.nColumns; i++ ) {
-		CControlUI* pControl = static_cast<CControlUI*>(m_pHeader->GetItemAt(i));
-		if( !pControl->IsVisible() ) continue;
-		if( pControl->IsFloat() ) continue;
-
-		RECT rcPos = pControl->GetPos();
-		if( iOffset > 0 ) {
-			rcPos.left -= iOffset;
-			rcPos.right -= iOffset;
-			pControl->SetPos(rcPos, false);
-		}
-		m_ListInfo.rcColumn[i] = pControl->GetPos();
-	}
-	if( !m_pHeader->IsVisible() ) {
-		for( int it = m_pHeader->GetCount() - 1; it >= 0; it-- ) {
-			static_cast<CControlUI*>(m_pHeader->GetItemAt(it))->SetInternVisible(false);
-		}
-		m_pHeader->SetInternVisible(false);
-	}
 }
 
 void CListUI::Move(SIZE szOffset, bool bNeedInvalidate)

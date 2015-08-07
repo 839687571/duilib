@@ -454,6 +454,7 @@ namespace DuiLib
 			m_pVerticalScrollBar = new CScrollBarUI;
 			m_pVerticalScrollBar->SetOwner(this);
 			m_pVerticalScrollBar->SetManager(m_pManager, NULL, false);
+            m_pVerticalScrollBar->SetVisible(false);    
 			if ( m_pManager ) {
 				LPCTSTR pDefaultAttributes = m_pManager->GetDefaultAttributeList(_T("VScrollBar"));
 				if( pDefaultAttributes ) {
@@ -471,6 +472,7 @@ namespace DuiLib
 			m_pHorizontalScrollBar->SetHorizontal(true);
 			m_pHorizontalScrollBar->SetOwner(this);
 			m_pHorizontalScrollBar->SetManager(m_pManager, NULL, false);
+            m_pHorizontalScrollBar->SetVisible(false);
 			if ( m_pManager ) {
 				LPCTSTR pDefaultAttributes = m_pManager->GetDefaultAttributeList(_T("HScrollBar"));
 				if( pDefaultAttributes ) {
