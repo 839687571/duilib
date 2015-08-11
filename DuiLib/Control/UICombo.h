@@ -48,7 +48,7 @@ public:
     bool RemoveAt(int iIndex);
     void RemoveAll();
 
-    bool Activate(BOOL bTakeFocus=TRUE);/* ¡ä¡ä?¡§¡ä¡ã?¨² ¨º?¡¤? ??¨¨??1¦Ì?*/
+    bool Activate(BOOL bTakeFocus=TRUE);/* if drop wnd take focus*/
 	void  InActivate();
     RECT GetTextPadding() const;
     void SetTextPadding(RECT rc);

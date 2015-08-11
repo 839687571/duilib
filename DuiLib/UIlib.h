@@ -108,5 +108,6 @@
 #include "Control/UIWebBrowser.h"
 #include "Control/UIGifButton.h"
 #include "Control/UIMenu.h"
+#include "Control/UIAutoCompleteCombo.h"
 //#include "Control/UIFlash.h"
 

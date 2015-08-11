@@ -230,7 +230,7 @@ protected:                                                                \
 
 #define  DUI_CTR_COMBO                           (_T("Combo"))
 #define  DUI_CTR_LABEL                           (_T("Label"))
-#define  DUI_CTR_FLASH							(_T("Flash"))
+#define  DUI_CTR_FLASH							   (_T("Flash"))
 
 #define  DUI_CTR_BUTTON                          (_T("Button"))
 #define  DUI_CTR_OPTION                          (_T("Option"))
@@ -238,7 +238,7 @@ protected:                                                                \
 
 #define  DUI_CTR_CONTROL                         (_T("Control"))
 #define  DUI_CTR_ACTIVEX                         (_T("ActiveX"))
-#define  DUI_CTR_GIF_BUTTON						 (_T("GifButton"))
+#define  DUI_CTR_GIF_BUTTON					   (_T("GifButton"))
 
 #define  DUI_CTR_LISTITEM                        (_T("ListItem"))
 #define  DUI_CTR_PROGRESS                        (_T("Progress"))
@@ -269,8 +269,10 @@ protected:                                                                \
 
 #define  DUI_CTR_HORIZONTALLAYOUT                (_T("HorizontalLayout"))
 #define  DUI_CTR_LISTLABELELEMENT                (_T("ListLabelElement"))
+#define  DUI_CTR_AUTOCOMPLETECOMBO               (_T("AutoCompleteCombo"))
 
 #define  DUI_CTR_LISTCONTAINERELEMENT            (_T("ListContainerElement"))
+
 
 ///
 //////////////END控件名称宏定义//////////////////////////////////////////////////
