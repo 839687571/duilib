@@ -289,7 +289,8 @@ public:
 	static void RemoveAllMultiLanguageString();
 	static void ProcessMultiLanguageTokens(CDuiString& pStrMultiLanguage);
 
-    bool AttachDialog(CControlUI* pControl);
+		//skilla 2014.12.21
+    bool AttachDialog(CControlUI* pControl,bool bAutoDeleteControl = true);
     bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
     void ReapObjects(CControlUI* pControl);
 
@@ -351,6 +352,8 @@ public:
     bool PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
 	void UsedVirtualWnd(bool bUsed);
 
+		//skilla¨¬¨ª?¨®2014.12.21
+	void SetUnfocusPaintWindow(bool b);
 private:
 	CStdPtrArray* GetFoundControls();
     static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
@@ -401,6 +404,11 @@ private:
     bool m_bMouseCapture;
 	bool m_bUsedVirtualWnd;
 
+	//skilla 2014.12.21
+	bool m_bAutoDeleteControls;
+
+	//skilla 2014.12.21
+	bool m_bUnfocusPaintWindow;
     //
     CStdPtrArray m_aNotifiers;
     CStdPtrArray m_aTimers;
