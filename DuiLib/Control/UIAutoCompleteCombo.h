@@ -152,10 +152,10 @@ public:
 
 
 
+	CDuiString GetEditText();
 
 	/* 重新的combui 方法*/
 	/*********************************************************/
-	CDuiString GetText() const;
 	void SetEnabled(bool bEnable = true);
 	virtual const CDuiString& GetUserData(); /* selected item userdata */
 	/*********************************************************/

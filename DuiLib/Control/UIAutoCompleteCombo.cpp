@@ -156,7 +156,7 @@ void CAutoCompleteComboUI::SetText(int iComboSel)
 	}
 }
 
-CDuiString CAutoCompleteComboUI::GetText() const
+CDuiString CAutoCompleteComboUI::GetEditText() 
 {
 	if (m_pEdit != NULL)
 	{
