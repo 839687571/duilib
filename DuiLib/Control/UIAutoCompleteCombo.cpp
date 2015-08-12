@@ -30,6 +30,14 @@ void CAutoCompleteComboUI::Notify(TNotifyUI& msg)
 		CContainerUI *cont = (CContainerUI *)GetParent();
 		cont->Add(m_pEdit);
 		m_pEdit->SetPos(rc);
+
+		CDuiRect rcTxtPad = GetTextPadding();
+		if (rcTxtPad.left == 0)
+		{
+			rcTxtPad.left += 2;
+		}
+		SetTextPadding(rcTxtPad);  /*combui 上显示的文字要让eidt遮盖住*/
+		AddItemDefOnXML();
 	}
 
 	if (msg.pSender == m_pEdit)
@@ -40,15 +48,31 @@ void CAutoCompleteComboUI::Notify(TNotifyUI& msg)
 	{
 		OnComboNotify(msg);
 	}
-
-	CDuiString str = msg.sType.GetData();
-
-	printf("%s\n", str.GetData());
-	OutputDebugString(str);
-	OutputDebugString("\n");
-	//printf("\n");
 }
 
+
+void  CAutoCompleteComboUI::AddItemDefOnXML()
+{
+	int isel = GetCurSel();
+	CListLabelElementUI* pSelItem = static_cast<CListLabelElementUI*>(GetItemAt(isel));
+	if (pSelItem != NULL)
+	{
+		CDuiString userdate = pSelItem->GetUserData().GetData();
+		m_pEdit->SetUserData(userdate);
+		m_pEdit->SetText(pSelItem->GetText());
+	}
+	for (int i = 0; i < GetCount();i++)
+	{
+		CListLabelElementUI* pSelItem = static_cast<CListLabelElementUI*>(GetItemAt(i));
+		if (pSelItem != NULL)
+		{
+			CDuiString sText;
+			sText = pSelItem->GetText();
+			CDuiString TextPy = (m_pHzToPy->HzToPinYin(sText.GetData())).c_str();
+			itemPyMap[sText.GetData()] = TextPy.GetData();
+		}
+	}
+}
 void CAutoCompleteComboUI::AddItemToCombo(LPCTSTR pText, LPCTSTR pUserData)
 {
 	if (m_pHzToPy == NULL) ASSERT(0);
