@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>DuiLib</ProjectName>
+    <ProjectName>DuiLib2.0</ProjectName>
     <ProjectGuid>{BBF0E73E-4202-4B5C-BA25-5F7206D44A87}</ProjectGuid>
     <RootNamespace>DuiLib</RootNamespace>
   </PropertyGroup>
@@ -72,15 +72,15 @@
     <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\Build\Release\</OutDir>
-    <IntDir>.\Build\Release\</IntDir>
+    <OutDir>$(SolutionDir)lib</OutDir>
+    <IntDir>$(Configuration)</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)lib</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
+    <IntDir>$(Configuration)</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <EmbedManifest>false</EmbedManifest>
@@ -126,7 +126,7 @@
       <Culture>0x0406</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>../bin/DuiLib.dll</OutputFile>
+      <OutputFile>$(solutiondir)bin\$(targetname).dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>.\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x11000000</BaseAddress>
@@ -165,9 +165,10 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>$(SolutionDir)bin\DuiLib.dll</OutputFile>
+      <OutputFile>$(solutiondir)bin\$(targetname).dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>.\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
       <BaseAddress>0x11000000</BaseAddress>
@@ -255,7 +256,11 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Control\UIAutoCompleteCombo.cpp" />
     <ClCompile Include="Control\UIGifButton.cpp" />
+    <ClCompile Include="Control\UISpinButton.cpp" />
+    <ClCompile Include="Control\UITimeSpin.cpp" />
+    <ClCompile Include="Control\UITimeSpinMini.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Build\Debug/DuiLib.pch</PrecompiledHeaderOutputFile>
@@ -323,7 +328,11 @@
     <ClCompile Include="Control\UIWebBrowser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Control\UIAutoCompleteCombo.h" />
     <ClInclude Include="Control\UIGifButton.h" />
+    <ClInclude Include="Control\UISpinButton.h" />
+    <ClInclude Include="Control\UITimeSpin.h" />
+    <ClInclude Include="Control\UITimeSpinMini.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UIlib.h" />
     <ClInclude Include="Utils\Algorithms.h" />

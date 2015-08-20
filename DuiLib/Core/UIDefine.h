@@ -79,8 +79,8 @@ union DuiMessageMapFunctions
 #define DUI_MSGTYPE_VALUECHANGED           (_T("valuechanged"))
 
 #define DUI_MSGTYPE_SELECTCHANGED 		   (_T("selectchanged"))
-
-
+#define DUI_MSGTYPE_SPINCHANGED            (_T("spinchanged"))
+#define DUI_MSGTYPE_TIMECHANGED            (_T("timechanged"))
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -248,10 +248,14 @@ protected:                                                                \
 #define  DUI_CTR_DATETIME                        (_T("DateTime"))
 #define  DUI_CTR_TREEVIEW                        (_T("TreeView"))
 #define  DUI_CTR_TREENODE                        (_T("TreeNode"))
+#define  DUI_CTR_PROPERTY                        (_T("Property"))
+#define  DUI_CTR_TIMESPIN                        (_T("TimeSpin"))
 
 #define  DUI_CTR_CONTAINER                       (_T("Container"))
 #define  DUI_CTR_TABLAYOUT                       (_T("TabLayout"))
 #define  DUI_CTR_SCROLLBAR                       (_T("ScrollBar"))
+#define  DUI_CTR_SPINBUTTON						 (_T("SpinButton"))
+#define  DUI_CTR_FADEBUTTON						 (_T("FadeButton"))
 
 #define  DUI_CTR_LISTHEADER                      (_T("ListHeader"))
 #define  DUI_CTR_TILELAYOUT                      (_T("TileLayout"))
@@ -261,6 +265,7 @@ protected:                                                                \
 #define  DUI_CTR_LISTELEMENT                     (_T("ListElement"))
 
 #define  DUI_CTR_DIALOGLAYOUT                    (_T("DialogLayout"))
+#define  DUI_CTR_TIMESPINMINI                     (_T("TimeSpinMini"))
 
 #define  DUI_CTR_VERTICALLAYOUT                  (_T("VerticalLayout"))
 #define  DUI_CTR_LISTHEADERITEM                  (_T("ListHeaderItem"))

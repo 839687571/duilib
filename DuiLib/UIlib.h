@@ -106,8 +106,11 @@
 
 #include "Control/UIActiveX.h"
 #include "Control/UIWebBrowser.h"
+#include "Control/UISpinButton.h"
+#include "Control/UITimeSpin.h"
+#include "Control/UITimeSpinMini.h"
 #include "Control/UIGifButton.h"
-#include "Control/UIMenu.h"
+
 #include "Control/UIAutoCompleteCombo.h"
 //#include "Control/UIFlash.h"
 
