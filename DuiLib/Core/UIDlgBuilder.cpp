@@ -404,6 +404,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                 else if( _tcsicmp(pstrClass, DUI_CTR_TILELAYOUT) == 0 )        pControl = new CTileLayoutUI;
 				else if( _tcsicmp(pstrClass, DUI_CTR_WEBBROWSER) == 0 )        pControl = new CWebBrowserUI;
                 else if( _tcscmp(pstrClass, DUI_CTR_SPINBUTTON) == 0 )         pControl = new CSpinButtonUI; 
+				else if( _tcscmp(pstrClass, DUI_CTR_FADEBUTTON) == 0 )         pControl = new CFadeButtonUI; 
                 break;
 			case 11:
 				if (_tcsicmp(pstrClass, DUI_CTR_CHILDLAYOUT) == 0)			  pControl = new CChildLayoutUI;

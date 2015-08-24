@@ -214,15 +214,15 @@ bool CAutoCompleteComboUI::OnComboNotify(void* pMsg)
 		}
 	}
 	else if (pNotify->sType == DUI_MSGTYPE_ITEMSELECT) {
-				int isel = GetCurSel();
-				CListLabelElementUI* pSelItem = static_cast<CListLabelElementUI*>(GetItemAt(isel));
-				if (pSelItem != NULL)
-				{
-					CDuiString userdate = pSelItem->GetUserData().GetData();
-					m_pEdit->SetUserData(userdate);
-				}
-				m_pEdit->SetText(pNotify->pSender->GetText());
-			}
+		int isel = GetCurSel();
+		CListLabelElementUI* pSelItem = static_cast<CListLabelElementUI*>(GetItemAt(isel));
+		if (pSelItem != NULL)
+		{
+			CDuiString userdate = pSelItem->GetUserData().GetData();
+			m_pEdit->SetUserData(userdate);
+		}
+		m_pEdit->SetText(pNotify->pSender->GetText());
+	}
 	return true;
 }
 

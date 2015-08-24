@@ -69,6 +69,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/UIDelegate.h"
+#include "Utils/UIAnimation.h"
 #include "Core/UIDefine.h"
 #include "Core/UIManager.h"
 #include "Core/UIBase.h"
@@ -109,6 +110,7 @@
 #include "Control/UISpinButton.h"
 #include "Control/UITimeSpin.h"
 #include "Control/UITimeSpinMini.h"
+#include "Control/UIFadeButton.h"
 #include "Control/UIGifButton.h"
 
 #include "Control/UIAutoCompleteCombo.h"
