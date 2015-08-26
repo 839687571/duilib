@@ -274,8 +274,18 @@ void CAutoCompleteComboUI::SetEnabled(bool bEnable)
 	if (m_pEdit != NULL) {
 		m_pEdit->SetEnabled(false);
 	}
+} 
+UINT CAutoCompleteComboUI::GetControlFlags() const
+{
+	//return UIFLAG_TABSTOP;
+	return 0;
 }
-
+void CAutoCompleteComboUI::SetFocus()
+{
+	if (m_pEdit != NULL) {
+		m_pEdit->SetFocus();
+	}
+}
 const CDuiString& CAutoCompleteComboUI::GetUserData()
 {
 	if (m_pEdit != NULL) {
