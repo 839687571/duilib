@@ -210,7 +210,14 @@ namespace DuiLib
 			m_pWindow = new CEditWnd();
 			ASSERT(m_pWindow);
 			m_pWindow->Init(this);
+			
+            int nSize = GetWindowTextLength(*m_pWindow);
+            if( nSize == 0 )
+            nSize = 1;
+            Edit_SetSel(*m_pWindow, 0, nSize);
+            
 			Invalidate();
+
 		}
 		if( event.Type == UIEVENT_KILLFOCUS && IsEnabled() ) 
 		{
