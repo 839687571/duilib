@@ -176,7 +176,9 @@ bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 				}
 			}
 		}
-		Activate(FALSE);
+		if (GetCount()>0){
+			Activate(FALSE);
+		}
 	}
 // 		int isel = m_pCombo->GetCurSel();
 // 		CListLabelElementUI* pItem = (CListLabelElementUI*)m_pCombo->GetItemAt(isel);// CListLabelElementUI;
