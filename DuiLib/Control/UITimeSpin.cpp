@@ -18,6 +18,10 @@ CTimeSpinUI::CTimeSpinUI()
     InitInnerControl();
 }
 
+CTimeSpinUI::~CTimeSpinUI()
+{
+	GetManager()->RemoveNotifier(this);
+}
 void CTimeSpinUI::InitInnerControl()
 {
     m_pHour = new CEditUI;
@@ -296,7 +300,7 @@ bool CTimeSpinUI::SetCurrentTime(UINT nHour, UINT nMinute, UINT nSecond)
     }
 
     m_dwTime = dwTime;
-    m_pSpin->SetSpinPos(dwTime);
+    m_pSpin->SetSpinPosSilent(dwTime);
 //     SetEditStatus();
 
     if (GetHour() != nHour && *m_pHour->GetText())
@@ -373,8 +377,8 @@ bool CTimeSpinUI::SetHour(UINT nHour)
         _stprintf_s(szTmp, _countof(szTmp), _T("%02d"), nHour);
         m_pHour->SetText(szTmp);
         m_dwTime = dwNewTime;
-        m_pSpin->SetSpinPos(dwNewTime);
-        SetEditStatus();
+        m_pSpin->SetSpinPosSilent(dwNewTime);
+        //SetEditStatus();
     }
 
     return true;
@@ -398,8 +402,8 @@ bool CTimeSpinUI::SetMinute(UINT nMinute)
         _stprintf_s(szTmp, _countof(szTmp), _T("%02d"), nMinute);
         m_pMinute->SetText(szTmp);
         m_dwTime = dwNewTime;
-        m_pSpin->SetSpinPos(dwNewTime);
-        SetEditStatus();
+        m_pSpin->SetSpinPosSilent(dwNewTime);
+        //SetEditStatus();
     }
 
     return true;
@@ -423,8 +427,8 @@ bool CTimeSpinUI::SetSecond(UINT nSecond)
         _stprintf_s(szTmp, _countof(szTmp), _T("%02d"), nSecond);
         m_pSecond->SetText(szTmp);
         m_dwTime = dwNewTime;
-        m_pSpin->SetSpinPos(dwNewTime);
-        SetEditStatus();
+        m_pSpin->SetSpinPosSilent(dwNewTime);
+        //SetEditStatus();
     }
 
     return true;
@@ -437,7 +441,7 @@ void CTimeSpinUI::SetMinTime(DWORD dwMinTime)
     if ( m_dwTime< dwMinTime)
     {
         SetCurrentTime(dwMinTime);
-        m_pSpin->SetSpinPos(dwMinTime);
+        m_pSpin->SetSpinPosSilent(dwMinTime);
     }
 }
 
@@ -453,7 +457,7 @@ void CTimeSpinUI::SetMaxTime(DWORD dwMaxTime)
     if (m_dwTime > dwMaxTime)
     {
         SetCurrentTime(dwMaxTime);
-        m_pSpin->SetSpinPos(dwMaxTime);
+        m_pSpin->SetSpinPosSilent(dwMaxTime);
     }
 }
 
