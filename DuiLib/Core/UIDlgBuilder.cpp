@@ -391,23 +391,30 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 				else if( _tcsicmp(pstrClass, DUI_CTR_CHECKBOX) == 0 )		  pControl = new CCheckBoxUI;
 				else if( _tcsicmp(pstrClass, DUI_CTR_DATETIME) == 0 )		  pControl = new CDateTimeUI;
 				else if( _tcsicmp(pstrClass, DUI_CTR_TREEVIEW) == 0 )		  pControl = new CTreeViewUI;
+                else if( _tcscmp(pstrClass, DUI_CTR_TIMESPIN) == 0)           pControl = new CTimeSpinUI;
                 break;
             case 9:
                 if( _tcsicmp(pstrClass, DUI_CTR_CONTAINER) == 0 )              pControl = new CContainerUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_TABLAYOUT) == 0 )         pControl = new CTabLayoutUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_SCROLLBAR) == 0 )         pControl = new CScrollBarUI; 
+				else if (_tcscmp(pstrClass, DUI_CTR_GIF_BUTTON) == 0)		  pControl = new CGifButtonUI;
                 break;
             case 10:
                 if( _tcsicmp(pstrClass, DUI_CTR_LISTHEADER) == 0 )             pControl = new CListHeaderUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_TILELAYOUT) == 0 )        pControl = new CTileLayoutUI;
 				else if( _tcsicmp(pstrClass, DUI_CTR_WEBBROWSER) == 0 )        pControl = new CWebBrowserUI;
+                else if( _tcscmp(pstrClass, DUI_CTR_SPINBUTTON) == 0 )         pControl = new CSpinButtonUI; 
+				else if( _tcscmp(pstrClass, DUI_CTR_FADEBUTTON) == 0 )         pControl = new CFadeButtonUI; 
                 break;
 			case 11:
 				if (_tcsicmp(pstrClass, DUI_CTR_CHILDLAYOUT) == 0)			  pControl = new CChildLayoutUI;
 				break;
+            case 12:
+                if( _tcscmp(pstrClass, DUI_CTR_TIMESPINMINI) == 0)           pControl = new CTimeSpinMiniUI;
+                break;
             case 14:
                 if( _tcsicmp(pstrClass, DUI_CTR_VERTICALLAYOUT) == 0 )         pControl = new CVerticalLayoutUI;
-                else if( _tcsicmp(pstrClass, DUI_CTR_LISTHEADERITEM) == 0 )    pControl = new CListHeaderItemUI;
+				else if (_tcsicmp(pstrClass, DUI_CTR_LISTHEADERITEM) == 0)    pControl = new CListHeaderItemUI;
                 break;
             case 15:
                 if( _tcsicmp(pstrClass, DUI_CTR_LISTTEXTELEMENT) == 0 )        pControl = new CListTextElementUI;
@@ -416,6 +423,8 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                 if( _tcsicmp(pstrClass, DUI_CTR_HORIZONTALLAYOUT) == 0 )       pControl = new CHorizontalLayoutUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_LISTLABELELEMENT) == 0 )  pControl = new CListLabelElementUI;
                 break;
+			case 17:
+				if (_tcsicmp(pstrClass, DUI_CTR_AUTOCOMPLETECOMBO) == 0)        pControl = new CAutoCompleteComboUI;
             case 20:
                 if( _tcsicmp(pstrClass, DUI_CTR_LISTCONTAINERELEMENT) == 0 )   pControl = new CListContainerElementUI;
                 break;

@@ -56,6 +56,7 @@ public:
     virtual TListInfoUI* GetListInfo() = 0;
     virtual int GetCurSel() const = 0;
     virtual bool SelectItem(int iIndex, bool bTakeFocus = false) = 0;
+    virtual bool SelectItemActivate(int iIndex) = 0;
     virtual void DoEvent(TEventUI& event) = 0;
 };
 
@@ -103,7 +104,9 @@ public:
     bool GetScrollSelect();
     void SetScrollSelect(bool bScrollSelect);
     int GetCurSel() const;
+    int GetCurSelActivate() const;
     bool SelectItem(int iIndex, bool bTakeFocus = false);
+    bool SelectItemActivate(int iIndex);    // 双击选中
 
     CListHeaderUI* GetHeader() const;  
     CContainerUI* GetList() const;
@@ -193,7 +196,8 @@ public:
     BOOL SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData);
 protected:
     bool m_bScrollSelect;
-    int m_iCurSel;
+    int m_iCurSel;          // 单击的列
+    int m_iCurSelActivate;  // 双击的列
     int m_iExpandedItem;
     IListCallbackUI* m_pCallback;
     CListBodyUI* m_pList;
@@ -280,6 +284,7 @@ public:
     SIZE EstimateSize(SIZE szAvailable);
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
     RECT GetThumbRect() const;
+
 
     void PaintText(HDC hDC);
     void PaintStatusImage(HDC hDC);
@@ -431,7 +436,46 @@ public:
 
     void DrawItemText(HDC hDC, const RECT& rcItem);    
     void DrawItemBk(HDC hDC, const RECT& rcItem);
+	void DrawItemDivLien(HDC hDC, const RECT& rcItem);
 
+	//add by whmiao 
+	// 每个列表项和表头对齐.
+ 	void SetPos(RECT rc, bool bNeedInvalidate=true)
+	{
+		CContainerUI::SetPos(rc);
+		if( m_pOwner == NULL ) return;		
+		
+		if (m_pHeader == NULL)
+		{
+			return;
+		}
+		TListInfoUI* pInfo = m_pOwner->GetListInfo();
+		int nCount = m_items.GetSize();
+		for (int i = 0; i < nCount; i++)
+		{
+			CListHeaderItemUI *pHeaderItem = static_cast<CListHeaderItemUI*>(m_pHeader->GetItemAt(i));
+			CControlUI *pHorizontalLayout = static_cast<CControlUI*>(m_items[i]);
+			if (pHorizontalLayout != NULL)
+			{
+// 				RECT rtHeader = pHeaderItem->GetPos();
+// 				RECT rt = pHorizontalLayout->GetPos();
+// 				rt.left = pInfo->rcColumn[i].left;
+// 				rt.right = pInfo->rcColumn[i].right;
+				//pHorizontalLayout->SetPos(rt);
+			}
+
+
+			if (pHorizontalLayout != NULL && pHeaderItem != NULL)
+			{
+				RECT rtHeader = pHeaderItem->GetPos();
+				RECT rt = pHorizontalLayout->GetPos();
+				rt.left = rtHeader.left;
+				rt.right = rtHeader.right;
+				pHorizontalLayout->SetPos(rt);
+			}
+		}
+ 	}
+	CListHeaderUI *m_pHeader;
 protected:
     int m_iIndex;
     bool m_bSelected;

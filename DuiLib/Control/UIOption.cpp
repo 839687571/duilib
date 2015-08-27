@@ -63,7 +63,7 @@ namespace DuiLib
 		return m_bSelected;
 	}
 
-	void COptionUI::Selected(bool bSelected)
+	void COptionUI::Selected(bool bSelected, bool emitEvent)
 	{
 		if( m_bSelected == bSelected ) return;
 		m_bSelected = bSelected;
@@ -80,11 +80,11 @@ namespace DuiLib
 							pControl->Selected(false);
 						}
 					}
-					m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
+					if (emitEvent) m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
 				}
 			}
 			else {
-				m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
+				if (emitEvent) m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
 			}
 		}
 

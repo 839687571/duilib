@@ -146,7 +146,9 @@ namespace DuiLib
 		if( pstr == NULL ) return 0;
 		::GetWindowText(m_hWnd, pstr, cchLen);
 		m_pOwner->m_sText = pstr;
-		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
+		if (m_pOwner->GetEnableTextChangeEvent()) {
+			m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
+		}
 		return 0;
 	}
 
@@ -157,7 +159,7 @@ namespace DuiLib
 
 	CEditUI::CEditUI() : m_pWindow(NULL), m_uMaxChar(255), m_bReadOnly(false), 
 		m_bPasswordMode(false), m_cPasswordChar(_T('*')), m_uButtonState(0), 
-		m_dwEditbkColor(0xFFFFFFFF), m_iWindowStyls(0)
+		m_dwEditbkColor(0xFFFFFFFF), m_iWindowStyls(0), m_enableTextChangeEvent(true)
 	{
 		SetTextPadding(CDuiRect(4, 3, 4, 3));
 		SetBkColor(0xFFFFFFFF);
@@ -208,7 +210,14 @@ namespace DuiLib
 			m_pWindow = new CEditWnd();
 			ASSERT(m_pWindow);
 			m_pWindow->Init(this);
+			
+            int nSize = GetWindowTextLength(*m_pWindow);
+            if( nSize == 0 )
+            nSize = 1;
+            Edit_SetSel(*m_pWindow, 0, nSize);
+            
 			Invalidate();
+
 		}
 		if( event.Type == UIEVENT_KILLFOCUS && IsEnabled() ) 
 		{
@@ -330,7 +339,7 @@ namespace DuiLib
 		}
 		else
 		{
-			m_iWindowStyls &= ~ES_NUMBER;
+			m_iWindowStyls |= ~ES_NUMBER;
 		}
 	}
 
@@ -553,5 +562,15 @@ namespace DuiLib
 				m_iFont, DT_SINGLELINE | m_uTextStyle);
 
 		}
+	}
+
+	void CEditUI::SetEnableTextChangeEvent(bool bEnabled)
+	{
+		m_enableTextChangeEvent = bEnabled;
+	}
+
+	bool CEditUI::GetEnableTextChangeEvent()
+	{
+		return m_enableTextChangeEvent;
 	}
 }

@@ -107,7 +107,15 @@ namespace DuiLib
 			if( it == iIndex ) {
 				GetItemAt(it)->SetVisible(true);
 				GetItemAt(it)->SetFocus();
-				SetPos(m_rcItem);
+				if (!IsFloat())
+				{
+				  SetPos(GetPos(), false);
+				}
+				else
+				{
+				  SetPos(GetRelativePos(), false);
+				}
+				//SetPos(m_rcItem);
 			}
 			else GetItemAt(it)->SetVisible(false);
 		}
@@ -138,7 +146,7 @@ namespace DuiLib
 	void CTabLayoutUI::SetPos(RECT rc, bool bNeedInvalidate)
 	{
 		CControlUI::SetPos(rc, bNeedInvalidate);
-		rc = m_rcItem;
+		rc = m_rcItem ; /* whmiao*/
 
 		// Adjust for inset
 		rc.left += m_rcInset.left;

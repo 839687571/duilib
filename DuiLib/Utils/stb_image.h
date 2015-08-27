@@ -403,7 +403,13 @@ enum
 };
 
 typedef unsigned char stbi_uc;
-
+typedef struct gif_data
+{
+	stbi_uc* pData;
+	int w;
+	int h;
+	int delay;
+}stbi_gif_data;
 #ifdef __cplusplus
 extern "C" {
 #endif

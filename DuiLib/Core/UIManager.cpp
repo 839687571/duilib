@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include <zmouse.h>
 #include <stdlib.h>
 
@@ -110,7 +110,9 @@ m_bMouseCapture(false),
 m_bOffscreenPaint(true),
 m_bAlphaBackground(false),
 m_bUsedVirtualWnd(false),
-m_nOpacity(255)
+m_nOpacity(255),
+m_bAutoDeleteControls(false),
+m_bUnfocusPaintWindow(false)
 {
 	if (m_SharedResInfo.m_DefaultFontInfo.sFontName.IsEmpty())
 	{
@@ -164,8 +166,11 @@ CPaintManagerUI::~CPaintManagerUI()
     for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
     for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) delete static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
     m_mNameHash.Resize(0);
-    delete m_pRoot;
 
+	if (m_bAutoDeleteControls)
+	{
+		 delete m_pRoot;
+	}
     ::DeleteObject(m_ResInfo.m_DefaultFontInfo.hFont);
     RemoveAllFonts();
     RemoveAllImages();
@@ -608,12 +613,21 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 m_pEventClick->Event(event);
             }
 
-            SetFocus(NULL);
+
+		//æ— ç„¦çª—å£ä¸åšå¤„ç†
+			if (!m_bUnfocusPaintWindow)
+			{
+				 SetFocus(NULL);
+			}
 
             // Hmmph, the usual Windows tricks to avoid
             // focus loss...
             HWND hwndParent = GetWindowOwner(m_hWndPaint);
+
+			if (!m_bUnfocusPaintWindow)
+			{
             if( hwndParent != NULL ) ::SetFocus(hwndParent);
+			}
         }
         break;
     case WM_ERASEBKGND:
@@ -643,6 +657,8 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 ::GetClientRect(m_hWndPaint, &rcClient);
                 if( !::IsRectEmpty(&rcClient) ) {
                     if( m_pRoot->IsUpdateNeeded() ) {
+						if (!::IsIconic(m_hWndPaint))  //redrainä¿®å¤bug
+							m_pRoot->SetPos(rcClient,true);
                         if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
                         if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
                         if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
@@ -651,7 +667,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                         m_hDcBackground = NULL;
                         m_hbmpOffscreen = NULL;
                         m_hbmpBackground = NULL;
-						m_pRoot->SetPos(rcClient, true);
                     }
                     else {
 						CControlUI* pControl = NULL;
@@ -661,6 +676,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 							pControl = static_cast<CControlUI*>(m_aFoundControls[it]);
 							if( !pControl->IsFloat() ) pControl->SetPos(pControl->GetPos(), true);
 							else pControl->SetPos(pControl->GetRelativePos(), true);
+
 						}
                     }
                     // We'll want to notify the window when it is first initialized
@@ -903,7 +919,11 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             // We alway set focus back to our app (this helps
             // when Win32 child windows are placed on the dialog
             // and we need to remove them on focus change).
-            ::SetFocus(m_hWndPaint);
+	//æ— ç„¦çª—å£ä¸åšå¤„ç†
+			if (!m_bUnfocusPaintWindow)
+			{
+			      ::SetFocus(m_hWndPaint);
+			}
             POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
             m_ptLastMousePos = pt;
             CControlUI* pControl = FindControl(pt);
@@ -925,7 +945,11 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         break;
     case WM_LBUTTONDBLCLK:
         {
-            ::SetFocus(m_hWndPaint);
+			//æ— ç„¦çª—å£ä¸åšå¤„ç†
+			if (!m_bUnfocusPaintWindow)
+			{
+				::SetFocus(m_hWndPaint);
+			}
             POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
             m_ptLastMousePos = pt;
             CControlUI* pControl = FindControl(pt);
@@ -957,12 +981,12 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             event.wKeyState = (WORD)wParam;
             event.dwTimestamp = ::GetTickCount();
 			// By daviyang35 at 2015-6-5 16:10:13
-			// ÔÚClickÊÂ¼şÖĞµ¯³öÁËÄ£Ì¬¶Ô»°¿ò£¬ÍË³ö½×¶Î´°¿ÚÊµÀı¿ÉÄÜÒÑ¾­É¾³ı
-			// this³ÉÔ±ÊôĞÔ¸³Öµ½«»áµ¼ÖÂheap´íÎó
-			// this³ÉÔ±º¯Êıµ÷ÓÃ½«»áµ¼ÖÂÒ°Ö¸ÕëÒì³£
-			// Ê¹ÓÃÕ»ÉÏµÄ³ÉÔ±À´µ÷ÓÃÏìÓ¦£¬ÌáÇ°Çå¿Õ³ÉÔ±
-			// µ±×èÈûµÄÄ£Ì¬´°¿Ú·µ»ØÊ±£¬»ØÕ»½×¶Î²»·ÃÎÊÈÎºÎÀàÊµÀı·½·¨»òÊôĞÔ
-			// ½«²»»á´¥·¢Òì³£
+			// åœ¨Clickäº‹ä»¶ä¸­å¼¹å‡ºäº†æ¨¡æ€å¯¹è¯æ¡†ï¼Œé€€å‡ºé˜¶æ®µçª—å£å®ä¾‹å¯èƒ½å·²ç»åˆ é™¤
+			// thisæˆå‘˜å±æ€§èµ‹å€¼å°†ä¼šå¯¼è‡´heapé”™è¯¯
+			// thisæˆå‘˜å‡½æ•°è°ƒç”¨å°†ä¼šå¯¼è‡´é‡æŒ‡é’ˆå¼‚å¸¸
+			// ä½¿ç”¨æ ˆä¸Šçš„æˆå‘˜æ¥è°ƒç”¨å“åº”ï¼Œæå‰æ¸…ç©ºæˆå‘˜
+			// å½“é˜»å¡çš„æ¨¡æ€çª—å£è¿”å›æ—¶ï¼Œå›æ ˆé˜¶æ®µä¸è®¿é—®ä»»ä½•ç±»å®ä¾‹æ–¹æ³•æˆ–å±æ€§
+			// å°†ä¸ä¼šè§¦å‘å¼‚å¸¸
 			CControlUI* pClick = m_pEventClick;
 			m_pEventClick = NULL;
             pClick->Event(event);
@@ -970,7 +994,11 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         break;
     case WM_RBUTTONDOWN:
         {
-            ::SetFocus(m_hWndPaint);
+			//æ— ç„¦çª—å£ä¸åšå¤„ç†
+			if (!m_bUnfocusPaintWindow)
+			{
+				::SetFocus(m_hWndPaint);
+			}
             POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
             m_ptLastMousePos = pt;
             CControlUI* pControl = FindControl(pt);
@@ -1160,7 +1188,7 @@ void CPaintManagerUI::Invalidate(RECT& rcItem)
     ::InvalidateRect(m_hWndPaint, &rcItem, FALSE);
 }
 
-bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
+bool CPaintManagerUI::AttachDialog(CControlUI* pControl,bool bAutoDeleteControl)
 {
     ASSERT(::IsWindow(m_hWndPaint));
     // Reset any previous attachment
@@ -1181,6 +1209,7 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
     m_bUpdateNeeded = true;
     m_bFirstLayout = true;
     m_bFocusNeeded = true;
+	m_bAutoDeleteControls = bAutoDeleteControl;
     // Initiate all control
     return InitControls(pControl);
 }
@@ -1306,7 +1335,11 @@ void CPaintManagerUI::SetFocus(CControlUI* pControl)
 {
     // Paint manager window has focus?
     HWND hFocusWnd = ::GetFocus();
+//æ— ç„¦çª—å£ä¸åšå¤„ç†
+	if (!m_bUnfocusPaintWindow)
+	{
     if( hFocusWnd != m_hWndPaint && pControl != m_pFocus ) ::SetFocus(m_hWndPaint);
+	}
     // Already has focus?
     if( pControl == m_pFocus ) return;
     // Remove focus from old control
@@ -1339,7 +1372,10 @@ void CPaintManagerUI::SetFocus(CControlUI* pControl)
 
 void CPaintManagerUI::SetFocusNeeded(CControlUI* pControl)
 {
-    ::SetFocus(m_hWndPaint);
+	 if (!m_bUnfocusPaintWindow)
+	 {
+		   ::SetFocus(m_hWndPaint);
+	 }
     if( pControl == NULL ) return;
     if( m_pFocus != NULL ) {
         TEventUI event = { 0 };
@@ -2170,7 +2206,7 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
 
 const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha, bool bShared)
 {
-	// ÒòÎŞ·¨È·¶¨Íâ²¿HBITMAP¸ñÊ½£¬²»ÄÜÊ¹ÓÃhslµ÷Õû
+	// Ã’Ã²ÃÃÂ·Â¨ÃˆÂ·Â¶Â¨ÃÃ¢Â²Â¿HBITMAPÂ¸Ã±ÃŠÂ½Â£Â¬Â²Â»Ã„ÃœÃŠÂ¹Ã“ÃƒhslÂµÃ·Ã•Ã»
 	if( bitmap == NULL || bitmap[0] == _T('\0') ) return NULL;
     if( hBitmap == NULL || iWidth <= 0 || iHeight <= 0 ) return NULL;
 
@@ -2669,7 +2705,7 @@ bool CPaintManagerUI::TranslateMessage(const LPMSG pMsg)
 	if (uChildRes != 0)
 	{
 		HWND hWndParent = ::GetParent(pMsg->hwnd);
-		//code by redrain 2014.12.3,½â¾öeditºÍwebbrowser°´tabÎŞ·¨ÇĞ»»½¹µãµÄbug
+		//code by redrain 2014.12.3,è§£å†³editå’ŒwebbrowseræŒ‰tabæ— æ³•åˆ‡æ¢ç„¦ç‚¹çš„bug
 		//		for( int i = 0; i < m_aPreMessages.GetSize(); i++ ) 
 		for( int i = m_aPreMessages.GetSize() - 1; i >= 0 ; --i ) 
 		{
@@ -2738,4 +2774,8 @@ void CPaintManagerUI::UsedVirtualWnd(bool bUsed)
 	m_bUsedVirtualWnd = bUsed;
 }
 
+void CPaintManagerUI::SetUnfocusPaintWindow(bool b)
+{
+	m_bUnfocusPaintWindow = b;
+}
 } // namespace DuiLib

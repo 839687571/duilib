@@ -27,6 +27,8 @@ namespace DuiLib
 		m_TransText(168),
 		m_TransShadow1(60),
 		m_TransText1(168),
+		m_hAlign(DT_LEFT),
+		m_vAlign(DT_CENTER),
 		m_dwTextColor1(-1),
 		m_dwTextShadowColorA(0xff000000),
 		m_dwTextShadowColorB(-1),
@@ -35,7 +37,8 @@ namespace DuiLib
 		m_TransStroke(255),
 		m_dwStrokeColor(0),
 		m_EnabledShadow(false),
-		m_GradientLength(0)
+		m_GradientLength(0),
+        m_EnableAutoTip(false)
 	{
 		m_ShadowOffset.X		= 0.0f;
 		m_ShadowOffset.Y		= 0.0f;
@@ -145,6 +148,17 @@ namespace DuiLib
 		Invalidate();
 	}
 
+    void CLabelUI::SetEnableAutoTip(bool bAutoTip)
+    {
+        if( m_EnableAutoTip == bAutoTip ) return;
+        m_EnableAutoTip = bAutoTip;
+        Invalidate();
+    }
+
+    bool CLabelUI::GetEnableAutoTip() const
+    {
+        return m_EnableAutoTip;
+    }
 	SIZE CLabelUI::EstimateSize(SIZE szAvailable)
 	{
 		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);
@@ -274,6 +288,7 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetStrokeColor(clrColor);
 		}
+        else if( _tcscmp(pstrName, _T("autotip")) == 0 ) SetEnableAutoTip(_tcscmp(pstrValue, _T("true")) == 0);
 		else CControlUI::SetAttribute(pstrName, pstrValue);
 	}
 
@@ -317,14 +332,8 @@ namespace DuiLib
 			nGraphics.SetTextRenderingHint(m_TextRenderingHintAntiAlias);
 
 			StringFormat format;
-			StringAlignment sa = StringAlignment::StringAlignmentNear;
-			if ((m_uTextStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
-			else if( (m_uTextStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
-			format.SetAlignment((StringAlignment)sa);
-			sa = StringAlignment::StringAlignmentNear;
-			if ((m_uTextStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
-			else if( (m_uTextStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
-			format.SetLineAlignment((StringAlignment)sa);
+			format.SetAlignment((StringAlignment)m_hAlign);
+			format.SetLineAlignment((StringAlignment)m_vAlign);
 
 			RectF nRc((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top);
 			RectF nShadowRc = nRc;
@@ -553,6 +562,22 @@ namespace DuiLib
 		}
 	}
 
+    CDuiString CLabelUI::GetToolTip() const
+    {
+        RECT rc = m_rcItem;
+        rc.left += m_rcTextPadding.left;
+        rc.right -= m_rcTextPadding.right;
+        rc.top += m_rcTextPadding.top;
+        rc.bottom -= m_rcTextPadding.bottom;
+        SIZE sz = CRenderEngine::GetTextSize(GetManager()->GetPaintDC(), m_pManager, m_sText, m_iFont, DT_SINGLELINE | m_uTextStyle);
+        if (sz.cx > (rc.right - rc.left) && GetEnableAutoTip())
+        {
+            return m_sText;
+        }
+
+        return __super::GetToolTip();
+    }
+
 	//************************************
 	// Method:    GetText
 	// FullName:  CLabelUI::GetText
@@ -589,7 +614,6 @@ namespace DuiLib
 		try
 		{
 			m_EnableEffect = _EnabledEffect;
-			m_TextValue = CControlUI::GetText();
 		}
 		catch (...)
 		{

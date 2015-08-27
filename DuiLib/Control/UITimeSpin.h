@@ -10,7 +10,7 @@ class UILIB_API CTimeSpinUI : public CHorizontalLayoutUI, public INotifyUI
 {
 public:
     CTimeSpinUI();
-
+	~CTimeSpinUI();
     LPCTSTR GetClass() const;
     UINT GetControlFlags() const;
     LPVOID GetInterface(LPCTSTR pstrName);
@@ -50,7 +50,7 @@ public:
     virtual void SetTextColor(DWORD clrColor);
     virtual void PaintBkImage(HDC hDC);
 	virtual void DoPaint(HDC hDC, const RECT& rcPaint);
-
+	DWORD GetTime() { return m_dwTime; }
 protected:
     virtual void CheckTime();
     virtual void SetEditStatus();
