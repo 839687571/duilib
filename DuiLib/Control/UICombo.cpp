@@ -264,6 +264,7 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     m_ListInfo.dwLineColor = 0;
     m_ListInfo.bShowHtml = false;
     m_ListInfo.bMultiExpandable = false;
+	m_bSelectCloseFlag = true;
     ::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
     ::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
 
@@ -296,10 +297,20 @@ int CComboUI::GetCurSel() const
     return m_iCurSel;
 }
 
+bool CComboUI::GetSelectCloseFlag()
+{
+	return m_bSelectCloseFlag;
+}
+
+void CComboUI::SetSelectCloseFlag(bool flag)
+{
+	m_bSelectCloseFlag = flag;
+}
+
 bool CComboUI::SelectItem(int iIndex, bool bTakeFocus)
 {
-    //if( m_pWindow != NULL ) m_pWindow->Close();
-    if( iIndex == m_iCurSel ) return true;
+   // if( m_bSelectCloseFlag && m_pWindow != NULL ) m_pWindow->Close();
+   // if( iIndex == m_iCurSel ) return true;
     int iOldSel = m_iCurSel;
     if( m_iCurSel >= 0 ) {
         CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
@@ -478,29 +489,43 @@ void CComboUI::DoEvent(TEventUI& event)
             Activate();
             return;
         case VK_UP:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(m_iCurSel - 1, false));
+			SetSelectCloseFlag(true);
             return;
         case VK_DOWN:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(m_iCurSel + 1, true));
+			SetSelectCloseFlag(true);
             return;
         case VK_PRIOR:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(m_iCurSel - 1, false));
+			SetSelectCloseFlag(true);
             return;
         case VK_NEXT:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(m_iCurSel + 1, true));
+			SetSelectCloseFlag(true);
             return;
         case VK_HOME:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(0, false));
+			SetSelectCloseFlag(true);
             return;
         case VK_END:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(GetCount() - 1, true));
+			SetSelectCloseFlag(true);
             return;
         }
     }
     if( event.Type == UIEVENT_SCROLLWHEEL )
     {
         bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
+		SetSelectCloseFlag(false);
         SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
+		SetSelectCloseFlag(true);
         return;
     }
     if( event.Type == UIEVENT_CONTEXTMENU )
