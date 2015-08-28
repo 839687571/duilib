@@ -310,7 +310,7 @@ void CComboUI::SetSelectCloseFlag(bool flag)
 bool CComboUI::SelectItem(int iIndex, bool bTakeFocus)
 {
    // if( m_bSelectCloseFlag && m_pWindow != NULL ) m_pWindow->Close();
-   // if( iIndex == m_iCurSel ) return true;
+    if( iIndex == m_iCurSel ) return true;
     int iOldSel = m_iCurSel;
     if( m_iCurSel >= 0 ) {
         CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
