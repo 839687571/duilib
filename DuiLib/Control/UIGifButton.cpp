@@ -83,7 +83,8 @@ namespace DuiLib
 		{
 			SetNormalGifFile(pstrValue);
 		} else {
-			CButtonUI::SetAttribute(pstrName, pstrValue);
+
+		CButtonUI::SetAttribute(pstrName,pstrValue);
 		}
 	}
 

@@ -358,7 +358,6 @@ namespace DuiLib
 		if (m_pWindow == NULL) return NULL;
 		return m_pWindow->GetHWND();
 	}
-
 	void CEditUI::SetPasswordMode(bool bPasswordMode)
 	{
 		if( m_bPasswordMode == bPasswordMode ) return;

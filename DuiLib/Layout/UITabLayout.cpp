@@ -107,20 +107,11 @@ namespace DuiLib
 			if( it == iIndex ) {
 				GetItemAt(it)->SetVisible(true);
 				GetItemAt(it)->SetFocus();
-				SetPos(m_rcItem);
-				if (!IsFloat())
-				{
+			//	SetPos(m_rcItem);
+
+				if (!IsFloat())	{
 				  SetPos(GetPos(), false);
-				}
-				else
-				{
-				  SetPos(GetRelativePos(), false);
-				}
-				if (!IsFloat())
-				{
-				  SetPos(GetPos(), false);
-				}
-				else
+				}	else
 				{
 				  SetPos(GetRelativePos(), false);
 				}

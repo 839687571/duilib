@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>DuiLib2.0</ProjectName>
+    <ProjectName>DuiLib</ProjectName>
     <ProjectGuid>{BBF0E73E-4202-4B5C-BA25-5F7206D44A87}</ProjectGuid>
     <RootNamespace>DuiLib</RootNamespace>
   </PropertyGroup>
