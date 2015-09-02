@@ -61,66 +61,7 @@ namespace DuiLib
 		//没有gif图片,则与普通按钮一样
 		else
 		{
-			if( IsFocused() ) 
-				m_uButtonState |= UISTATE_FOCUSED;
-			else 
-				m_uButtonState &= ~ UISTATE_FOCUSED;
-			if( !IsEnabled() ) 
-				m_uButtonState |= UISTATE_DISABLED;
-			else 
-				m_uButtonState &= ~ UISTATE_DISABLED;
-
-			if( (m_uButtonState & UISTATE_DISABLED) != 0 ) 
-			{
-				//whmiao need finish diable image
-// 				if( !m_sDisabledImage.IsEmpty() ) 
-// 				{
-// 					if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage)) 
-// 						m_sDisabledImage.Empty();
-// 					else 
-// 						return;
-// 				}
-			}
-			else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) 
-			{
-				//whmiao need finish diable image
-// 				if( !m_sPushedImage.IsEmpty() ) 
-// 				{
-// 					if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ) 
-// 						m_sPushedImage.Empty();
-// 					else 
-// 						return;
-// 				}
-			}
-			else if( (m_uButtonState & UISTATE_HOT) != 0 ) 
-			{
-				//whmiao need finish diable image
-// 				if( !m_sHotImage.IsEmpty() ) 
-// 				{
-// 					if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) 
-// 						m_sHotImage.Empty();
-// 					else 
-// 						return;
-// 				}
-			}
-			else if( (m_uButtonState & UISTATE_FOCUSED) != 0 )
-			{
-// 				if( !m_sFocusedImage.IsEmpty() ) 
-// 				{
-// 					if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) 
-// 						m_sFocusedImage.Empty();
-// 					else 
-// 						return;
-// 				}
-			}
-
-// 			if( !m_sNormalImage.IsEmpty() ) 
-// 			{
-// 				if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) 
-// 					m_sNormalImage.Empty();
-// 				else 
-// 					return;
-// 			}
+             CButtonUI::PaintStatusImage(hDC);
 		}
 	}
 
@@ -141,9 +82,9 @@ namespace DuiLib
 		if( _tcscmp(pstrName, _T("NormalGifFile")) == 0 )
 		{
 			SetNormalGifFile(pstrValue);
+		} else {
+			CButtonUI::SetAttribute(pstrName, pstrValue);
 		}
-
-		CButtonUI::SetAttribute(pstrName,pstrValue);
 	}
 
 	void CGifButtonUI::SetNormalGifFile( LPCTSTR pstrName )
