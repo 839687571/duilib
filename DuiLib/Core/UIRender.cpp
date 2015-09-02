@@ -645,7 +645,9 @@ CGifHandler* CRenderEngine::LoadGif( STRINGorID bitmap, LPCTSTR type, DWORD mask
 		data->delay = delay;
 		data->alphaChannel = bAlphaChannel;
 		pGifHandler->AddFrameInfo(data);
-
+    	data->pBits = pDest;
+    	data->bUseHSL = false;
+    	data->pSrcBits = NULL;
 		stbi_image_free(pImage);
 		pImage = NULL;
 

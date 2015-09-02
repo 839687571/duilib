@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>DuiLib2.0</ProjectName>
+    <ProjectName>DuiLib</ProjectName>
     <ProjectGuid>{BBF0E73E-4202-4B5C-BA25-5F7206D44A87}</ProjectGuid>
     <RootNamespace>DuiLib</RootNamespace>
   </PropertyGroup>
@@ -75,7 +75,7 @@
     <OutDir>$(SolutionDir)lib</OutDir>
     <IntDir>$(Configuration)</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <GenerateManifest>false</GenerateManifest>
+    <GenerateManifest>true</GenerateManifest>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -132,6 +132,7 @@
       <BaseAddress>0x11000000</BaseAddress>
       <ImportLibrary>../Lib/DuiLib.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
