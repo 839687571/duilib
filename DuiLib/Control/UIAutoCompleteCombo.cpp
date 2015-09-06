@@ -132,6 +132,7 @@ CAutoCompleteComboUI::CAutoCompleteComboUI()
 	m_pEdit      = NULL;
 	m_iLeftWidth = 22;/* default size*/
 	m_pHzToPy = new CHzToPyIner;
+	m_bInited  = false;
 	OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnComboNotify);
 	OnInit += MakeDelegate(this, &CAutoCompleteComboUI::OnInitControl);
 }
@@ -198,9 +199,16 @@ bool CAutoCompleteComboUI::OnInitControl(void* pMsg)
 	m_pEdit = new CEditUI();
 	m_pEdit->SetFloat(true);
 	CContainerUI *cont = (CContainerUI *)GetParent();
-	cont->Add(m_pEdit);
-	
+	int iMyIndex = cont->GetItemIndex(this);
+	if (iMyIndex != -1){ /*while tab select focus, this ui works like a eidtui*/
+		cont->AddAt(m_pEdit,iMyIndex+1);
+	} else {
+		cont->Add(m_pEdit);
+	}
+
 	m_pEdit->OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnEiditNotify);
+
+	m_bInited = true;
 	return true;
 }
 
