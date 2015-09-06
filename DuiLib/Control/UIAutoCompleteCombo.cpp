@@ -180,6 +180,8 @@ bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 		if (GetCount()>0){
 			Activate(FALSE);
 		}
+		
+		GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
 	}
 // 		int isel = m_pCombo->GetCurSel();
 // 		CListLabelElementUI* pItem = (CListLabelElementUI*)m_pCombo->GetItemAt(isel);// CListLabelElementUI;
