@@ -143,6 +143,11 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         if( pDefaultAttributes ) {
             m_pLayout->ApplyAttributeList(pDefaultAttributes);
         }
+        
+        LPCTSTR pScrollbarAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("VScrollBar"));
+		if (pScrollbarAttributes) {
+			m_pm.AddDefaultAttributeList("VScrollBar",pScrollbarAttributes,false);
+        }
         m_pLayout->SetInset(CDuiRect(1, 1, 1, 1));
         m_pLayout->SetBkColor(0xFFFFFFFF);
         m_pLayout->SetBorderColor(0xFFC6C7D2);
