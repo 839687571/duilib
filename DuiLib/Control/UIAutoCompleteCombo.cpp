@@ -159,10 +159,13 @@ void CAutoCompleteComboUI::AddItemToCombo(LPCTSTR pText, LPCTSTR pUserData)
 bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 {
 	TNotifyUI* pNotify = (TNotifyUI*)pMsg;
+
+	int iSel = GetCurSel();/* 下拉框选中也会产生EditChange消息,此时不响应*/
+
 	if (pNotify->sType == DUI_MSGTYPE_TEXTCHANGED) {
 		CDuiString textEdit = ((CEditUI*)pNotify->pSender)->GetText();
 		bool bSelect = false; /*默认选择 第一个匹配的选项*/
-
+		bool bFind = false;   /* 没有匹配的选项 则关闭下拉框*/
 		for (int i = 0; i < GetCount(); i++) {
 			CListLabelElementUI* pItem = (CListLabelElementUI*)GetItemAt(i);
 			CDuiString text = pItem->GetText();
@@ -170,6 +173,7 @@ bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 
 			pItem->SetVisible(false);
 			if (textPy.Find(textEdit) != -1) {
+				bFind = true;
 				pItem->SetVisible(true);
 				if (!bSelect) {
 					//SelectItem(i);
@@ -178,11 +182,17 @@ bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 			}
 		}
 		if (GetCount()>0){
-			Activate(FALSE);
+			if (iSel == -1) {
+				Activate(FALSE);
+			}
+		}
+		if (!bFind) {
+            InActivate();
 		}
 		
 		GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
 	}
+	
 // 		int isel = m_pCombo->GetCurSel();
 // 		CListLabelElementUI* pItem = (CListLabelElementUI*)m_pCombo->GetItemAt(isel);// CListLabelElementUI;
 // 		CDuiString text = pItem->GetText();
