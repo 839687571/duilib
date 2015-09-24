@@ -440,6 +440,9 @@ private:
     static CStdPtrArray m_aPreMessages;
     static CStdPtrArray m_aPlugins;
 
+	//add 2015-09- 24 tooltip refresh bug
+	POINT m_toolTipLastPt;;
+
 public:
 	CStdPtrArray m_aTranslateAccelerator;
 };
