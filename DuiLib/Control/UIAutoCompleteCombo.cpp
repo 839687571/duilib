@@ -64,7 +64,7 @@ public:
 	{
 
 		//std::string   sChinese   =   “张三丰”;   //   输入的字符串
-		char *psText;
+		//char *psText;
 #ifdef UNICODE
 
 		DWORD dwNum = WideCharToMultiByte(CP_OEMCP, NULL, str.GetBuffer(0), -1, NULL, 0, NULL, FALSE);
@@ -283,6 +283,17 @@ void CAutoCompleteComboUI::SetText(int iComboSel)
 
 CDuiString CAutoCompleteComboUI::GetEditText() 
 {
+	if (m_pEdit != NULL) {
+		return m_pEdit->GetText();
+	}
+	return "";
+}
+
+CDuiString CAutoCompleteComboUI::GetText() const
+{
+	if (!__super::GetText().IsEmpty()) {
+		return __super::GetText();
+	}
 	if (m_pEdit != NULL) {
 		return m_pEdit->GetText();
 	}
