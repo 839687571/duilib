@@ -29,7 +29,7 @@ public:
 	BOOL m_bShowExText;
 /*Add by whmiao end*/
 
-    CDuiString GetText() const;
+    virtual CDuiString GetText() const;
     void SetEnabled(bool bEnable = true);
 
     CDuiString GetDropBoxAttributeList();

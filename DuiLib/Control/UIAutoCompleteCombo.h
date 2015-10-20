@@ -27,6 +27,7 @@ public:
 
 	void SetPos(RECT rc,  bool bNeedInvalidate);
 
+	CDuiString GetText() const;
 	CDuiString GetEditText();
 
 
