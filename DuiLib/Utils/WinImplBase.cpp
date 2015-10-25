@@ -30,7 +30,8 @@ LRESULT WindowImplBase::ResponseDefaultKeyEvent(WPARAM wParam)
 	}
 	else if (wParam == VK_ESCAPE)
 	{
-		Close();
+		//Close();
+		Close(IDCANCEL);
 		return TRUE;
 	}
 
