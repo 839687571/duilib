@@ -1,18 +1,19 @@
-#include "StdAfx.h"
+
+#include "stdafx.h"
 #include "UILabel.h"
 
 #include <atlconv.h>
 namespace DuiLib
 {
 
-	Color _MakeRGB(int a, Color cl)
+	Gdiplus::Color _MakeRGB(int a, Gdiplus::Color cl)
 	{
-		return Color(a, cl.GetR(), cl.GetG(), cl.GetB());
+		return Gdiplus::Color(a, cl.GetR(), cl.GetG(), cl.GetB());
 	}
 
-	Color _MakeRGB(int r, int g, int b)
+	Gdiplus::Color _MakeRGB(int r, int g, int b)
 	{
-		return Color(255, r, g, b);
+		return Gdiplus::Color(255, r, g, b);
 	}
 
 	CLabelUI::CLabelUI() : m_uTextStyle(DT_VCENTER), m_dwTextColor(0), 
@@ -22,7 +23,7 @@ namespace DuiLib
 
 		m_EnableEffect(false),
 		m_gdiplusToken(0),
-		m_TextRenderingHintAntiAlias(TextRenderingHintSystemDefault),
+		m_TextRenderingHintAntiAlias(Gdiplus::TextRenderingHintSystemDefault),
 		m_TransShadow(60),
 		m_TransText(168),
 		m_TransShadow1(60),
@@ -61,7 +62,7 @@ namespace DuiLib
 	{
 		try
 		{
-			GdiplusShutdown( m_gdiplusToken );
+			Gdiplus::GdiplusShutdown(m_gdiplusToken);
 		}
 		catch (...)
 		{
@@ -326,17 +327,17 @@ namespace DuiLib
 		}
 		else
 		{
-			Font	nFont(hDC,m_pManager->GetFont(GetFont()));
+			Gdiplus::Font	nFont(hDC, m_pManager->GetFont(GetFont()));
 
-			Graphics nGraphics(hDC);
+			Gdiplus::Graphics nGraphics(hDC);
 			nGraphics.SetTextRenderingHint(m_TextRenderingHintAntiAlias);
 
-			StringFormat format;
-			format.SetAlignment((StringAlignment)m_hAlign);
-			format.SetLineAlignment((StringAlignment)m_vAlign);
+			Gdiplus::StringFormat format;
+			format.SetAlignment((Gdiplus::StringAlignment)m_hAlign);
+			format.SetLineAlignment((Gdiplus::StringAlignment)m_vAlign);
 
-			RectF nRc((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top);
-			RectF nShadowRc = nRc;
+			Gdiplus::RectF nRc((float)rc.left, (float)rc.top, (float)rc.right - rc.left, (float)rc.bottom - rc.top);
+			Gdiplus::RectF nShadowRc = nRc;
 			nShadowRc.X += m_ShadowOffset.X;
 			nShadowRc.Y += m_ShadowOffset.Y;
 
@@ -345,12 +346,12 @@ namespace DuiLib
 			if(nGradientLength == 0)
 				nGradientLength = (rc.bottom-rc.top);
 
-			LinearGradientBrush nLineGrBrushA(Point(GetGradientAngle(), 0),Point(0,nGradientLength),_MakeRGB(GetTransShadow(),GetTextShadowColorA()),_MakeRGB(GetTransShadow1(),GetTextShadowColorB() == -1?GetTextShadowColorA():GetTextShadowColorB()));
-			LinearGradientBrush nLineGrBrushB(Point(GetGradientAngle(), 0),Point(0,nGradientLength),_MakeRGB(GetTransText(),GetTextColor()),_MakeRGB(GetTransText1(),GetTextColor1() == -1?GetTextColor():GetTextColor1()));
+			Gdiplus::LinearGradientBrush nLineGrBrushA(Gdiplus::Point(GetGradientAngle(), 0), Gdiplus::Point(0, nGradientLength), _MakeRGB(GetTransShadow(), GetTextShadowColorA()), _MakeRGB(GetTransShadow1(), GetTextShadowColorB() == -1 ? GetTextShadowColorA() : GetTextShadowColorB()));
+			Gdiplus::LinearGradientBrush nLineGrBrushB(Gdiplus::Point(GetGradientAngle(), 0), Gdiplus::Point(0, nGradientLength), _MakeRGB(GetTransText(), GetTextColor()), _MakeRGB(GetTransText1(), GetTextColor1() == -1 ? GetTextColor() : GetTextColor1()));
 
 			if(GetEnabledStroke() && GetStrokeColor() > 0)
 			{
-				LinearGradientBrush nLineGrBrushStroke(Point(GetGradientAngle(),0),Point(0,rc.bottom-rc.top+2),_MakeRGB(GetTransStroke(),GetStrokeColor()),_MakeRGB(GetTransStroke(),GetStrokeColor()));
+				Gdiplus::LinearGradientBrush nLineGrBrushStroke(Gdiplus::Point(GetGradientAngle(), 0), Gdiplus::Point(0, rc.bottom - rc.top + 2), _MakeRGB(GetTransStroke(), GetStrokeColor()), _MakeRGB(GetTransStroke(), GetStrokeColor()));
 				
 #ifdef _UNICODE
 				nRc.Offset(-1,0);
@@ -452,7 +453,7 @@ namespace DuiLib
 		{
 			if(_TextRenderingHintAntiAlias < 0 || _TextRenderingHintAntiAlias > 5)
 				_TextRenderingHintAntiAlias = 0;
-			m_TextRenderingHintAntiAlias = (TextRenderingHint)_TextRenderingHintAntiAlias;
+			m_TextRenderingHintAntiAlias = (Gdiplus::TextRenderingHint)_TextRenderingHintAntiAlias;
 		}
 		catch (...)
 		{
@@ -526,7 +527,7 @@ namespace DuiLib
 	// Qualifier:
 	// Note:	  
 	//************************************
-	RectF CLabelUI::GetShadowOffset()
+	Gdiplus::RectF CLabelUI::GetShadowOffset()
 	{
 		try
 		{

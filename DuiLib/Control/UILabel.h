@@ -5,7 +5,7 @@
 
 #include <GdiPlus.h>
 #pragma comment( lib, "GdiPlus.lib" )
-using namespace Gdiplus;
+//using namespace Gdiplus;
 class UILIB_API Gdiplus::RectF;
 struct UILIB_API Gdiplus::GdiplusStartupInput;
 
@@ -58,7 +58,7 @@ namespace DuiLib
 		void		SetTextRenderingHintAntiAlias(int _TextRenderingHintAntiAlias);
 		int			GetTextRenderingHintAntiAlias();
 		void		SetShadowOffset(int _offset,int _angle);
-		RectF		GetShadowOffset();
+		Gdiplus::RectF		GetShadowOffset();
 		void		SetTextColor1(DWORD _TextColor1);
 		DWORD		GetTextColor1();
 		void		SetTextShadowColorA(DWORD _TextShadowColorA);
@@ -103,11 +103,11 @@ namespace DuiLib
 		DWORD					m_dwTextShadowColorA;
 		DWORD					m_dwTextShadowColorB;
 		DWORD					m_dwStrokeColor;
-		RectF					m_ShadowOffset;
+		Gdiplus::RectF					m_ShadowOffset;
 		CDuiString				m_TextValue;
 		ULONG_PTR				m_gdiplusToken;
-		GdiplusStartupInput		m_gdiplusStartupInput;
-		TextRenderingHint		m_TextRenderingHintAntiAlias;
+		Gdiplus::GdiplusStartupInput		m_gdiplusStartupInput;
+		Gdiplus::TextRenderingHint		m_TextRenderingHintAntiAlias;
 	};
 }
 
