@@ -164,6 +164,13 @@ bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 
 	if (pNotify->sType == DUI_MSGTYPE_TEXTCHANGED) {
 		CDuiString textEdit = ((CEditUI*)pNotify->pSender)->GetText();
+		if (!textEdit.IsEmpty()) {
+ 			TCHAR firstWord = textEdit.GetAt(0);
+			if (firstWord<'a' || firstWord>'z') {
+				return false;
+ 			}
+		}
+
 		bool bSelect = false; /*默认选择 第一个匹配的选项*/
 		bool bFind = false;   /* 没有匹配的选项 则关闭下拉框*/
 		for (int i = 0; i < GetCount(); i++) {
@@ -182,7 +189,8 @@ bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 			}
 		}
 		if (GetCount()>0){
-			if (iSel == -1) {
+			//if (iSel == -1)
+			{
 				Activate(FALSE);
 			}
 		}
