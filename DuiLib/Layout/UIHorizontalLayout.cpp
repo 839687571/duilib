@@ -36,19 +36,18 @@ namespace DuiLib
 		rc.top += m_rcInset.top;
 		rc.right -= m_rcInset.right;
 		rc.bottom -= m_rcInset.bottom;
+		if (m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible()) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+		if (m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible()) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
 
 		if( m_items.GetSize() == 0) {
 			ProcessScrollBar(rc, 0, 0);
 			return;
 		}
 
-		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
-
 		// Determine the width of elements that are sizeable
 		SIZE szAvailable = { rc.right - rc.left, rc.bottom - rc.top };
-		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) 
-			szAvailable.cx += m_pHorizontalScrollBar->GetScrollRange();
+		//if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) 
+			//szAvailable.cx += m_pHorizontalScrollBar->GetScrollRange();
 
 		int nAdjustables = 0;
 		int cxFixed = 0;
@@ -70,17 +69,26 @@ namespace DuiLib
 		}
 		cxFixed += (nEstimateNum - 1) * m_iChildPadding;
 
-		int cxExpand = 0;
+		// Place elements
         int cxNeeded = 0;
-		if( nAdjustables > 0 ) cxExpand = MAX(0, (szAvailable.cx - cxFixed) / nAdjustables);
+		int cyNeeded = 0;
+		int cxExpand = 0;
+		int iRemainder = 0;
+		if (nAdjustables > 0) {
+			cxExpand = MAX(0, (szAvailable.cx - cxFixed) / nAdjustables);
+			iRemainder = (szAvailable.cx - cxFixed) % nAdjustables;
+		} 
 		// Position the elements
 		SIZE szRemaining = szAvailable;
+		int iPosY = rc.top;
+		if (m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible()) {
+			iPosY -= m_pVerticalScrollBar->GetScrollPos();
+		}
 		int iPosX = rc.left;
 		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
 			iPosX -= m_pHorizontalScrollBar->GetScrollPos();
 		}
 		int iAdjustable = 0;
-		int cxFixedRemaining = cxFixed;
 		for( int it2 = 0; it2 < m_items.GetSize(); it2++ ) {
 			CControlUI* pControl = static_cast<CControlUI*>(m_items[it2]);
 			if( !pControl->IsVisible() ) continue;
@@ -95,38 +103,39 @@ namespace DuiLib
 				iAdjustable++;
 				sz.cx = cxExpand;
 				// Distribute remaining to last element (usually round-off left-overs)
-				if( iAdjustable == nAdjustables ) {
-					sz.cx = MAX(0, szRemaining.cx - rcPadding.right - cxFixedRemaining);
-				}
+ 				if( iAdjustable == nAdjustables ) {
+					sz.cx += iRemainder;
+ 				}
 				if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
 				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+				//cxFixedUsed += sz.cx;
 			}
 			else {
 				if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
 				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
-
-				//cxFixedRemaining -= sz.cx;
-				  cxFixedRemaining -= sz.cx + rcPadding.left + rcPadding.right ;  
+//				cxFixedRemaining -= sz.cx + rcPadding.left + rcPadding.right ;
 			}
-            cxFixedRemaining -= m_iChildPadding;  
-             
+
+//			cxFixedRemaining -= m_iChildPadding;
+
 			sz.cy = pControl->GetFixedHeight();
-			if( sz.cy == 0 ) sz.cy = rc.bottom - rc.top - rcPadding.top - rcPadding.bottom;
+			if( sz.cy == 0 ) sz.cy = szAvailable.cy - rcPadding.top - rcPadding.bottom;
 			if( sz.cy < 0 ) sz.cy = 0;
 			if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
 			if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
 
-            RECT rcCtrl = { iPosX + rcPadding.left, rc.top + rcPadding.top, iPosX + sz.cx + rcPadding.left , rc.top + rcPadding.top + sz.cy}; 
-	//		RECT rcCtrl = { iPosX + rcPadding.left, rc.top + rcPadding.top, iPosX + sz.cx + rcPadding.left + rcPadding.right, rc.top + rcPadding.top + sz.cy};
-			pControl->SetPos(rcCtrl, false);
+			RECT rcCtrl = { iPosX + rcPadding.left, iPosY + rcPadding.top, iPosX + rcPadding.left + sz.cx, iPosY + rcPadding.top + sz.cy };
+			pControl->SetPos(rcCtrl);
+
 			iPosX += sz.cx + m_iChildPadding + rcPadding.left + rcPadding.right;
             cxNeeded += sz.cx + rcPadding.left + rcPadding.right;
+			cyNeeded = ((sz.cy + rcPadding.top + rcPadding.bottom) > cyNeeded) ? (sz.cy + rcPadding.top + rcPadding.bottom) : cyNeeded;
 			szRemaining.cx -= sz.cx + m_iChildPadding + rcPadding.right;
 		}
         cxNeeded += (nEstimateNum - 1) * m_iChildPadding;
 
 		// Process the scrollbar
-		ProcessScrollBar(rc, cxNeeded, 0);
+		ProcessScrollBar(rc, cxNeeded, cyNeeded);
 	}
 
 	void CHorizontalLayoutUI::DoPostPaint(HDC hDC, const RECT& rcPaint)
