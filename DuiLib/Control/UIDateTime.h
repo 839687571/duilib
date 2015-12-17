@@ -18,6 +18,9 @@ namespace DuiLib
 
 		SYSTEMTIME& GetTime();
 		void SetTime(SYSTEMTIME* pst);
+		bool StringToData(const char*lpszValue, SYSTEMTIME &time);
+	
+
 		void SetUpdateFlag(int flag) { m_nDTUpdateFlag = flag; }
 		void SetReadOnly(bool bReadOnly);
 		bool IsReadOnly() const;

@@ -193,7 +193,37 @@ namespace DuiLib
 		m_sysTime = *pst;
 		Invalidate();
 	}
+	bool  CDateTimeUI::StringToData(const char*lpszValue, SYSTEMTIME &time)
+	{
+		if (!lpszValue) {
+			return FALSE;
+		}
 
+		int         nYear = 0;
+		int         nMonth = 0;
+		int         nDay = 0;
+		int         nHour = 0;
+		int         nSecond = 0;
+		int         nMinute = 0;
+		CDuiString  str = lpszValue;
+
+		_stscanf(str, _T("%d-%d-%d %d:%d:%d"), &nYear, &nMonth, &nDay, &nHour, &nMinute, &nSecond);
+
+		if (nMonth == 0 || nDay == 0) {
+			_stscanf(str, _T("%d/%d/%d %d:%d:%d"), &nYear, &nMonth, &nDay, &nHour, &nMinute, &nSecond);
+		}
+
+		time.wYear = nYear;
+		time.wMonth = nMonth;
+		time.wDay = nDay;
+		time.wHour = nHour;
+		time.wSecond = nSecond;
+		time.wMinute = nMinute;
+		time.wDayOfWeek = 0;
+		time.wMilliseconds = 0;
+
+		return TRUE;
+	}
 	void CDateTimeUI::SetReadOnly(bool bReadOnly)
 	{
 		m_bReadOnly = bReadOnly;
