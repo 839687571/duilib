@@ -12,6 +12,7 @@ namespace DuiLib {
 typedef int (CALLBACK *PULVCompareFunc)(UINT_PTR, UINT_PTR, UINT_PTR);
 
 class CListHeaderUI;
+class CListContainerElementUI;
 
 #define UILIST_MAX_COLUMNS 32
 
@@ -116,7 +117,7 @@ public:
     int GetItemIndex(CControlUI* pControl) const;
     bool SetItemIndex(CControlUI* pControl, int iIndex);
     int GetCount() const;
-    bool Add(CControlUI* pControl);
+    virtual bool Add(CControlUI* pControl);
     bool AddAt(CControlUI* pControl, int iIndex);
     bool Remove(CControlUI* pControl);
     bool RemoveAt(int iIndex);
@@ -194,6 +195,11 @@ public:
     virtual CScrollBarUI* GetVerticalScrollBar() const;
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
     BOOL SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData);
+
+	void BeginDrag(CListContainerElementUI *pListElement);
+	void EndDrag(CListContainerElementUI* dstParent);
+	void Draging(POINT pt);
+
 protected:
     bool m_bScrollSelect;
     int m_iCurSel;          // 单击的列
@@ -203,6 +209,10 @@ protected:
     CListBodyUI* m_pList;
     CListHeaderUI* m_pHeader;
     TListInfoUI m_ListInfo;
+
+	CListContainerElementUI    *m_pNodeNeedMove;
+	CListContainerElementUI    *m_pDragingCtrl;
+
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -341,6 +351,7 @@ public:
 
     void DrawItemBk(HDC hDC, const RECT& rcItem);
 
+
 protected:
     int m_iIndex;
     bool m_bSelected;
@@ -437,7 +448,9 @@ public:
     void DrawItemText(HDC hDC, const RECT& rcItem);    
     void DrawItemBk(HDC hDC, const RECT& rcItem);
 	void DrawItemDivLien(HDC hDC, const RECT& rcItem);
-
+	void SetDrag(bool bCanDrag);
+	bool         m_bDrag;	
+	CListContainerElementUI *GetListElementUIFromPt(POINT pt);
 	//add by whmiao 
 	// 每个列表项和表头对齐.
  	void SetPos(RECT rc, bool bNeedInvalidate=true)
@@ -455,15 +468,6 @@ public:
 		{
 			CListHeaderItemUI *pHeaderItem = static_cast<CListHeaderItemUI*>(m_pHeader->GetItemAt(i));
 			CControlUI *pHorizontalLayout = static_cast<CControlUI*>(m_items[i]);
-			if (pHorizontalLayout != NULL)
-			{
-// 				RECT rtHeader = pHeaderItem->GetPos();
-// 				RECT rt = pHorizontalLayout->GetPos();
-// 				rt.left = pInfo->rcColumn[i].left;
-// 				rt.right = pInfo->rcColumn[i].right;
-				//pHorizontalLayout->SetPos(rt);
-			}
-
 
 			if (pHorizontalLayout != NULL && pHeaderItem != NULL)
 			{
@@ -481,6 +485,7 @@ protected:
     bool m_bSelected;
     UINT m_uButtonState;
     IListOwnerUI* m_pOwner;
+	CListUI      *m_pOwnerList;
 };
 
 } // namespace DuiLib

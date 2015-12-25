@@ -31,6 +31,10 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
     m_ListInfo.bMultiExpandable = false;
     ::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
     ::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
+	m_pDragingCtrl = NULL;
+	m_pNodeNeedMove = NULL;
+
+	printf("create clistui %d", this);
 }
 
 LPCTSTR CListUI::GetClass() const
@@ -898,6 +902,80 @@ BOOL CListUI::SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData)
 		return FALSE;
 	return m_pList->SortItems(pfnCompare, dwData);	
 }
+void CListUI::BeginDrag(CListContainerElementUI *pListElement)
+{
+	m_pNodeNeedMove = pListElement;
+	if (m_pDragingCtrl == NULL) {
+		int h = pListElement->GetFixedHeight();
+		int w = pListElement->GetFixedWidth();
+		printf("BeginDrag cur this is %d\n", this);
+		m_pDragingCtrl = new CListContainerElementUI;
+		m_pDragingCtrl->SetFixedHeight(h);
+		m_pDragingCtrl->SetFixedWidth(w == 0?100:w);
+		m_pDragingCtrl->SetName(_T("listdarg"));
+		m_pDragingCtrl->SetBorderSize(2);
+		m_pDragingCtrl->SetBorderColor(0xffFFA500);
+		m_pDragingCtrl->SetVisible(false);
+// 		CControlUI* pImgNode = new CControlUI;
+// 		pImgNode->ApplyAttributeList(_T("float=\"true\" pos=\"3,3,123,51\""));
+// 		pImgNode->SetBkImage("background.png");
+// 		pImgNode->SetContextMenuUsed(true);
+// 		pImgNode->SetName(_T("menuRawList"));
+
+	//	m_pDragingCtrl->Add(pImgNode);
+
+		Add((CControlUI*)m_pDragingCtrl);
+	}
+	//static_cast<CListContainerElementUI*>(m_pDragingCtrl)->GetItemAt(0)->SetText("ÇëÑ¡ÔñÎ»ÖÃ");
+}
+void CListUI::Draging(POINT pt)
+{
+	if (m_pNodeNeedMove == NULL || m_pDragingCtrl == NULL) {
+		return;
+	}
+	int h = m_pDragingCtrl->GetFixedHeight();
+	int w = m_pDragingCtrl->GetFixedWidth();
+	RECT rt;
+	rt.left = pt.x + 5;
+	rt.top = pt.y + 5;
+	rt.right = rt.left + w;
+	rt.bottom = rt.top + h;
+	m_pDragingCtrl->SetVisible(true);
+	m_pDragingCtrl->SetPos(rt);
+}
+void CListUI::EndDrag(CListContainerElementUI* dstElement)
+{
+	RECT rt;
+	rt.left = rt.right = rt.top = rt.bottom = 0;
+
+	if (m_pDragingCtrl == NULL) return;
+	m_pDragingCtrl->SetPos(rt);
+	m_pDragingCtrl->SetVisible(false);
+	if (m_pNodeNeedMove != NULL && dstElement != NULL && m_pNodeNeedMove != dstElement) {
+		int dstElementIndex = dstElement->GetIndex();
+		int moveElementIndex = m_pNodeNeedMove->GetIndex();
+
+		int moveCount = moveElementIndex - dstElementIndex;
+		while (moveCount>0){	
+			CListContainerElementUI *curElement = static_cast<CListContainerElementUI*>(GetItemAt(moveElementIndex - 1));
+			SetItemIndex(m_pNodeNeedMove, moveElementIndex - 1);
+			SetItemIndex(curElement, moveElementIndex);
+			moveElementIndex--;
+			moveCount--;
+		}
+
+		while (moveCount < 0) {
+			CListContainerElementUI *curElement = static_cast<CListContainerElementUI*>(GetItemAt(moveElementIndex + 1));
+			SetItemIndex(m_pNodeNeedMove, moveElementIndex + 1);
+			SetItemIndex(curElement, moveElementIndex);
+			moveElementIndex++;
+			moveCount++;
+		}
+		m_pNodeNeedMove = NULL;
+	}
+	m_pNodeNeedMove = NULL;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //
 //
@@ -2144,6 +2222,7 @@ m_bSelected(false),
 m_uButtonState(0),
 m_pHeader(NULL)
 {
+	m_bDrag = false;
 }
 
 LPCTSTR CListContainerElementUI::GetClass() const
@@ -2171,6 +2250,7 @@ IListOwnerUI* CListContainerElementUI::GetOwner()
 void CListContainerElementUI::SetOwner(CControlUI* pOwner)
 {
     m_pOwner = static_cast<IListOwnerUI*>(pOwner->GetInterface(_T("IListOwner")));
+	m_pOwnerList = static_cast<CListUI*>(pOwner);
 }
 
 void CListContainerElementUI::SetVisible(bool bVisible)
@@ -2314,8 +2394,27 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
             Select();
             Invalidate();
         }
+		if (m_bDrag && event.Type == UIEVENT_BUTTONDOWN) {
+            CListContainerElementUI *pListEle = GetListElementUIFromPt(event.ptMouse);
+            if (pListEle != NULL) {
+             m_pOwnerList->BeginDrag(pListEle);
+            }
+	    }
         return;
-    }
+	} else if (event.Type == UIEVENT_BUTTONUP) {
+	   if(m_bDrag){
+    		CListContainerElementUI* pListEle = GetListElementUIFromPt(event.ptMouse);
+    		m_pOwnerList->EndDrag(pListEle);
+	   }
+	
+	} else if (UIEVENT_MOUSEMOVE == event.Type) {
+	    if(m_bDrag){
+		    m_pOwnerList->Draging(event.ptMouse);
+	    }
+
+	}
+
+
     if( event.Type == UIEVENT_BUTTONUP ) 
     {
         return;
@@ -2347,9 +2446,33 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
     if( m_pOwner != NULL ) m_pOwner->DoEvent(event); else CControlUI::DoEvent(event);
 }
 
+void  CListContainerElementUI::SetDrag(bool bCanDrag)
+{
+    m_bDrag = bCanDrag;
+}
+CListContainerElementUI *CListContainerElementUI::GetListElementUIFromPt(POINT pt)
+{
+	LPVOID lpControl = NULL;
+	CControlUI* pControl = m_pManager->FindSubControlByPoint(GetParent (), pt);
+	while (pControl) {
+		lpControl = pControl->GetInterface(DUI_CTR_LISTCONTAINERELEMENT);
+		if (lpControl != NULL) {
+			if (pControl->GetInterface(DUI_CTR_TREENODE) == NULL) {
+				break;
+			}
+		}
+		pControl = pControl->GetParent();
+	}
+	if (lpControl) {
+		return static_cast<CListContainerElementUI*>(lpControl);
+	} else
+		return NULL;
+}
+
 void CListContainerElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
     if( _tcscmp(pstrName, _T("selected")) == 0 ) Select();
+    else if( _tcscmp(pstrName, _T("drag")) == 0 ) SetDrag(_tcscmp(pstrValue, _T("true")) == 0);
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
