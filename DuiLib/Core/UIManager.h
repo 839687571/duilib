@@ -404,6 +404,11 @@ private:
     bool m_bMouseCapture;
 	bool m_bUsedVirtualWnd;
 
+//   OPACTIY SUPPLY
+	LPBYTE	m_pBmpOffscreenBits;
+	bool	m_bIsRestore;
+	RECT	m_rcInvalidate;			// 半透明异形窗体中，保存刷新区域
+
 	//skilla 2014.12.21
 	bool m_bAutoDeleteControls;
 

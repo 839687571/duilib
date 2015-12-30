@@ -112,7 +112,9 @@ m_bAlphaBackground(false),
 m_bUsedVirtualWnd(false),
 m_nOpacity(255),
 m_bAutoDeleteControls(false),
-m_bUnfocusPaintWindow(false)
+m_bUnfocusPaintWindow(false),
+m_bIsRestore(false),
+m_pBmpOffscreenBits(false)
 {
 	if (m_SharedResInfo.m_DefaultFontInfo.sFontName.IsEmpty())
 	{
@@ -125,6 +127,7 @@ m_bUnfocusPaintWindow(false)
 		LOGFONT lf = { 0 };
 		::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
 		lf.lfCharSet = DEFAULT_CHARSET;
+
 		HFONT hDefaultFont = ::CreateFontIndirect(&lf);
 		m_SharedResInfo.m_DefaultFontInfo.hFont = hDefaultFont;
 		m_SharedResInfo.m_DefaultFontInfo.sFontName = lf.lfFaceName;
@@ -157,6 +160,7 @@ m_bUnfocusPaintWindow(false)
     m_szRoundCorner.cx = m_szRoundCorner.cy = 0;
     ::ZeroMemory(&m_rcSizeBox, sizeof(m_rcSizeBox));
     ::ZeroMemory(&m_rcCaption, sizeof(m_rcCaption));
+    ::ZeroMemory(&m_rcInvalidate, sizeof(m_rcInvalidate));
     m_ptLastMousePos.x = m_ptLastMousePos.y = -1;
     m_toolTipLastPt= {0,0};
 }
@@ -648,6 +652,9 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 ::EndPaint(m_hWndPaint, &ps);
                 return true;
             }            
+		   // Begin Windows paint
+		   PAINTSTRUCT ps = {0};
+		   ::BeginPaint(m_hWndPaint, &ps);
             // Do we need to resize anything?
             // This is the time where we layout the controls on the form.
             // We delay this even from the WM_SIZE messages since resizing can be
@@ -668,6 +675,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                         m_hDcBackground = NULL;
                         m_hbmpOffscreen = NULL;
                         m_hbmpBackground = NULL;
+                        m_pBmpOffscreenBits = NULL;
                     }
                     else {
 						CControlUI* pControl = NULL;
@@ -694,66 +702,113 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 SetNextTabControl();
             }
             //
-            // Render screen
-            //
-            // Prepare offscreen bitmap?
-            if( m_bOffscreenPaint && m_hbmpOffscreen == NULL )
-            {
-                RECT rcClient = { 0 };
-                ::GetClientRect(m_hWndPaint, &rcClient);
-                m_hDcOffscreen = ::CreateCompatibleDC(m_hDcPaint);
-                m_hbmpOffscreen = ::CreateCompatibleBitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top); 
-                ASSERT(m_hDcOffscreen);
-                ASSERT(m_hbmpOffscreen);
-            }
-            // Begin Windows paint
-            PAINTSTRUCT ps = { 0 };
-            ::BeginPaint(m_hWndPaint, &ps);
-            if( m_bOffscreenPaint )
-            {
-                HBITMAP hOldBitmap = (HBITMAP) ::SelectObject(m_hDcOffscreen, m_hbmpOffscreen);
-                int iSaveDC = ::SaveDC(m_hDcOffscreen);
-                if( m_bAlphaBackground ) {
-                    if( m_hbmpBackground == NULL ) {
-                        RECT rcClient = { 0 };
-                        ::GetClientRect(m_hWndPaint, &rcClient);
-                        m_hDcBackground = ::CreateCompatibleDC(m_hDcPaint);;
-                        m_hbmpBackground = ::CreateCompatibleBitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top); 
-                        ASSERT(m_hDcBackground);
-                        ASSERT(m_hbmpBackground);
-                        ::SelectObject(m_hDcBackground, m_hbmpBackground);
-                        ::BitBlt(m_hDcBackground, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
-                            ps.rcPaint.bottom - ps.rcPaint.top, ps.hdc, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
-                    }
-                    else
-                        ::SelectObject(m_hDcBackground, m_hbmpBackground);
-                    ::BitBlt(m_hDcOffscreen, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
-                        ps.rcPaint.bottom - ps.rcPaint.top, m_hDcBackground, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
-                }
-                m_pRoot->DoPaint(m_hDcOffscreen, ps.rcPaint);
-                for( int i = 0; i < m_aPostPaintControls.GetSize(); i++ ) {
-                    CControlUI* pPostPaintControl = static_cast<CControlUI*>(m_aPostPaintControls[i]);
-                    pPostPaintControl->DoPostPaint(m_hDcOffscreen, ps.rcPaint);
-                }
-                ::RestoreDC(m_hDcOffscreen, iSaveDC);
-                ::BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
-                    ps.rcPaint.bottom - ps.rcPaint.top, m_hDcOffscreen, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
-                ::SelectObject(m_hDcOffscreen, hOldBitmap);
 
-                if( m_bShowUpdateRect ) {
-                    HPEN hOldPen = (HPEN)::SelectObject(ps.hdc, m_hUpdateRectPen);
-                    ::SelectObject(ps.hdc, ::GetStockObject(HOLLOW_BRUSH));
-                    ::Rectangle(ps.hdc, rcPaint.left, rcPaint.top, rcPaint.right, rcPaint.bottom);
-                    ::SelectObject(ps.hdc, hOldPen);
+			if (m_bAlphaBackground)
+		   {
+			   DWORD dwExStyle = GetWindowLong(m_hWndPaint, GWL_EXSTYLE);
+			   if((dwExStyle&WS_EX_LAYERED) != WS_EX_LAYERED)
+				   SetWindowLong(m_hWndPaint, GWL_EXSTYLE, dwExStyle|WS_EX_LAYERED);
+
+			   RECT rcClient = {0};
+			   GetClientRect(m_hWndPaint, &rcClient);
+
+			   if (!m_bIsRestore)
+			   {
+				   UnionRect(&rcPaint, &rcPaint, &m_rcInvalidate);
+				   ::ZeroMemory(&m_rcInvalidate, sizeof(m_rcInvalidate));				   
+			   }
+			   else
+			   {
+				   rcPaint = rcClient;
+				   m_bIsRestore = false;
+			   }
+			   
+			   int nClientWidth = rcClient.right - rcClient.left;
+			   int nClientHeight = rcClient.bottom - rcClient.top;
+			   if(m_bOffscreenPaint && m_hbmpOffscreen == NULL)
+			   {
+				   m_hDcOffscreen = ::CreateCompatibleDC(m_hDcPaint);
+				   BITMAPINFO bmi;
+				   ::ZeroMemory(&bmi, sizeof(BITMAPINFO));
+				   bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+				   bmi.bmiHeader.biWidth = nClientWidth;
+				   bmi.bmiHeader.biHeight = -nClientHeight;
+				   bmi.bmiHeader.biPlanes = 1;
+				   bmi.bmiHeader.biBitCount = 32;
+				   bmi.bmiHeader.biCompression = BI_RGB;
+				   bmi.bmiHeader.biSizeImage = nClientWidth * nClientHeight * 4;
+				   bmi.bmiHeader.biClrUsed = 0;
+				   m_hbmpOffscreen = ::CreateDIBSection(m_hDcPaint, &bmi, DIB_RGB_COLORS,
+					   (void**)&m_pBmpOffscreenBits, NULL, 0);
+
+				   ASSERT(m_hDcOffscreen);
+				   ASSERT(m_hbmpOffscreen);
+			   }
+
+			   HBITMAP hOldBitmap = (HBITMAP)::SelectObject(m_hDcOffscreen, m_hbmpOffscreen);
+			   int iSaveDC = ::SaveDC(m_hDcOffscreen);
+			   CRenderEngine::ClearAlphaPixel(m_pBmpOffscreenBits, nClientWidth, &rcPaint);
+			   m_pRoot->DoPaint(m_hDcOffscreen, rcPaint);
+			  // DrawCaret(m_hDcOffscreen, rcPaint);
+			   for(int i = 0; i < m_aPostPaintControls.GetSize(); i++)
+			   {
+				   CControlUI* pPostPaintControl = static_cast<CControlUI*>(m_aPostPaintControls[i]);
+				   pPostPaintControl->DoPostPaint(m_hDcOffscreen, ps.rcPaint);
+			   }
+			   CRenderEngine::RestoreAlphaColor(m_pBmpOffscreenBits, nClientWidth, &rcPaint);
+			   ::RestoreDC(m_hDcOffscreen, iSaveDC);
+
+			   // 贴到主窗体
+			   RECT rcWnd = {0};
+			   ::GetWindowRect(m_hWndPaint, &rcWnd);
+			   POINT pt = {rcWnd.left, rcWnd.top};
+			   SIZE szWindow = {rcWnd.right-rcWnd.left, rcWnd.bottom-rcWnd.top};
+			   POINT ptSrc = {0, 0};
+			   BLENDFUNCTION blendPixelFunction = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+			   ::UpdateLayeredWindow(m_hWndPaint, NULL, &pt, &szWindow, m_hDcOffscreen, 
+				   &ptSrc, 0, &blendPixelFunction, ULW_ALPHA);
+
+			   ::SelectObject(m_hDcOffscreen, hOldBitmap);
+		   } else{
+                if( m_bOffscreenPaint && m_hbmpOffscreen == NULL )
+                {
+                    RECT rcClient = { 0 };
+                    ::GetClientRect(m_hWndPaint, &rcClient);
+                    m_hDcOffscreen = ::CreateCompatibleDC(m_hDcPaint);
+                    m_hbmpOffscreen = ::CreateCompatibleBitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top); 
+                    ASSERT(m_hDcOffscreen);
+                    ASSERT(m_hbmpOffscreen);
                 }
-            }
-            else
-            {
-                // A standard paint job
-                int iSaveDC = ::SaveDC(ps.hdc);
-                m_pRoot->DoPaint(ps.hdc, ps.rcPaint);
-                ::RestoreDC(ps.hdc, iSaveDC);
-            }
+
+                if( m_bOffscreenPaint )
+                {
+                    HBITMAP hOldBitmap = (HBITMAP) ::SelectObject(m_hDcOffscreen, m_hbmpOffscreen);
+                    int iSaveDC = ::SaveDC(m_hDcOffscreen);
+                    m_pRoot->DoPaint(m_hDcOffscreen, ps.rcPaint);
+                    for( int i = 0; i < m_aPostPaintControls.GetSize(); i++ ) {
+                        CControlUI* pPostPaintControl = static_cast<CControlUI*>(m_aPostPaintControls[i]);
+                        pPostPaintControl->DoPostPaint(m_hDcOffscreen, ps.rcPaint);
+                    }
+                    ::RestoreDC(m_hDcOffscreen, iSaveDC);
+                    ::BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
+                        ps.rcPaint.bottom - ps.rcPaint.top, m_hDcOffscreen, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
+                    ::SelectObject(m_hDcOffscreen, hOldBitmap);
+
+                    if( m_bShowUpdateRect ) {
+                        HPEN hOldPen = (HPEN)::SelectObject(ps.hdc, m_hUpdateRectPen);
+                        ::SelectObject(ps.hdc, ::GetStockObject(HOLLOW_BRUSH));
+                        ::Rectangle(ps.hdc, rcPaint.left, rcPaint.top, rcPaint.right, rcPaint.bottom);
+                        ::SelectObject(ps.hdc, hOldPen);
+                    }
+                }
+                else
+                {
+                    // A standard paint job
+                    int iSaveDC = ::SaveDC(ps.hdc);
+                    m_pRoot->DoPaint(ps.hdc, ps.rcPaint);
+                    ::RestoreDC(ps.hdc, iSaveDC);
+                }
+		   }
             // All Done!
             ::EndPaint(m_hWndPaint, &ps);
         }
@@ -790,6 +845,15 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             ::RestoreDC(hDC, save);
         }
         break;
+    case WM_SYSCOMMAND:
+		{
+			if (SC_RESTORE == (wParam & 0xfff0))
+			{
+				m_bIsRestore = true;
+			}
+        return true;
+		}
+		break;   
     case WM_GETMINMAXINFO:
         {
             LPMINMAXINFO lpMMI = (LPMINMAXINFO) lParam;
@@ -1192,6 +1256,7 @@ void CPaintManagerUI::Invalidate()
 void CPaintManagerUI::Invalidate(RECT& rcItem)
 {
     ::InvalidateRect(m_hWndPaint, &rcItem, FALSE);
+     m_rcInvalidate = rcItem;
 }
 
 bool CPaintManagerUI::AttachDialog(CControlUI* pControl,bool bAutoDeleteControl)

@@ -1219,7 +1219,12 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 			data = pManager->GetImageEx((LPCTSTR)sImageName, NULL, dwMask, bUseHSL);
 		}
 		else {
-			data = pManager->GetImageEx((LPCTSTR)sImageName, (LPCTSTR)sImageResType, dwMask, bUseHSL);
+			if (sImageResType.IsEmpty ()) {
+				data = pManager->GetImageEx((LPCTSTR)sImageName, NULL, dwMask, bUseHSL);
+			} else {
+				data = pManager->GetImageEx((LPCTSTR)sImageName, (LPCTSTR)sImageResType, dwMask, bUseHSL);
+			}
+
 		}
 		if( !data ) return false;
 
@@ -2172,5 +2177,42 @@ SIZE CRenderEngine::GetTextSize( HDC hDC, CPaintManagerUI* pManager , LPCTSTR ps
 	::SelectObject(hDC, hOldFont);
 	return size;
 }
+void CRenderEngine::CheckAlphaColor(DWORD& dwColor)
+{
+	//RestoreAlphaColor认为0x00000000是真正的透明，其它都是GDI绘制导致的
+	//所以在GDI绘制中不能用0xFF000000这个颜色值，现在处理是让它变成RGB(0,0,1)
+	//RGB(0,0,1)与RGB(0,0,0)很难分出来
+	if((0x00FFFFFF & dwColor) == 0)
+	{
+		dwColor += 1;
+	}
+}
 
+void CRenderEngine::ClearAlphaPixel(LPBYTE pBits, int bitsWidth, PRECT rc)
+{
+	if(!pBits)
+		return;
+
+	for(int i = rc->top; i < rc->bottom; ++i)
+	{
+		for(int j = rc->left; j < rc->right; ++j)
+		{
+			int x = (i*bitsWidth + j) * 4;
+			*((unsigned int*)&pBits[x]) = 0;
+		}
+	}
+}
+
+void CRenderEngine::RestoreAlphaColor(LPBYTE pBits, int bitsWidth, PRECT rc)
+{
+	for(int i = rc->top; i < rc->bottom; ++i)
+	{
+		for(int j = rc->left; j < rc->right; ++j)
+		{
+			int x = (i*bitsWidth + j) * 4;
+			if((pBits[x + 3] == 0)&& (pBits[x + 0] != 0 || pBits[x + 1] != 0|| pBits[x + 2] != 0))
+				pBits[x + 3] = 255;	
+		}
+	}
+}
 } // namespace DuiLib
