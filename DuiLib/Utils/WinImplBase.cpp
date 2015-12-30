@@ -391,7 +391,7 @@ LRESULT WindowImplBase::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	}
 	m_PaintManager.AttachDialog(pRoot);
 	m_PaintManager.AddNotifier(this);
-	m_PaintManager.SetBackgroundTransparent(TRUE);
+	//m_PaintManager.SetBackgroundTransparent(TRUE);
 
 	InitWindow();
 	return 0;
