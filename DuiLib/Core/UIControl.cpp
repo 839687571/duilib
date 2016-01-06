@@ -165,7 +165,12 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
 	}
 	Invalidate();
 }
-
+void  CControlUI::SetBkImageFade(int fade)
+{
+    if(fade<0 || fade>255) return ;
+    m_diBk.uFade = fade; 
+	Invalidate();
+}
 DWORD CControlUI::GetBorderColor() const
 {
     return m_dwBorderColor;
