@@ -211,7 +211,7 @@ protected:
     TListInfoUI m_ListInfo;
 
 	CListContainerElementUI    *m_pNodeNeedMove;
-	CListContainerElementUI    *m_pDragingCtrl;
+	CControlUI                 *m_pDragingCtrl;
 
 };
 

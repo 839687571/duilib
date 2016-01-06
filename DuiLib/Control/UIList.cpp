@@ -34,7 +34,6 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
 	m_pDragingCtrl = NULL;
 	m_pNodeNeedMove = NULL;
 
-	printf("create clistui %d", this);
 }
 
 LPCTSTR CListUI::GetClass() const
@@ -905,15 +904,18 @@ BOOL CListUI::SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData)
 void CListUI::BeginDrag(CListContainerElementUI *pListElement)
 {
 	m_pNodeNeedMove = pListElement;
-	if (m_pDragingCtrl == NULL) {
+	///if (m_pDragingCtrl == NULL)
+	{
 		int h = pListElement->GetFixedHeight();
 		int w = pListElement->GetFixedWidth();
 		printf("BeginDrag cur this is %d\n", this);
-		m_pDragingCtrl = new CListContainerElementUI;
-		m_pDragingCtrl->SetFixedHeight(h);
-		m_pDragingCtrl->SetFixedWidth(w == 0?100:w);
-		m_pDragingCtrl->SetName(_T("listdarg"));
-		m_pDragingCtrl->SetBorderSize(2);
+		m_pDragingCtrl = GetManager()->FindControl("dragContrl");
+		if (m_pDragingCtrl == NULL) {
+			return;
+		}
+		m_pDragingCtrl->SetFixedHeight(20);
+		m_pDragingCtrl->SetFixedWidth(30);
+		m_pDragingCtrl->SetBorderSize(1);
 		m_pDragingCtrl->SetBorderColor(0xffFFA500);
 		m_pDragingCtrl->SetVisible(false);
 // 		CControlUI* pImgNode = new CControlUI;
@@ -924,7 +926,7 @@ void CListUI::BeginDrag(CListContainerElementUI *pListElement)
 
 	//	m_pDragingCtrl->Add(pImgNode);
 
-		Add((CControlUI*)m_pDragingCtrl);
+	//	Add((CControlUI*)m_pDragingCtrl);
 	}
 	//static_cast<CListContainerElementUI*>(m_pDragingCtrl)->GetItemAt(0)->SetText("«Î—°‘ÒŒª÷√");
 }
