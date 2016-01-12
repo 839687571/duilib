@@ -359,6 +359,12 @@ CDuiString CTimeSpinUI::GetTimeString()
     return szTmp;
 }
 
+void CTimeSpinUI::SetTimeString(CDuiString timeStr)
+{
+    UINT hour= 0,min = 0,sec = 0;
+	_stscanf_s(timeStr, _T("%02d:%02d:%02d"), &hour, &min, &sec);
+    SetCurrentTime(hour,min,sec);
+}
 bool CTimeSpinUI::SetHour(UINT nHour)
 {
     UINT nOldHour = GetHour();

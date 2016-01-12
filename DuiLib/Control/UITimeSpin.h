@@ -43,6 +43,7 @@ public:
     virtual void SetButtonWidth(INT nWidth);
 
 	virtual CDuiString GetTimeString();
+	void SetTimeString(CDuiString timeStr);
     virtual void InitInnerControl();
 
     virtual void SetFont(int iFont);
