@@ -448,8 +448,11 @@ public:
     void DrawItemText(HDC hDC, const RECT& rcItem);    
     void DrawItemBk(HDC hDC, const RECT& rcItem);
 	void DrawItemDivLien(HDC hDC, const RECT& rcItem);
+	// drag related
 	void SetDrag(bool bCanDrag);
 	bool         m_bDrag;	
+	POINT        m_StartPt;
+	
 	CListContainerElementUI *GetListElementUIFromPt(POINT pt);
 	//add by whmiao 
 	// 每个列表项和表头对齐.

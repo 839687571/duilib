@@ -2398,6 +2398,7 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
         }
 		if (m_bDrag && event.Type == UIEVENT_BUTTONDOWN) {
             CListContainerElementUI *pListEle = GetListElementUIFromPt(event.ptMouse);
+            m_StartPt = event.ptMouse;
             if (pListEle != NULL) {
              m_pOwnerList->BeginDrag(pListEle);
             }
@@ -2411,7 +2412,11 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
 	
 	} else if (UIEVENT_MOUSEMOVE == event.Type) {
 	    if(m_bDrag){
-		    m_pOwnerList->Draging(event.ptMouse);
+			int d = sqrt((event.ptMouse.x - m_StartPt.x)*(event.ptMouse.x - m_StartPt.x)
+				+ (event.ptMouse.y - m_StartPt.y)*(event.ptMouse.y - m_StartPt.y));
+			if (d > 30) {
+				m_pOwnerList->Draging(event.ptMouse);
+			}
 	    }
 
 	}
