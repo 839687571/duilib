@@ -908,7 +908,6 @@ void CListUI::BeginDrag(CListContainerElementUI *pListElement)
 	{
 		int h = pListElement->GetFixedHeight();
 		int w = pListElement->GetFixedWidth();
-		printf("BeginDrag cur this is %d\n", this);
 		m_pDragingCtrl = GetManager()->FindControl("dragContrl");
 		if (m_pDragingCtrl == NULL) {
 			return;
