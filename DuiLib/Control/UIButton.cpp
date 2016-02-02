@@ -47,8 +47,8 @@ namespace DuiLib
 		}
 		if( event.Type == UIEVENT_KEYDOWN )
 		{
-			if (IsKeyboardEnabled()) {
-				if( event.chKey == VK_SPACE || event.chKey == VK_RETURN ) {
+			if (IsKeyboardEnabled()) {/* space 键不触发按键操作.*/
+				if(/* event.chKey == VK_SPACE || */event.chKey == VK_RETURN ) {
 					Activate();
 					return;
 				}
