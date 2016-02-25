@@ -1852,7 +1852,7 @@ void CPaintManagerUI::SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold
 	{
 		::DeleteObject(m_SharedResInfo.m_DefaultFontInfo.hFont);
 		m_SharedResInfo.m_DefaultFontInfo.hFont = hFont;
-		m_SharedResInfo.m_DefaultFontInfo.sFontName = pStrFontName;
+		m_SharedResInfo.m_DefaultFontInfo.sFontName = lf.lfFaceName;
 		m_SharedResInfo.m_DefaultFontInfo.iSize = nSize;
 		m_SharedResInfo.m_DefaultFontInfo.bBold = bBold;
 		m_SharedResInfo.m_DefaultFontInfo.bUnderline = bUnderline;
@@ -1868,7 +1868,7 @@ void CPaintManagerUI::SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold
 	{
 		::DeleteObject(m_ResInfo.m_DefaultFontInfo.hFont);
 		m_ResInfo.m_DefaultFontInfo.hFont = hFont;
-		m_ResInfo.m_DefaultFontInfo.sFontName = pStrFontName;
+		m_ResInfo.m_DefaultFontInfo.sFontName = lf.lfFaceName;
 		m_ResInfo.m_DefaultFontInfo.iSize = nSize;
 		m_ResInfo.m_DefaultFontInfo.bBold = bBold;
 		m_ResInfo.m_DefaultFontInfo.bUnderline = bUnderline;
@@ -1907,7 +1907,7 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
     if( !pFontInfo ) return false;
     ::ZeroMemory(pFontInfo, sizeof(TFontInfo));
     pFontInfo->hFont = hFont;
-    pFontInfo->sFontName = pStrFontName;
+    pFontInfo->sFontName = lf.lfFaceName;
     pFontInfo->iSize = nSize;
     pFontInfo->bBold = bBold;
     pFontInfo->bUnderline = bUnderline;
