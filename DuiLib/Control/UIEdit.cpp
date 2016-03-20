@@ -34,7 +34,7 @@ namespace DuiLib
 	{
 		m_pOwner = pOwner;
 		RECT rcPos = CalPos();
-		UINT uStyle = WS_CHILD | ES_AUTOHSCROLL;
+		UINT uStyle = WS_CHILD | ES_AUTOHSCROLL ;
 		if( m_pOwner->IsPasswordMode() ) uStyle |= ES_PASSWORD;
 		Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
 		HFONT hFont=NULL;
@@ -507,6 +507,8 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
 		else if( _tcscmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
 		else if( _tcscmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
+		else if (_tcscmp(pstrName, _T("tipvalue")) == 0) SetTipValue(pstrValue);
+		else if (_tcscmp(pstrName, _T("tipvaluecolor")) == 0) SetTipValueColor(pstrValue);
 		else if( _tcscmp(pstrName, _T("nativebkcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
@@ -538,20 +540,27 @@ namespace DuiLib
 
 	void CEditUI::PaintText(HDC hDC)
 	{
+		DWORD mCurTextColor = m_dwTextColor;
 		if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
 		if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
 
-		if( m_sText.IsEmpty() ) return;
-
 		CDuiString sText = m_sText;
-		if( m_bPasswordMode ) {
-			sText.Empty();
-			LPCTSTR p = m_sText.GetData();
-			while( *p != _T('\0') ) {
-				sText += m_cPasswordChar;
-				p = ::CharNext(p);
+		if (GetText() == m_sTipValue || GetText() == _T(""))
+		{
+			mCurTextColor = m_dwTipValueColor;
+			sText = m_sTipValue;
+		} else {
+			if (m_bPasswordMode) {
+				sText.Empty();
+				LPCTSTR p = m_sText.GetData();
+				while (*p != _T('\0')) {
+					sText += m_cPasswordChar;
+					p = ::CharNext(p);
+				}
 			}
 		}
+
+		if (sText.IsEmpty()) return;
 
 		RECT rc = m_rcItem;
 		rc.left += m_rcTextPadding.left;
@@ -577,5 +586,27 @@ namespace DuiLib
 	bool CEditUI::GetEnableTextChangeEvent()
 	{
 		return m_enableTextChangeEvent;
+	}
+
+	void CEditUI::SetTipValue(LPCTSTR pStrTipValue)
+	{
+		m_sTipValue = pStrTipValue;
+	}
+	LPCTSTR CEditUI::GetTipValue()
+	{
+		return m_sTipValue.GetData();
+	}
+	void CEditUI::SetTipValueColor(LPCTSTR pStrColor)
+	{
+		if (*pStrColor == _T('#')) pStrColor = ::CharNext(pStrColor);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pStrColor, &pstr, 16);
+
+		m_dwTipValueColor = clrColor;
+	}
+
+	DWORD CEditUI::GetTipValueColor()
+	{
+		return m_dwTipValueColor;
 	}
 }

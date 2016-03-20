@@ -38,19 +38,32 @@ public:
 	virtual const CDuiString& GetUserData(); /* selected item userdata */
 	virtual UINT GetControlFlags() const;
 	virtual void SetFocus();
+    void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 	/*********************************************************/
+	void SetTipValue(LPCTSTR pStrTipValue);
+	LPCTSTR GetTipValue();
+	void SetTipValueColor(LPCTSTR pStrColor);
+	DWORD GetTipValueColor();
+
 private:
 	void SetText(int iComboSel);
 private:
 	CEditUI *m_pEdit;
 	unsigned int m_iLeftWidth;/* 下来框左边预留的大小*/
+	CDuiString  m_strBkcolorValue;
+	int         m_iFont;
 
+	// tip
+	CDuiString m_sTipValue;
+	CDuiString m_sSrcTipValue;
+	DWORD m_dwTipValueColor;
+	
 	/*
 	搜索的条件
 	*/
 	//CStdStringPtrMap  m_itemPinyin;/*pinyin*/
 
 	std::map<std::string, std::string> itemPyMap;/*首字母*/
-	CHzToPyIner           *m_pHzToPy;
+	CHzToPyIner              *m_pHzToPy;
 	bool					m_bInited;
 };

@@ -133,6 +133,7 @@ CAutoCompleteComboUI::CAutoCompleteComboUI()
 	m_iLeftWidth = 22;/* default size*/
 	m_pHzToPy = new CHzToPyIner;
 	m_bInited  = false;
+	m_iFont   = -1;
 	OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnComboNotify);
 	OnInit += MakeDelegate(this, &CAutoCompleteComboUI::OnInitControl);
 }
@@ -227,7 +228,14 @@ bool CAutoCompleteComboUI::OnInitControl(void* pMsg)
 	}
 
 	m_pEdit->OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnEiditNotify);
-
+	if (!m_strBkcolorValue.IsEmpty()) {
+		m_pEdit->SetAttribute("bkcolor", m_strBkcolorValue);
+	}
+	if(m_iFont != -1){
+       m_pEdit->SetFont(0);
+	}
+	m_pEdit->SetTipValue("dafsdfasd");
+	m_pEdit->SetTipValueColor("#FFFF0000");
 	m_bInited = true;
 	return true;
 }
@@ -327,10 +335,52 @@ void CAutoCompleteComboUI::SetFocus()
 		m_pEdit->SetFocus();
 	}
 }
+void CAutoCompleteComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
+{
+	if (_tcscmp(pstrName, _T("bkcolor")) == 0) {
+		m_strBkcolorValue = pstrValue;
+	} else if (_tcscmp(pstrName, _T("hasdrop")) == 0) {
+		if (_tcscmp(pstrValue, _T("false")) == 0) {
+			m_iLeftWidth = 0;
+		}
+	} else if (_tcscmp(pstrName, _T("font")) == 0) {
+		m_iFont = atoi(pstrValue);
+	} else if (_tcscmp(pstrName, _T("tipvalue")) == 0) SetTipValue(pstrValue);
+	else if (_tcscmp(pstrName, _T("tipvaluecolor")) == 0) SetTipValueColor(pstrValue);
+	CComboUI::SetAttribute(pstrName, pstrValue);
+}
 const CDuiString& CAutoCompleteComboUI::GetUserData()
 {
 	if (m_pEdit != NULL) {
 		return m_pEdit->GetUserData();
 	}
 	return "";
+}
+void CAutoCompleteComboUI::SetTipValue(LPCTSTR pStrTipValue)
+{
+	m_sTipValue = pStrTipValue;
+	if (m_pEdit != NULL)
+	{
+		m_pEdit->SetTipValue(pStrTipValue);
+	}
+}
+LPCTSTR CAutoCompleteComboUI::GetTipValue()
+{
+	return m_sTipValue.GetData();
+}
+void CAutoCompleteComboUI::SetTipValueColor(LPCTSTR pStrColor)
+{
+	if (*pStrColor == _T('#')) pStrColor = ::CharNext(pStrColor);
+	LPTSTR pstr = NULL;
+	DWORD clrColor = _tcstoul(pStrColor, &pstr, 16);
+
+	m_dwTipValueColor = clrColor;
+	if (m_pEdit != NULL) {
+		m_pEdit->SetTipValue(pStrColor);
+	}
+}
+
+DWORD CAutoCompleteComboUI::GetTipValueColor()
+{
+	return m_dwTipValueColor;
 }

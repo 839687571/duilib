@@ -62,6 +62,10 @@ namespace DuiLib
 		void SetEnableTextChangeEvent(bool bEnabled);
 		bool GetEnableTextChangeEvent();
 
+		void SetTipValue(LPCTSTR pStrTipValue);
+		LPCTSTR GetTipValue();
+		void SetTipValueColor(LPCTSTR pStrColor);
+		DWORD GetTipValueColor();
 	protected:
 		CEditWnd* m_pWindow;
 
@@ -74,6 +78,10 @@ namespace DuiLib
 		bool m_enableTextChangeEvent;
 		DWORD m_dwEditbkColor;
 		int m_iWindowStyls;
+		// tip
+		CDuiString m_sTipValue;
+		CDuiString m_sSrcTipValue;
+		DWORD m_dwTipValueColor;
 
 		TDrawInfo m_diNormal;
 		TDrawInfo m_diHot;
