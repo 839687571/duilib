@@ -540,10 +540,10 @@ namespace DuiLib
 
 	void CEditUI::PaintText(HDC hDC)
 	{
-		DWORD mCurTextColor = m_dwTextColor;
 		if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
 		if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
 
+		DWORD mCurTextColor = m_dwTextColor;
 		CDuiString sText = m_sText;
 		if (GetText() == m_sTipValue || GetText() == _T(""))
 		{
@@ -568,7 +568,7 @@ namespace DuiLib
 		rc.top += m_rcTextPadding.top;
 		rc.bottom -= m_rcTextPadding.bottom;
 		if( IsEnabled() ) {
-			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwTextColor, \
+			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, mCurTextColor, \
 				m_iFont, DT_SINGLELINE | m_uTextStyle);
 		}
 		else {

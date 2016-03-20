@@ -43,8 +43,9 @@ public:
 	void SetTipValue(LPCTSTR pStrTipValue);
 	LPCTSTR GetTipValue();
 	void SetTipValueColor(LPCTSTR pStrColor);
-	DWORD GetTipValueColor();
-
+	LPCTSTR GetTipValueColor();
+	void SetTextColor(LPCTSTR pStrValue);
+	DWORD GetTextColor();
 private:
 	void SetText(int iComboSel);
 private:
@@ -56,7 +57,8 @@ private:
 	// tip
 	CDuiString m_sTipValue;
 	CDuiString m_sSrcTipValue;
-	DWORD m_dwTipValueColor;
+	CDuiString m_sTipValueColor;
+	DWORD m_dwTextColor;
 	
 	/*
 	ËÑË÷µÄÌõ¼þ

@@ -234,8 +234,18 @@ bool CAutoCompleteComboUI::OnInitControl(void* pMsg)
 	if(m_iFont != -1){
        m_pEdit->SetFont(0);
 	}
-	m_pEdit->SetTipValue("dafsdfasd");
-	m_pEdit->SetTipValueColor("#FFFF0000");
+	if (!m_sTipValue.IsEmpty())
+	{
+		m_pEdit->SetTipValue(m_sTipValue);
+		if (!m_sTipValueColor.IsEmpty()) {
+			m_pEdit->SetTipValueColor(m_sTipValueColor);
+		}
+	}
+	if (m_dwTextColor != -1)
+	{
+		m_pEdit->SetTextColor(m_dwTextColor);
+	}
+
 	m_bInited = true;
 	return true;
 }
@@ -347,6 +357,8 @@ void CAutoCompleteComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		m_iFont = atoi(pstrValue);
 	} else if (_tcscmp(pstrName, _T("tipvalue")) == 0) SetTipValue(pstrValue);
 	else if (_tcscmp(pstrName, _T("tipvaluecolor")) == 0) SetTipValueColor(pstrValue);
+	else if (_tcscmp(pstrName, _T("textcolor")) == 0) SetTipValueColor(pstrValue);
+
 	CComboUI::SetAttribute(pstrName, pstrValue);
 }
 const CDuiString& CAutoCompleteComboUI::GetUserData()
@@ -372,15 +384,27 @@ void CAutoCompleteComboUI::SetTipValueColor(LPCTSTR pStrColor)
 {
 	if (*pStrColor == _T('#')) pStrColor = ::CharNext(pStrColor);
 	LPTSTR pstr = NULL;
-	DWORD clrColor = _tcstoul(pStrColor, &pstr, 16);
+	//DWORD clrColor = _tcstoul(pStrColor, &pstr, 16);
 
-	m_dwTipValueColor = clrColor;
+	m_sTipValueColor = pStrColor;
 	if (m_pEdit != NULL) {
-		m_pEdit->SetTipValue(pStrColor);
+		m_pEdit->SetTipValueColor(pStrColor);
 	}
 }
 
-DWORD CAutoCompleteComboUI::GetTipValueColor()
+LPCTSTR CAutoCompleteComboUI::GetTipValueColor()
 {
-	return m_dwTipValueColor;
+	return m_sTipValueColor.GetData();
+}
+void CAutoCompleteComboUI::SetTextColor(LPCTSTR pStrValue)
+{
+	if (*pStrValue == _T('#')) pStrValue = ::CharNext(pStrValue);
+	LPTSTR pstr = NULL;
+	DWORD clrColor = _tcstoul(pStrValue, &pstr, 16);
+
+	m_dwTextColor = clrColor;
+}
+DWORD CAutoCompleteComboUI::GetTextColor()
+{
+	return m_dwTextColor;
 }
