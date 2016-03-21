@@ -348,6 +348,14 @@ namespace DuiLib
 		}
 
 		Invalidate();
+		if(m_pVerticalScrollBar)
+		{
+			// 发送滚动消息
+			if( m_pManager != NULL ) {
+				int nPage = (m_pVerticalScrollBar->GetScrollPos() + m_pVerticalScrollBar->GetLineSize()) / m_pVerticalScrollBar->GetLineSize();
+				m_pManager->SendNotify(this, DUI_MSGTYPE_SCROLL, (WPARAM)nPage);
+			}
+		}
 	}
 
 	void CContainerUI::LineUp()
@@ -763,9 +771,47 @@ namespace DuiLib
 
 	void CContainerUI::ProcessScrollBar(RECT rc, int cxRequired, int cyRequired)
 	{
-		if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() ) {
-			RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetFixedHeight()};
-			m_pHorizontalScrollBar->SetPos(rcScrollBarPos, false);
+		// by 冰下海 2015/08/16
+		while (m_pHorizontalScrollBar)
+		{
+			// Scroll needed
+			if (cxRequired > rc.right - rc.left && !m_pHorizontalScrollBar->IsVisible())
+			{
+				m_pHorizontalScrollBar->SetVisible(true);
+				m_pHorizontalScrollBar->SetScrollRange(cxRequired - (rc.right - rc.left));
+				m_pHorizontalScrollBar->SetScrollPos(0);
+					SetPos(m_rcItem,false);
+				break;
+			}
+
+			// No scrollbar required
+			if (!m_pHorizontalScrollBar->IsVisible()) break;
+
+			// Scroll not needed anymore?
+			int cxScroll = cxRequired - (rc.right - rc.left);
+			if (cxScroll <= 0)
+			{
+				m_pHorizontalScrollBar->SetVisible(false);
+				m_pHorizontalScrollBar->SetScrollPos(0);
+				m_pHorizontalScrollBar->SetScrollRange(0);
+					SetPos(m_rcItem,false);
+			}
+			else
+			{
+				RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetFixedHeight() };
+				m_pHorizontalScrollBar->SetPos(rcScrollBarPos);
+
+				if (m_pHorizontalScrollBar->GetScrollRange() != cxScroll) 
+				{
+					int iScrollPos = m_pHorizontalScrollBar->GetScrollPos();
+					m_pHorizontalScrollBar->SetScrollRange(::abs(cxScroll)); // if scrollpos>range then scrollpos=range
+					if(iScrollPos > m_pHorizontalScrollBar->GetScrollPos()) 
+					{
+						SetPos(m_rcItem,false);
+					}
+				}
+			}
+			break;
 		}
 
 		if( m_pVerticalScrollBar == NULL ) return;
