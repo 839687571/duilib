@@ -10,6 +10,7 @@ namespace DuiLib
 		, m_dwFocusedTextColor(0)
 		,m_dwHotBkColor(0)
 		,m_dwPushedBkColor(0)
+		,m_dwDisabledBkColor(0)
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_CENTER;
 	}
@@ -178,6 +179,14 @@ namespace DuiLib
 		m_dwPushedTextColor = dwColor;
 	}
 
+	void CButtonUI::SetDisabledBkColor(DWORD dwColor)
+	{
+        m_dwDisabledBkColor = dwColor;
+	}
+	DWORD CButtonUI::GetDisabledBkColor() const
+	{
+        return m_dwDisabledBkColor;
+	}
 	DWORD CButtonUI::GetPushedTextColor() const
 	{
 		return m_dwPushedTextColor;
@@ -367,6 +376,12 @@ namespace DuiLib
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetFocusedTextColor(clrColor);
+		}else if( _tcscmp(pstrName, _T("disabledbkcolor")) == 0 )
+		{
+			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			LPTSTR pstr = NULL;
+			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			SetDisabledBkColor(clrColor);
 		}
 		else CLabelUI::SetAttribute(pstrName, pstrValue);
 	}
@@ -414,7 +429,13 @@ namespace DuiLib
 		else m_uButtonState &= ~ UISTATE_DISABLED;
 
 		if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
-			if (DrawImage(hDC, m_diDisabled)) goto Label_ForeImage;
+				if (!DrawImage(hDC, m_diDisabled)) {
+    				if (m_dwDisabledBkColor != 0) {
+    					CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwDisabledBkColor));
+    				} else {
+    					DrawImage(hDC, m_diNormal);
+    				}
+			}
 		}
 		else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
 			if (!DrawImage(hDC, m_diPushed)) {
