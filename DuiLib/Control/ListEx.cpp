@@ -126,6 +126,12 @@ int CListUIEx::InsertItem(int nItem, int nHeight,std::string listName)
 		pSubHor->SetAttribute("inset", "3,1,3,1");
 		pSubHor->Add(pControl);//添加到父控件
 	}
+	void CListUIEx::SetItemDataCenter(int nItem, int nColumn, CControlUI* pControl, LPCTSTR inset)
+	{
+		CHorizontalLayoutUI *pSubHor = GetListSubItem(nItem, nColumn);
+		pSubHor->SetAttribute("inset", inset);
+		pSubHor->Add(pControl);//添加到父控件
+	}
 
 	void CListUIEx::SetItemText(int nItem, int nColumn, LPCTSTR itemName, LPCTSTR Text)
 	{

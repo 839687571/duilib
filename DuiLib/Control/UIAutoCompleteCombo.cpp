@@ -314,6 +314,12 @@ CDuiString CAutoCompleteComboUI::GetEditText()
 	}
 	return "";
 }
+void  CAutoCompleteComboUI::SetEditText(LPCTSTR pstrValue)
+{
+	if (m_pEdit != NULL) {
+		return m_pEdit->SetText(pstrValue);
+	}
+}
 
 CDuiString CAutoCompleteComboUI::GetText() const
 {

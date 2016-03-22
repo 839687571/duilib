@@ -29,6 +29,7 @@ public:
 
 	CDuiString GetText() const;
 	CDuiString GetEditText();
+	void SetEditText(LPCTSTR pstrValue);
 
 
 

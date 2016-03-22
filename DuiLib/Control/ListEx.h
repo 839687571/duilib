@@ -58,6 +58,9 @@ namespace DuiLib {
 		void SetItemData(int nItem, int nColumn, CControlUI* pControl);
 
 		void SetItemText(int nItem, int nColumn,LPCTSTR itemName, LPCTSTR Text);
+
+		// 添加控件到中间位置.
+		void SetItemDataCenter(int nItem, int nColumn, CControlUI* pControl,LPCTSTR inset);
 		/**
 		 * 根据索引获取行控件
 		 * 
