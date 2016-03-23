@@ -289,6 +289,16 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetStrokeColor(clrColor);
 		}
+			else if( _tcsicmp(pstrName, _T("wordbreak")) == 0 ) {
+			if( _tcsicmp(pstrValue, _T("true")) == 0 ) {
+				m_uTextStyle &= ~DT_SINGLELINE;
+				m_uTextStyle |= DT_WORDBREAK | DT_EDITCONTROL;
+			}
+			else {
+				m_uTextStyle &= ~DT_WORDBREAK & ~DT_EDITCONTROL;
+				m_uTextStyle |= DT_SINGLELINE;
+			}
+		}
         else if( _tcscmp(pstrName, _T("autotip")) == 0 ) SetEnableAutoTip(_tcscmp(pstrValue, _T("true")) == 0);
 		else CControlUI::SetAttribute(pstrName, pstrValue);
 	}

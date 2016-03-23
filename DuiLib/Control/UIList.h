@@ -249,13 +249,22 @@ public:
     LPVOID GetInterface(LPCTSTR pstrName);
 
     SIZE EstimateSize(SIZE szAvailable);
+	//开启百分比表头功能 redrain 2014.12.29
+	void SetPos(RECT rc,bool bNeedInvalidate = true );
+	void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+
+	void SetScaleHeader(bool bIsScale);
+	bool IsScaleHeader() const;
+
+private:
+	bool m_bIsScaleHeader;
 };
 
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
 
-class UILIB_API CListHeaderItemUI : public CControlUI
+class UILIB_API CListHeaderItemUI : public CHorizontalLayoutUI
 {
 public:
     CListHeaderItemUI();
@@ -289,6 +298,9 @@ public:
     void SetFocusedImage(LPCTSTR pStrImage);
     LPCTSTR GetSepImage() const;
     void SetSepImage(LPCTSTR pStrImage);
+	//开启百分比表头功能,百分比 redrain 2014.12.29
+	void SetScale(int nScale);
+	int GetScale() const;
 
     void DoEvent(TEventUI& event);
     SIZE EstimateSize(SIZE szAvailable);
@@ -314,6 +326,8 @@ protected:
     TDrawInfo m_diPushed;
     TDrawInfo m_diFocused;
     TDrawInfo m_diSep;
+
+	int m_nScale;
 };
 
 
