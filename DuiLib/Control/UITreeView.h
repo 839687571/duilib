@@ -114,9 +114,7 @@ namespace DuiLib
 		virtual void RemoveAll();
 		virtual bool OnCheckBoxChanged(void* param);
 		virtual bool OnFolderChanged(void* param);
-		virtual bool OnDBClickItem(void* param);
-
-		virtual bool OnClickItem(void *param);
+		virtual bool OnClickItem(void* param);
 		virtual bool SetItemCheckBox(bool _Selected,CTreeNodeUI* _TreeNode = NULL);
 		virtual void SetItemExpand(bool _Expanded,CTreeNodeUI* _TreeNode = NULL);
 		virtual void Notify(TNotifyUI& msg);

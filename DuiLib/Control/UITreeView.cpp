@@ -788,8 +788,7 @@ namespace DuiLib
 		if (_tcsicmp(pControl->GetClass(), _T("TreeNodeUI")) != 0)
 			return false;
 
-		//pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnDBClickItem);//whmiao 替换为单击
-		pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnClickItem); 
+		pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnClickItem);//whmiao 替换为单击
 		pControl->GetFolderButton()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnFolderChanged);
 		pControl->GetCheckBox()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnCheckBoxChanged);
 
@@ -834,8 +833,7 @@ namespace DuiLib
 // 		if(!pParent)
 // 			return -1;
 
-	//	pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnDBClickItem);
-        pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnClickItem); 
+		pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnClickItem);
 		pControl->GetFolderButton()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnFolderChanged);
 		pControl->GetCheckBox()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnCheckBoxChanged);
 
@@ -984,15 +982,23 @@ namespace DuiLib
 	}
 	
 	//************************************
-	// 函数名称: OnDBClickItem
+	// 函数名称: OnClickItem
 	// 返回类型: bool
 	// 参数信息: void * param
 	// 函数说明:
 	//************************************
-	bool CTreeViewUI::OnDBClickItem( void* param )
+	bool CTreeViewUI::OnClickItem( void* param )
 	{
 		TNotifyUI* pMsg = (TNotifyUI*)param;
 		if(pMsg->sType == _T("itemdbclick"))
+		{
+			CTreeNodeUI* pItem		= static_cast<CTreeNodeUI*>(pMsg->pSender);
+			CCheckBoxUI* pFolder	= pItem->GetFolderButton();
+			pFolder->Selected(!pFolder->IsSelected());
+			pItem->SetVisibleTag(!pFolder->GetCheck());
+			SetItemExpand(!pFolder->GetCheck(),pItem);
+			return true;
+		}else if (pMsg->sType == DUI_MSGTYPE_ITEMCLICK)
 		{
 			CTreeNodeUI* pItem		= static_cast<CTreeNodeUI*>(pMsg->pSender);
 			CCheckBoxUI* pFolder	= pItem->GetFolderButton();
@@ -1004,20 +1010,7 @@ namespace DuiLib
 		return false;
 	}
 	
-	bool CTreeViewUI::OnClickItem(void *param)
-	{
-		TNotifyUI* pMsg = (TNotifyUI*)param;
-		if (pMsg->sType == DUI_MSGTYPE_ITEMCLICK)
-		{
-			CTreeNodeUI* pItem		= static_cast<CTreeNodeUI*>(pMsg->pSender);
-			CCheckBoxUI* pFolder	= pItem->GetFolderButton();
-			pFolder->Selected(!pFolder->IsSelected());
-			pItem->SetVisibleTag(!pFolder->GetCheck());
-			SetItemExpand(!pFolder->GetCheck(),pItem);
-			return true;
-		}
-		return false;
-	}
+
 	//************************************
 	// 函数名称: SetItemCheckBox
 	// 返回类型: bool
