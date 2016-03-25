@@ -788,7 +788,8 @@ namespace DuiLib
 		if (_tcsicmp(pControl->GetClass(), _T("TreeNodeUI")) != 0)
 			return false;
 
-		pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnDBClickItem);
+		//pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnDBClickItem);//whmiao 替换为单击
+		pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnClickItem); 
 		pControl->GetFolderButton()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnFolderChanged);
 		pControl->GetCheckBox()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnCheckBoxChanged);
 
@@ -829,11 +830,12 @@ namespace DuiLib
 		if (_tcsicmp(pControl->GetClass(), _T("TreeNodeUI")) != 0)
 			return -1;
 
-		CTreeNodeUI* pParent = static_cast<CTreeNodeUI*>(GetItemAt(iIndex));
-		if(!pParent)
-			return -1;
+// 		CTreeNodeUI* pParent = static_cast<CTreeNodeUI*>(GetItemAt(iIndex));
+// 		if(!pParent)
+// 			return -1;
 
-		pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnDBClickItem);
+	//	pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnDBClickItem);
+        pControl->OnNotify += MakeDelegate(this,&CTreeViewUI::OnClickItem); 
 		pControl->GetFolderButton()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnFolderChanged);
 		pControl->GetCheckBox()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnCheckBoxChanged);
 
@@ -1001,7 +1003,21 @@ namespace DuiLib
 		}
 		return false;
 	}
-
+	
+	bool CTreeViewUI::OnClickItem(void *param)
+	{
+		TNotifyUI* pMsg = (TNotifyUI*)param;
+		if (pMsg->sType == DUI_MSGTYPE_ITEMCLICK)
+		{
+			CTreeNodeUI* pItem		= static_cast<CTreeNodeUI*>(pMsg->pSender);
+			CCheckBoxUI* pFolder	= pItem->GetFolderButton();
+			pFolder->Selected(!pFolder->IsSelected());
+			pItem->SetVisibleTag(!pFolder->GetCheck());
+			SetItemExpand(!pFolder->GetCheck(),pItem);
+			return true;
+		}
+		return false;
+	}
 	//************************************
 	// 函数名称: SetItemCheckBox
 	// 返回类型: bool

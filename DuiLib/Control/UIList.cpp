@@ -2533,7 +2533,7 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
             return;
         }
     }
-    if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_RBUTTONDOWN )
+    if( event.Type == UIEVENT_BUTTONDOWN /*|| event.Type == UIEVENT_RBUTTONDOWN*/ )
     {
         if( IsEnabled() ){
             m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMCLICK);
@@ -2566,13 +2566,6 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
 	}
 
 
-    if( event.Type == UIEVENT_BUTTONUP ) 
-    {
-		if( IsEnabled() ){
-			m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMCLICK);
-		}
-        return;
-    }
     if( event.Type == UIEVENT_MOUSEMOVE )
     {
         return;
