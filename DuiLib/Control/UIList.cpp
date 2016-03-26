@@ -147,7 +147,6 @@ bool CListUI::AddAt(CControlUI* pControl, int iIndex)
         m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
         return ret;
     }
-    if (!m_pList->AddAt(pControl, iIndex)) return false;
 
     // The list items should know about us
     IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
@@ -155,6 +154,7 @@ bool CListUI::AddAt(CControlUI* pControl, int iIndex)
         pListItem->SetOwner(this);
         pListItem->SetIndex(iIndex);
     }
+	if (!m_pList->AddAt(pControl, iIndex)) return false;
 
     for(int i = iIndex + 1; i < m_pList->GetCount(); ++i) {
         CControlUI* p = m_pList->GetItemAt(i);
