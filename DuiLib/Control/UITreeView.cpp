@@ -35,6 +35,7 @@ namespace DuiLib
 		pCheckBox->SetFixedWidth(GetFixedHeight());
 		pItemButton->SetAttribute(_T("align"),_T("left"));
 		pItemButton->SetAttribute(_T("valign"), _T("vcenter")); /* item ÎÄ×Ö¾ÓÖÐÏÔÊ¾*/
+		pItemButton->SetTextPadding({10,0,0,0});
 
 		pDottedLine->SetVisible(false);
 		pCheckBox->SetVisible(false);

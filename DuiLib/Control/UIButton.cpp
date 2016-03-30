@@ -435,7 +435,9 @@ namespace DuiLib
     				} else {
     					DrawImage(hDC, m_diNormal);
     				}
+    				
 			}
+				goto Label_ForeImage;;
 		}
 		else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
 			if (!DrawImage(hDC, m_diPushed)) {
