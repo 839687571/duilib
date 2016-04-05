@@ -35,7 +35,7 @@ namespace DuiLib
 		pCheckBox->SetFixedWidth(GetFixedHeight());
 		pItemButton->SetAttribute(_T("align"),_T("left"));
 		pItemButton->SetAttribute(_T("valign"), _T("vcenter")); /* item ÎÄ×Ö¾ÓÖÐÏÔÊ¾*/
-		pItemButton->SetTextPadding({10,0,0,0});
+		pItemButton->SetTextPadding({18,0,0,0});
 
 		pDottedLine->SetVisible(false);
 		pCheckBox->SetVisible(false);
@@ -251,74 +251,28 @@ namespace DuiLib
             iDestIndex = GetCountChild();
         }
         if(iIndex != iDestIndex) iIndex = iDestIndex;
+		if(NULL == static_cast<CTreeNodeUI*>(pControl->GetInterface(_T("TreeNode"))))
+			return FALSE;
 
 		CTreeNodeUI* pIndexNode = static_cast<CTreeNodeUI*>(mTreeNodes.GetAt(iIndex));
-		pControl = CalLocation((CTreeNodeUI*)pControl);
-		
-        bool bRet = false;
-        int iTreeIndex = -1;
-        if (pTreeView)
-        {
-            //Get TreeView insert index
-            if (pIndexNode)
-            {
-                iTreeIndex = pIndexNode->GetTreeIndex();
-                bRet = pTreeView->AddAt((CTreeNodeUI*)pControl, iTreeIndex) >= 0;
-                if (bRet)
-                {
-                    mTreeNodes.InsertAt(iIndex, pControl);
-                }
-            }
-            else
-            {
-                CTreeNodeUI *pChildNode = NULL;
-                //insert child node position index(new node insert to tail, default add tail)
-                int iChIndex = -1;
-                //insert child node tree-view position index(new node insert to tail)
-                int iChTreeIndex = -1;
-                //search tree index reverse
-                for (int i = GetCountChild(); i > 0; i++)
-                {
-                    pChildNode = GetChildNode(i - 1);
-                    iChTreeIndex = pChildNode->GetTreeIndex();
-                    if (iChTreeIndex >= GetTreeIndex() && iChTreeIndex <= GetTreeIndex() + GetCountChild() )
-                    {
-                        //new child node position
-                        iChIndex = i;
-                        //child node tree position
-                        iTreeIndex = iChTreeIndex + 1;
-                        break;
-                    }
-                }
-                //child not find tree index directly insert to parent tail
-                if (iTreeIndex <= GetTreeIndex())
-                {
-                    iTreeIndex = GetTreeIndex() + 1;
-                }
-                //insert TreeNode to TreeView
-                bRet = pTreeView->AddAt((CTreeNodeUI*)pControl, iTreeIndex) >= 0;
-                //insert TreeNode to parent TreeNode
-                if (bRet)
-                {
-                    if (iChIndex > 0)
-                        bRet = mTreeNodes.InsertAt(iChIndex, pControl);
-                    else
-                        bRet = mTreeNodes.Add(pControl);
-                }
-            }
-        }
-        else
-        {
-            //parent TreeNode not bind TreeView just insert to parent TreeNode
-            bRet = mTreeNodes.InsertAt(iIndex, pControl);
-        }
-
-		if(bRet)  //add by redrain 2014.11.7
-		{
-		//	pControl->SetVisible(GetFolderButton()->IsSelected());
+		if(!pIndexNode){
+			if(!mTreeNodes.Add(pControl))
+				return FALSE;
 		}
+		else if(pIndexNode && !mTreeNodes.InsertAt(iIndex,pControl))
+			return FALSE;
 
-		return bRet;
+		if(!pIndexNode && pTreeView && pTreeView->GetItemAt(GetTreeIndex()+1))
+			pIndexNode = static_cast<CTreeNodeUI*>(pTreeView->GetItemAt(GetTreeIndex()+1)->GetInterface(_T("TreeNode")));
+
+		pControl = CalLocation((CTreeNodeUI*)pControl);
+
+		if(pTreeView && pIndexNode)
+			return pTreeView->AddAt((CTreeNodeUI*)pControl,pIndexNode);
+		else 
+			return pTreeView->Add((CTreeNodeUI*)pControl);
+
+		return TRUE;
 
 	}
 

@@ -115,5 +115,5 @@
 #include "Control/UIGifButton.h"
 
 #include "Control/UIAutoCompleteCombo.h"
-//#include "Control/UIFlash.h"
+#include "Control/UICalendar.h"
 

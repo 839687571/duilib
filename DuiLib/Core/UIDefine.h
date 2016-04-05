@@ -240,6 +240,7 @@ protected:                                                                \
 #define  DUI_CTR_ACTIVEX                         (_T("ActiveX"))
 #define  DUI_CTR_GIF_BUTTON					   (_T("GifButton"))
 
+
 #define  DUI_CTR_LISTITEM                        (_T("ListItem"))
 #define  DUI_CTR_PROGRESS                        (_T("Progress"))
 #define  DUI_CTR_RICHEDIT                        (_T("RichEdit"))
@@ -250,6 +251,7 @@ protected:                                                                \
 #define  DUI_CTR_TREENODE                        (_T("TreeNode"))
 #define  DUI_CTR_PROPERTY                        (_T("Property"))
 #define  DUI_CTR_TIMESPIN                        (_T("TimeSpin"))
+#define  DUI_CTR_CALENDER        				   (_T("Calender"))
 
 #define  DUI_CTR_CONTAINER                       (_T("Container"))
 #define  DUI_CTR_TABLAYOUT                       (_T("TabLayout"))
