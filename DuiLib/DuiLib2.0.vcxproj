@@ -265,6 +265,7 @@
   <ItemGroup>
     <ClCompile Include="Control\ListEx.cpp" />
     <ClCompile Include="Control\UIAutoCompleteCombo.cpp" />
+    <ClCompile Include="Control\UICalendar.cpp" />
     <ClCompile Include="Control\UIFadeButton.cpp" />
     <ClCompile Include="Control\UIGifButton.cpp" />
     <ClCompile Include="Control\UISpinButton.cpp" />
@@ -339,6 +340,7 @@
   <ItemGroup>
     <ClInclude Include="Control\ListEx.h" />
     <ClInclude Include="Control\UIAutoCompleteCombo.h" />
+    <ClInclude Include="Control\UICalendar.h" />
     <ClInclude Include="Control\UIFadeButton.h" />
     <ClInclude Include="Control\UIGifButton.h" />
     <ClInclude Include="Control\UISpinButton.h" />
