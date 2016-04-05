@@ -282,6 +282,7 @@ void CCalenderUI::DoInit()
 {
 	__super::DoInit();
 
+	printf("this  = %d name=%s\n",this,GetName().GetData());
 	GetManager()->AddNotifier(this);/* need fix */
 	
 	m_pButton->SetFixedHeight(m_iButtonHeight);
@@ -333,7 +334,7 @@ void CCalenderUI::Notify(TNotifyUI& msg)
 
 void CCalenderUI::SetTime(SYSTEMTIME &time)
 {
-	m_pLable->SetText(COleDateTime(time).Format(_T("%Y年%m月%d日   %H:%M")));
+	SetText(COleDateTime(time).Format(_T("%Y年%m月%d日   %H:%M")));
 }
 
 LPCTSTR CCalenderUI::GetTimeStr(const char *format)
@@ -360,6 +361,11 @@ void CCalenderUI::SetFont(int iFont)
 }
 void CCalenderUI::SetText(LPCTSTR pstrText)
 {
+	CDuiString oldText = m_pLable->GetText();
+
+	if (oldText != pstrText) {
+		GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
+	}
 	m_pLable->SetText(pstrText);
 }
 void CCalenderUI::SetTextColor(DWORD clrColor)

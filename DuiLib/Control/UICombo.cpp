@@ -108,6 +108,7 @@ void   CComboWnd::ReSize(CComboUI* pOwner)
 		cyFixed += sz.cy;
 	}
 
+    cyFixed += 5;
 	rc.bottom = rc.top + MIN(cyFixed, szDrop.cy);
 	if (cyFixed<24)
 	{

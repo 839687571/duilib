@@ -136,6 +136,7 @@ CAutoCompleteComboUI::CAutoCompleteComboUI()
 	m_iFont   = -1;
 	OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnComboNotify);
 	OnInit += MakeDelegate(this, &CAutoCompleteComboUI::OnInitControl);
+	AddFixCountItem(5);
 }
 
 
@@ -156,12 +157,59 @@ void CAutoCompleteComboUI::AddItemToCombo(LPCTSTR pText, LPCTSTR pUserData)
 	pItem->SetUserData(pUserData);
 	Add(pItem);
 }
+void CAutoCompleteComboUI::AddFixCountItem(int count)
+{
+    for(int i =count;i>0;i--){
+    	CListLabelElementUI* pItem = new CListLabelElementUI;
+        Add(pItem);
+    }
+}
+void CAutoCompleteComboUI::SetItemData(LPCTSTR pText, LPCTSTR pUserData ,int index,bool visible)
+{
+	CListLabelElementUI* pItem = (CListLabelElementUI*)GetItemAt(index);
+	if (pItem != NULL) {
+		pItem->SetText(pText);
+		pItem->SetUserData(pUserData);
+		pItem->SetVisible(visible);
+	}else {
+    	CListLabelElementUI* pItem = new CListLabelElementUI;
+        pItem->SetText(pText);
+		pItem->SetUserData(pUserData);
+        Add(pItem);
+	}
+}
+bool CAutoCompleteComboUI::OnEiditNotifyEx(void* pMsg)
+{
+    TNotifyUI* pNotify = (TNotifyUI*)pMsg;
 
+	if (pNotify->sType == DUI_MSGTYPE_TEXTCHANGED) {
+		CDuiString textEdit = ((CEditUI*)pNotify->pSender)->GetText();
+		if (!textEdit.IsEmpty()) {
+ 			TCHAR firstWord = textEdit.GetAt(0);
+			if (firstWord<'a' || firstWord>'z') {
+				return false;
+ 			}
+		}
+
+		if (GetCount()>0){	
+			{
+				Activate(FALSE);
+			}
+		}
+		
+		GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
+	}
+
+	else if (pNotify->sType == DUI_MSGTYPE_KILLFOCUS) {
+		InActivate();
+	}
+	return true;
+    
+}
 bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 {
 	TNotifyUI* pNotify = (TNotifyUI*)pMsg;
 
-	int iSel = GetCurSel();/* 下拉框选中也会产生EditChange消息,此时不响应*/
 
 	if (pNotify->sType == DUI_MSGTYPE_TEXTCHANGED) {
 		CDuiString textEdit = ((CEditUI*)pNotify->pSender)->GetText();
@@ -201,14 +249,7 @@ bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 		
 		GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
 	}
-	
-// 		int isel = m_pCombo->GetCurSel();
-// 		CListLabelElementUI* pItem = (CListLabelElementUI*)m_pCombo->GetItemAt(isel);// CListLabelElementUI;
-// 		CDuiString text = pItem->GetText();
-// 		m_pEdit->SetText(text);
-// 		m_pCombo->SelectItem(isel);
-// 		m_pCombo->InActivate();
-// 		::SetFocus(m_pm->GetPaintWindow());
+
 	else if (pNotify->sType == DUI_MSGTYPE_KILLFOCUS) {
 		InActivate();
 	}
@@ -227,7 +268,8 @@ bool CAutoCompleteComboUI::OnInitControl(void* pMsg)
 		cont->Add(m_pEdit);
 	}
 
-	m_pEdit->OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnEiditNotify);
+	//m_pEdit->OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnEiditNotify);
+	m_pEdit->OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnEiditNotifyEx);
 	if (!m_strBkcolorValue.IsEmpty()) {
 		m_pEdit->SetAttribute("bkcolor", m_strBkcolorValue);
 	}

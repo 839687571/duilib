@@ -20,7 +20,13 @@ public:
 	void SetLeftWidth(unsigned int iWidth){ m_iLeftWidth = iWidth; }
 	void AddItemToCombo(LPCTSTR pText, LPCTSTR pUserData);
 
+	void AddFixCountItem(int count);
+	void SetItemData(LPCTSTR pText, LPCTSTR pUserData, int index, bool visible = true);
+
 	bool OnEiditNotify(void* pMsg);
+
+	bool OnEiditNotifyEx(void* pMsg);
+	
 	bool OnComboNotify(void* pMsg);
 	bool OnInitControl(void* pMsg);
 
