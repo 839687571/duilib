@@ -61,6 +61,7 @@ public:
     virtual void SetDelayedDestroy(bool bDelayed);
     virtual bool IsMouseChildEnabled() const;
     virtual void SetMouseChildEnabled(bool bEnable = true);
+	void SetMouseNotify(bool bNotify = true);
 
     virtual int FindSelectable(int iIndex, bool bForward = true) const;
 
@@ -110,11 +111,12 @@ protected:
 protected:
     CStdPtrArray m_items;
     RECT m_rcInset;
-    int m_iChildPadding;
+    int  m_iChildPadding;
     bool m_bAutoDestroy;
     bool m_bDelayedDestroy;
     bool m_bMouseChildEnabled;
     bool m_bScrollProcess; // ∑¿÷πSetPos—≠ª∑µ˜”√
+    bool m_MouseNotify;
 
     CScrollBarUI* m_pVerticalScrollBar;
     CScrollBarUI* m_pHorizontalScrollBar;

@@ -14,7 +14,8 @@ namespace DuiLib
 		m_bMouseChildEnabled(true),
 		m_pVerticalScrollBar(NULL),
 		m_pHorizontalScrollBar(NULL),
-		m_bScrollProcess(false)
+		m_bScrollProcess(false),
+		m_MouseNotify(false)
 	{
 		::ZeroMemory(&m_rcInset, sizeof(m_rcInset));
 	}
@@ -182,7 +183,10 @@ namespace DuiLib
 	{
 		m_bMouseChildEnabled = bEnable;
 	}
-
+	void CContainerUI::SetMouseNotify(bool bNotify)
+	{
+        m_MouseNotify = bNotify;
+	}
 	void CContainerUI::SetVisible(bool bVisible)
 	{
 		if( m_bVisible == bVisible ) return;
@@ -224,12 +228,18 @@ namespace DuiLib
 		{
 			m_bFocused = true;
 			return;
-		}
-		if( event.Type == UIEVENT_KILLFOCUS ) 
+		}else if( event.Type == UIEVENT_KILLFOCUS ) 
 		{
 			m_bFocused = false;
 			return;
+		}else if( event.Type == UIEVENT_MOUSEENTER )
+		{
+			if (m_pManager!=NULL && m_MouseNotify) m_pManager->SendNotify(this, DUI_MSGTYPE_MOUSEENTER, event.wParam, event.lParam);
+		}else if(event.Type == UIEVENT_MOUSELEAVE)
+		{
+			if (m_pManager != NULL && m_MouseNotify)  m_pManager->SendNotify(this, DUI_MSGTYPE_MOUSELEAVE, event.wParam, event.lParam);
 		}
+		
 		if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() && m_pVerticalScrollBar->IsEnabled() )
 		{
 			if( event.Type == UIEVENT_KEYDOWN ) 
@@ -610,6 +620,9 @@ namespace DuiLib
 			if( GetHorizontalScrollBar() ) GetHorizontalScrollBar()->ApplyAttributeList(pstrValue);
 		}
 		else if( _tcscmp(pstrName, _T("childpadding")) == 0 ) SetChildPadding(_ttoi(pstrValue));
+		else if( _tcscmp(pstrName, _T("mousenotify")) == 0) {
+                SetMouseNotify(_tcscmp(pstrValue, _T("true")) == 0);
+		}
 		else CControlUI::SetAttribute(pstrName, pstrValue);
 	}
 
