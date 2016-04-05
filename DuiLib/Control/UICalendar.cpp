@@ -282,7 +282,8 @@ void CCalenderUI::DoInit()
 {
 	__super::DoInit();
 
-	GetManager()->AddNotifier(this);
+	GetManager()->AddNotifier(this);/* need fix */
+	
 	m_pButton->SetFixedHeight(m_iButtonHeight);
 	m_pButton->SetFixedWidth(m_iButtonWith);
 	m_pButton->SetPadding(m_ButtonPadding);
@@ -320,16 +321,12 @@ void CCalenderUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 } 
 void CCalenderUI::Notify(TNotifyUI& msg)
 {
-	if (msg.sType == DUI_MSGTYPE_CLICK) {
-		if (m_pClalenderWnd == NULL)
-		{
+	if (m_pButton == msg.pSender && msg.sType == DUI_MSGTYPE_CLICK) {
+		if (m_pClalenderWnd == NULL) {
 			m_pClalenderWnd = new CCalendarWnd;
-			m_pClalenderWnd->Init(this); 
+			m_pClalenderWnd->Init(this);
 
 		}
-		return;
-	} else if (msg.sType == DUI_MSGTYPE_KILLFOCUS) {
-		printf("kill focus \n");
 		return;
 	}
 }
