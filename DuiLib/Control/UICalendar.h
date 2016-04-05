@@ -5,119 +5,129 @@
 //#include "systdate.h"
 
 #include <ATLComTime.h>
+namespace DuiLib {
 
-class CCalenderUI;
+	class CCalenderUI;
 
-class CCalendarWnd : public CWindowWnd, public INotifyUI {
-public:
-	CCalendarWnd();
-	~CCalendarWnd();
-
-
-	LPCTSTR GetWindowClassName() const { return _T("CalendarWnd"); };
-
-	UINT GetClassStyle() const { return CS_DBLCLKS; };
-
-	void OnFinalMessage(HWND /*hWnd*/);
-	void Init(CCalenderUI *pOwner);
-	void SetWindPos(RECT &rc);
-	void OnPrepare();
-	void Notify(TNotifyUI& msg);
-	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	void DrawCalendar(const SYSTEMTIME& time);
-	void OnEditHour(CControlUI* pCtr);
-	void OnEditMinute(CControlUI* pCtr);
-
-	int GetDayCountInMonth(int iY, int iM) const;					// 指定月份的天数
-	int GetDayCountInMonth(const SYSTEMTIME& sysTime) const {
-		return GetDayCountInMonth(sysTime.wYear, sysTime.wMonth);
-	}
-	int GetDayOfWeekForMonthBegin(const SYSTEMTIME& sysTime, bool bSunStart = 0, bool bZeroStart = 0) const {
-		SYSTEMTIME time = sysTime;
-		time.wDay = 1;
-		int dayOfWeek = COleDateTime(time).GetDayOfWeek();			// 1:sun, 2:Mon, 3:Tue
-		dayOfWeek = (dayOfWeek == 1 && !bSunStart) ? 7 : dayOfWeek - 1;
-		return dayOfWeek - bZeroStart;
-	}
-	SYSTEMTIME PrevMonth(const SYSTEMTIME& sysTime) const {
-		SYSTEMTIME time = sysTime;
-		time.wMonth = time.wMonth == 1 ? (time.wYear -= 1, 12) : time.wMonth - 1;
-		time.wDay = GetDayCountInMonth(time.wYear, time.wMonth);
-		return time;
-	}
-	SYSTEMTIME NextMonth(const SYSTEMTIME& sysTime) const {
-		SYSTEMTIME time = sysTime;
-		time.wMonth = time.wMonth == 12 ? (time.wYear += 1, 1) : time.wMonth + 1;
-		time.wDay = GetDayCountInMonth(time.wYear, time.wMonth);
-		return time;
-	}
-	SYSTEMTIME PrevHour(const SYSTEMTIME& sysTime) const {
-		SYSTEMTIME time = sysTime;
-		time.wHour = time.wHour == 0 ? 23 : time.wHour - 1;
-		return time;
-	}
-	SYSTEMTIME NextHour(const SYSTEMTIME& sysTime) const {
-		SYSTEMTIME time = sysTime;
-		time.wHour = time.wHour == 23 ? 0 : time.wHour + 1;
-		return time;
-	}
-	SYSTEMTIME PrevMinute(const SYSTEMTIME& sysTime) const {
-		SYSTEMTIME time = sysTime;
-		time.wMinute = time.wMinute == 0 ? 59 : time.wMinute - 1;
-		return time;
-	}
-	SYSTEMTIME NextMinute(const SYSTEMTIME& sysTime) const {
-		SYSTEMTIME time = sysTime;
-		time.wMinute = time.wMinute == 59 ? 0 : time.wMinute + 1;
-		return time;
-	}
-private:
-	CPaintManagerUI m_pm;
-	SYSTEMTIME m_sysTime;
-
-	CCalenderUI *m_pOwner;
-};
+	class CCalendarWnd : public CWindowWnd, public INotifyUI {
+	public:
+		CCalendarWnd();
+		~CCalendarWnd();
 
 
-class  CCalenderUI :public CHorizontalLayoutUI,  INotifyUI {
-public:
-	CCalenderUI();
-	//virtual ~CCalenderUI();
+		LPCTSTR GetWindowClassName() const { return _T("CalendarWnd"); };
 
-	friend class CCalendarWnd;
+		UINT GetClassStyle() const { return CS_DBLCLKS; };
 
-	LPCTSTR GetClass() const;
-	void DoInit();
+		void OnFinalMessage(HWND /*hWnd*/);
+		void Init(CCalenderUI *pOwner);
+		void SetWindPos(RECT &rc);
+		void OnPrepare();
+		void Notify(TNotifyUI& msg);
+		LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+		void DrawCalendar(const SYSTEMTIME& time);
+		void OnEditHour(CControlUI* pCtr);
+		void OnEditMinute(CControlUI* pCtr);
 
-	CDuiString GetText() const;
-	void SetShowH_M_S(bool,bool,bool);
+		int GetDayCountInMonth(int iY, int iM) const;					// 指定月份的天数
+		int GetDayCountInMonth(const SYSTEMTIME& sysTime) const
+		{
+			return GetDayCountInMonth(sysTime.wYear, sysTime.wMonth);
+		}
+		int GetDayOfWeekForMonthBegin(const SYSTEMTIME& sysTime, bool bSunStart = 0, bool bZeroStart = 0) const
+		{
+			SYSTEMTIME time = sysTime;
+			time.wDay = 1;
+			int dayOfWeek = COleDateTime(time).GetDayOfWeek();			// 1:sun, 2:Mon, 3:Tue
+			dayOfWeek = (dayOfWeek == 1 && !bSunStart) ? 7 : dayOfWeek - 1;
+			return dayOfWeek - bZeroStart;
+		}
+		SYSTEMTIME PrevMonth(const SYSTEMTIME& sysTime) const
+		{
+			SYSTEMTIME time = sysTime;
+			time.wMonth = time.wMonth == 1 ? (time.wYear -= 1, 12) : time.wMonth - 1;
+			time.wDay = GetDayCountInMonth(time.wYear, time.wMonth);
+			return time;
+		}
+		SYSTEMTIME NextMonth(const SYSTEMTIME& sysTime) const
+		{
+			SYSTEMTIME time = sysTime;
+			time.wMonth = time.wMonth == 12 ? (time.wYear += 1, 1) : time.wMonth + 1;
+			time.wDay = GetDayCountInMonth(time.wYear, time.wMonth);
+			return time;
+		}
+		SYSTEMTIME PrevHour(const SYSTEMTIME& sysTime) const
+		{
+			SYSTEMTIME time = sysTime;
+			time.wHour = time.wHour == 0 ? 23 : time.wHour - 1;
+			return time;
+		}
+		SYSTEMTIME NextHour(const SYSTEMTIME& sysTime) const
+		{
+			SYSTEMTIME time = sysTime;
+			time.wHour = time.wHour == 23 ? 0 : time.wHour + 1;
+			return time;
+		}
+		SYSTEMTIME PrevMinute(const SYSTEMTIME& sysTime) const
+		{
+			SYSTEMTIME time = sysTime;
+			time.wMinute = time.wMinute == 0 ? 59 : time.wMinute - 1;
+			return time;
+		}
+		SYSTEMTIME NextMinute(const SYSTEMTIME& sysTime) const
+		{
+			SYSTEMTIME time = sysTime;
+			time.wMinute = time.wMinute == 59 ? 0 : time.wMinute + 1;
+			return time;
+		}
+	private:
+		CPaintManagerUI m_pm;
+		SYSTEMTIME m_sysTime;
 
-	void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
-	void Notify(TNotifyUI& msg);
+		CCalenderUI *m_pOwner;
+	};
 
-	void SetTime(SYSTEMTIME &time);
 
-	// format like:%Y年%m月%d日   %H:%M 2."%Y-%m-%d %H-%M-%S" "%Y-%m-%d %H:%M:%S"
-	LPCTSTR GetTimeStr(const char *format = "%Y-%m_%d %H:%M:%S");
+	class  UILIB_API CCalenderUI :public CHorizontalLayoutUI, INotifyUI {
+	public:
+		CCalenderUI();
+		//virtual ~CCalenderUI();
 
-	bool StringToSYSTEMTIME(const char*lpszValue, SYSTEMTIME &time);
-	
-	void SetFont(int iFont);
-	void SetText(LPCTSTR pstrText);
-	void SetTextColor(DWORD clrColor);
-	void SetButtonNormalImage(LPCTSTR pStrImage);
-	void SetButtonHotImage(LPCTSTR pStrImage);
-	void SetButtonPushedImage(LPCTSTR pStrImage);
-private:
+		friend class CCalendarWnd;
 
-	int  m_iButtonWith;
-	int  m_iButtonHeight;
+		LPCTSTR GetClass() const;
+		void DoInit();
 
-	RECT  m_ButtonPadding;
+		CDuiString GetText() const;
+		void SetShowH_M_S(bool, bool, bool);
 
-	CLabelUI *m_pLable;
-	CButtonUI *m_pButton;
+		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+		void Notify(TNotifyUI& msg);
 
-	CCalendarWnd *m_pClalenderWnd;
-};
+		void SetTime(SYSTEMTIME &time);
 
+		// format like:%Y年%m月%d日   %H:%M 2."%Y-%m-%d %H-%M-%S" "%Y-%m-%d %H:%M:%S"
+		CDuiString GetTimeStr(const char *format = "%Y-%m-%d %H:%M:%S");
+
+		bool StringToSYSTEMTIME(const char*lpszValue, SYSTEMTIME &time);
+
+		void SetFont(int iFont);
+		void SetText(LPCTSTR pstrText);
+		void SetTextColor(DWORD clrColor);
+		void SetButtonNormalImage(LPCTSTR pStrImage);
+		void SetButtonHotImage(LPCTSTR pStrImage);
+		void SetButtonPushedImage(LPCTSTR pStrImage);
+	private:
+
+		int  m_iButtonWith;
+		int  m_iButtonHeight;
+
+		RECT  m_ButtonPadding;
+
+		CLabelUI *m_pLable;
+		CButtonUI *m_pButton;
+
+		CCalendarWnd *m_pClalenderWnd;
+	};
+
+}

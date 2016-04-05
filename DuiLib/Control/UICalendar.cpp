@@ -337,11 +337,14 @@ void CCalenderUI::SetTime(SYSTEMTIME &time)
 	SetText(COleDateTime(time).Format(_T("%YÄê%mÔÂ%dÈÕ   %H:%M")));
 }
 
-LPCTSTR CCalenderUI::GetTimeStr(const char *format)
+CDuiString CCalenderUI::GetTimeStr(const char *format)
 {
 	SYSTEMTIME tm;
 	StringToSYSTEMTIME(m_pLable->GetText().GetData(), tm);
-	return COleDateTime(tm).Format(format);
+	CString p3 = COleDateTime(tm).Format("%Y-%m-%d %H:%M:%S");
+
+	return p3.GetBuffer();
+	
 }
 bool  CCalenderUI::StringToSYSTEMTIME(const char*lpszValue, SYSTEMTIME &time)
 {
