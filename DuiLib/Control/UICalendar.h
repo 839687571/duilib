@@ -104,15 +104,17 @@ namespace DuiLib {
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		void Notify(TNotifyUI& msg);
 
-		void SetTime(SYSTEMTIME &time);
+		void SetTime(SYSTEMTIME &time,bool notify = false);
 
 		// format like:%YƒÍ%m‘¬%d»’   %H:%M 2."%Y-%m-%d %H-%M-%S" "%Y-%m-%d %H:%M:%S"
 		CDuiString GetTimeStr(const char *format = "%Y-%m-%d %H:%M:%S");
 
 		bool StringToSYSTEMTIME(const char*lpszValue, SYSTEMTIME &time);
 
+		SYSTEMTIME getYesterday();
+
 		void SetFont(int iFont);
-		void SetText(LPCTSTR pstrText);
+		void SetText(LPCTSTR pstrText,bool notify = false);
 		void SetTextColor(DWORD clrColor);
 		void SetButtonNormalImage(LPCTSTR pStrImage);
 		void SetButtonHotImage(LPCTSTR pStrImage);

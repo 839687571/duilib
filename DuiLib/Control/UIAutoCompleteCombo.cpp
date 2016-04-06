@@ -272,9 +272,10 @@ bool CAutoCompleteComboUI::OnInitControl(void* pMsg)
 	m_pEdit->OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnEiditNotifyEx);
 	if (!m_strBkcolorValue.IsEmpty()) {
 		m_pEdit->SetAttribute("bkcolor", m_strBkcolorValue);
+		m_pEdit->SetAttribute("nativebkcolor", m_strBkcolorValue);
 	}
 	if(m_iFont != -1){
-       m_pEdit->SetFont(0);
+       m_pEdit->SetFont(1);
 	}
 	if (!m_sTipValue.IsEmpty())
 	{

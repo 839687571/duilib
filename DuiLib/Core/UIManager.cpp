@@ -1596,7 +1596,11 @@ bool CPaintManagerUI::SetNextTabControl(bool bForward)
 
 bool CPaintManagerUI::AddNotifier(INotifyUI* pNotifier)
 {
-    ASSERT(m_aNotifiers.Find(pNotifier)<0);
+  //  ASSERT(m_aNotifiers.Find(pNotifier)<0);
+	if (m_aNotifiers.Find(pNotifier) >= 0)
+	{
+		return true;
+	}
     return m_aNotifiers.Add(pNotifier);
 }
 

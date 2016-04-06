@@ -62,6 +62,7 @@ namespace DuiLib {
 		}
 		CListHeaderItemUI *pHeaderItem = (CListHeaderItemUI *)pHeader->GetItemAt(nColumn);
 		//pHeaderItem->Add(pControl);
+		return FALSE;
 	}
 
 int CListUIEx::InsertItem(int nItem, int nHeight,std::string listName)

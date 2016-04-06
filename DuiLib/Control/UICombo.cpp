@@ -575,8 +575,8 @@ bool CComboUI::Activate(BOOL bTakeFocus)
     if( !CControlUI::Activate() ) return false;
 	if (m_pWindow)
 	{
-		if (!bTakeFocus)
-			m_pWindow->ReSize(this);
+		//if (!bTakeFocus)
+		//	m_pWindow->ReSize(this);
 		return true;
 	}
     m_pWindow = new CComboWnd();
