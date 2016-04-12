@@ -346,6 +346,7 @@
     <ClInclude Include="Control\UISpinButton.h" />
     <ClInclude Include="Control\UITimeSpin.h" />
     <ClInclude Include="Control\UITimeSpinMini.h" />
+    <ClInclude Include="Control\UIWnd.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UIlib.h" />
     <ClInclude Include="Utils\Algorithms.h" />

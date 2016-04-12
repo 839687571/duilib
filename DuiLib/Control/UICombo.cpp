@@ -258,11 +258,11 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     m_ListInfo.nColumns = 0;
     m_ListInfo.nFont = -1;
     m_ListInfo.uTextStyle = DT_VCENTER;
-    m_ListInfo.dwTextColor = 0xFF000000;
+    m_ListInfo.dwTextColor = 0xFFffffff;
     m_ListInfo.dwBkColor = 0;
     m_ListInfo.bAlternateBk = false;
-    m_ListInfo.dwSelectedTextColor = 0xFF000000;
-    m_ListInfo.dwSelectedBkColor = 0xFFC1E3FF;
+    m_ListInfo.dwSelectedTextColor = 0xFFffffff;
+    m_ListInfo.dwSelectedBkColor = 0xFF3C3E4A;
     m_ListInfo.dwHotTextColor = 0xFF000000;
     m_ListInfo.dwHotBkColor = 0xFFE9F5FF;
     m_ListInfo.dwDisabledTextColor = 0xFFCCCCCC;

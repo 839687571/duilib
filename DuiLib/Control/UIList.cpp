@@ -950,7 +950,20 @@ void CListUI::EndDrag(CListContainerElementUI* dstElement)
 	rt.left = rt.right = rt.top = rt.bottom = 0;
 
 	if (m_pDragingCtrl == NULL) return;
-	m_pDragingCtrl->SetPos(rt);
+	if (m_pNodeNeedMove != NULL && _tcsicmp(dstElement->GetClass(), _T("TreeNodeUI")) == 0) {
+		CTreeNodeUI *pTreeDestNode = (CTreeNodeUI*)dstElement;
+		CTreeNodeUI *pTreeSrcNode = (CTreeNodeUI*)m_pNodeNeedMove;
+		if (pTreeDestNode->GetParentNode() != pTreeSrcNode->GetParentNode())
+		{
+			m_pDragingCtrl->SetPos(rt);
+			m_pDragingCtrl->SetVisible(false);
+			m_pNodeNeedMove = NULL;
+			return;
+		}
+        
+    }
+
+
 	m_pDragingCtrl->SetVisible(false);
 	if (m_pNodeNeedMove != NULL && dstElement != NULL && m_pNodeNeedMove != dstElement) {
 		int dstElementIndex = dstElement->GetIndex();
@@ -2604,11 +2617,14 @@ CListContainerElementUI *CListContainerElementUI::GetListElementUIFromPt(POINT p
 	while (pControl) {
 		lpControl = pControl->GetInterface(DUI_CTR_LISTCONTAINERELEMENT);
 		if (lpControl != NULL) {
-			if (pControl->GetInterface(DUI_CTR_TREENODE) == NULL) {
+			//if (pControl->GetInterface(DUI_CTR_TREENODE) == NULL)
+			{
 				break;
 			}
 		}
 		pControl = pControl->GetParent();
+
+	
 	}
 	if (lpControl) {
 		return static_cast<CListContainerElementUI*>(lpControl);

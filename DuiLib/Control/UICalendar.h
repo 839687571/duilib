@@ -7,7 +7,7 @@
 #include <ATLComTime.h>
 namespace DuiLib {
 
-	class CCalenderUI;
+	class CCalendarUI;
 
 	class CCalendarWnd : public CWindowWnd, public INotifyUI {
 	public:
@@ -20,7 +20,7 @@ namespace DuiLib {
 		UINT GetClassStyle() const { return CS_DBLCLKS; };
 
 		void OnFinalMessage(HWND /*hWnd*/);
-		void Init(CCalenderUI *pOwner);
+		void Init(CCalendarUI *pOwner);
 		void SetWindPos(RECT &rc);
 		void OnPrepare();
 		void Notify(TNotifyUI& msg);
@@ -84,14 +84,14 @@ namespace DuiLib {
 		CPaintManagerUI m_pm;
 		SYSTEMTIME m_sysTime;
 
-		CCalenderUI *m_pOwner;
+		CCalendarUI *m_pOwner;
 	};
 
 
-	class  UILIB_API CCalenderUI :public CHorizontalLayoutUI, INotifyUI {
+	class  UILIB_API CCalendarUI :public CHorizontalLayoutUI, INotifyUI {
 	public:
-		CCalenderUI();
-		//virtual ~CCalenderUI();
+		CCalendarUI();
+		//virtual ~CCalendarUI();
 
 		friend class CCalendarWnd;
 

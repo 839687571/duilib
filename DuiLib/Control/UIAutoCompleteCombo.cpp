@@ -137,6 +137,8 @@ CAutoCompleteComboUI::CAutoCompleteComboUI()
 	OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnComboNotify);
 	OnInit += MakeDelegate(this, &CAutoCompleteComboUI::OnInitControl);
 	AddFixCountItem(5);
+	m_OutPy = true;
+	m_dwTextColor = -2;
 }
 
 
@@ -152,7 +154,8 @@ void CAutoCompleteComboUI::AddItemToCombo(LPCTSTR pText, LPCTSTR pUserData)
 	CListLabelElementUI* pItem = new CListLabelElementUI;
 	pItem->SetText(pText);
 	CDuiString TextPy = (m_pHzToPy->HzToPinYin(pText)).c_str();
-	//m_itemPinyin.Insert(pText, (LPVOID)TextPy.GetData());
+	//if(!m_OutPy)
+	m_itemPinyin.Insert(pText, (LPVOID)TextPy.GetData());
 	itemPyMap[pText] = TextPy.GetData();
 	pItem->SetUserData(pUserData);
 	Add(pItem);
@@ -186,7 +189,10 @@ bool CAutoCompleteComboUI::OnEiditNotifyEx(void* pMsg)
 		CDuiString textEdit = ((CEditUI*)pNotify->pSender)->GetText();
 		if (!textEdit.IsEmpty()) {
  			TCHAR firstWord = textEdit.GetAt(0);
-			if (firstWord<'a' || firstWord>'z') {
+			if ( firstWord<'a' || firstWord>'z') {
+				if (firstWord >= '0'&&firstWord <= '9')
+					;
+				else
 				return false;
  			}
 		}
@@ -216,6 +222,9 @@ bool CAutoCompleteComboUI::OnEiditNotify(void* pMsg)
 		if (!textEdit.IsEmpty()) {
  			TCHAR firstWord = textEdit.GetAt(0);
 			if (firstWord<'a' || firstWord>'z') {
+				if (firstWord >= '0'&&firstWord <= '9')
+					;
+				else
 				return false;
  			}
 		}
@@ -268,8 +277,11 @@ bool CAutoCompleteComboUI::OnInitControl(void* pMsg)
 		cont->Add(m_pEdit);
 	}
 
-	//m_pEdit->OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnEiditNotify);
+    if(!m_OutPy)
+	m_pEdit->OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnEiditNotify);
+	else
 	m_pEdit->OnNotify += MakeDelegate(this, &CAutoCompleteComboUI::OnEiditNotifyEx);
+	
 	if (!m_strBkcolorValue.IsEmpty()) {
 		m_pEdit->SetAttribute("bkcolor", m_strBkcolorValue);
 		m_pEdit->SetAttribute("nativebkcolor", m_strBkcolorValue);
@@ -284,7 +296,7 @@ bool CAutoCompleteComboUI::OnInitControl(void* pMsg)
 			m_pEdit->SetTipValueColor(m_sTipValueColor);
 		}
 	}
-	if (m_dwTextColor != -1)
+	if (m_dwTextColor != -2)
 	{
 		m_pEdit->SetTextColor(m_dwTextColor);
 	}
@@ -312,6 +324,13 @@ bool CAutoCompleteComboUI::OnComboNotify(void* pMsg)
 			CDuiString userdate = pSelItem->GetUserData().GetData();
 			m_pEdit->SetUserData(userdate);
 		}
+		for (int i = 0; i < GetCount();i++)
+		{
+			CListLabelElementUI* pSelItem = static_cast<CListLabelElementUI*>(GetItemAt(i));
+			CDuiString test = pSelItem->GetText();
+			printf("%s\n", test);
+		}
+	
 		m_pEdit->SetText(pNotify->pSender->GetText());
 	}
 	return true;
@@ -374,7 +393,44 @@ CDuiString CAutoCompleteComboUI::GetText() const
 	}
 	return "";
 }
+void CAutoCompleteComboUI::SetOutPinying(bool bOutPy)
+{
+    RemoveAll();
+    m_OutPy = bOutPy;
+}
+LPCTSTR CAutoCompleteComboUI::GetComboSelectItemData()
+{
+	if (GetCount() == 0) {
+		return NULL;
+	}
+	int curSelIdx = GetCurSel();
+	if (curSelIdx < 0) return NULL;
+	CListLabelElementUI* pSelItem = static_cast<CListLabelElementUI*>(GetItemAt(curSelIdx));
+	CDuiString userData = pSelItem->GetUserData();
+	if (userData.IsEmpty()) {
+		return NULL;
+	}
+	if (GetEditText().IsEmpty()) {
+		return NULL;
+	}
+	return pSelItem->GetUserData().GetData();
+}
 
+LPCTSTR CAutoCompleteComboUI::GetComboSelectItemText()
+{
+	if (GetCount() == 0) {
+		return NULL;
+	}
+	int curSelIdx = GetCurSel();
+	if (curSelIdx < 0) return NULL;
+	CListLabelElementUI* pSelItem = static_cast<CListLabelElementUI*>(GetItemAt(curSelIdx));
+
+	//if (GetEditText().IsEmpty()) {
+	//	return NULL;
+	//}
+	return pSelItem->GetText().GetData();
+
+}
 void CAutoCompleteComboUI::SetEnabled(bool bEnable)
 {
 	__super::SetEnabled(bEnable);
@@ -406,7 +462,15 @@ void CAutoCompleteComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		m_iFont = atoi(pstrValue);
 	} else if (_tcscmp(pstrName, _T("tipvalue")) == 0) SetTipValue(pstrValue);
 	else if (_tcscmp(pstrName, _T("tipvaluecolor")) == 0) SetTipValueColor(pstrValue);
-	else if (_tcscmp(pstrName, _T("textcolor")) == 0) SetTipValueColor(pstrValue);
+	else if (_tcscmp(pstrName, _T("textcolor")) == 0) SetTextColor(pstrValue);
+	else if (_tcscmp(pstrName, _T("outpy")) == 0){
+    	if (_tcscmp(pstrValue, _T("false")) == 0) {
+    		    SetOutPinying(false);
+    		}else {
+                SetOutPinying(true);
+    		}
+	}
+
 
 	CComboUI::SetAttribute(pstrName, pstrValue);
 }

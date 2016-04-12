@@ -366,6 +366,8 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 #endif
             SIZE_T cchLen = _tcslen(pstrClass);
             switch( cchLen ) {
+            case 3:
+                  if( _tcsicmp(pstrClass, DUI_CTR_WND) == 0 )                   pControl = new CWndUI;
             case 4:
                 if( _tcsicmp(pstrClass, DUI_CTR_EDIT) == 0 )                   pControl = new CEditUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_LIST) == 0 )              pControl = new CListUI;
@@ -392,7 +394,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 				else if( _tcsicmp(pstrClass, DUI_CTR_DATETIME) == 0 )		  pControl = new CDateTimeUI;
 				else if( _tcsicmp(pstrClass, DUI_CTR_TREEVIEW) == 0 )		  pControl = new CTreeViewUI;
                 else if( _tcscmp(pstrClass, DUI_CTR_TIMESPIN) == 0)          pControl = new CTimeSpinUI;
-                else if( _tcscmp(pstrClass, DUI_CTR_CALENDER) == 0)          pControl = new CCalenderUI;
+                else if( _tcscmp(pstrClass, DUI_CTR_CALENDER) == 0)          pControl = new CCalendarUI;
                 break;
             case 9:
                 if( _tcsicmp(pstrClass, DUI_CTR_CONTAINER) == 0 )              pControl = new CContainerUI;

@@ -80,7 +80,6 @@ namespace DuiLib {
 				m_sysTime = NextMinute(m_sysTime);
 				DrawCalendar(m_sysTime);
 			} else if (msg.pSender->GetName() == _T("btnConfirm") || msg.pSender->GetName() == _T("btnDateTimePicker")) {
-				CControlUI* pCtrl = 0;
 				m_pOwner->SetTime(m_sysTime,true);
 				PostMessage(WM_CLOSE);
 
@@ -94,7 +93,7 @@ namespace DuiLib {
 	rc.top = rc.bottom;
 	Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_CHILD, WS_EX_TOOLWINDOW, rc);
 	*/
-	void CCalendarWnd::Init(CCalenderUI *pOwner)
+	void CCalendarWnd::Init(CCalendarUI *pOwner)
 	{
 		m_pOwner = pOwner;
 		CDuiString timeStr = m_pOwner->GetText();
@@ -158,6 +157,7 @@ namespace DuiLib {
 			CControlUI* pControl = m_pm.FindControl(pt);
 			if (pControl == NULL) {
 				PostMessage(WM_CLOSE);
+				return 0;
 			}
 		} else if (uMsg == WM_LBUTTONUP) {
 			printf("btn up \n");
@@ -246,7 +246,7 @@ namespace DuiLib {
 
 
 
-	CCalenderUI::CCalenderUI()
+	CCalendarUI::CCalendarUI()
 	{
 		m_pLable = new CLabelUI;
 		m_pButton = new CButtonUI;
@@ -262,14 +262,14 @@ namespace DuiLib {
 		Add(m_pButton);
 	}
 
-	// CCalenderUI::~CCalenderUI()
+	// CCalendarUI::~CCalendarUI()
 	// {
 	// }
-	LPCTSTR CCalenderUI::GetClass() const
+	LPCTSTR CCalendarUI::GetClass() const
 	{
 		return _T("CalenderUI");
 	}
-	void CCalenderUI::DoInit()
+	void CCalendarUI::DoInit()
 	{
 		__super::DoInit();
 
@@ -284,15 +284,15 @@ namespace DuiLib {
 		SetTime(tm);
 	}
 
-	CDuiString CCalenderUI::GetText() const
+	CDuiString CCalendarUI::GetText() const
 	{
 		return m_pLable->GetText();
 	}
-	void CCalenderUI::SetShowH_M_S(bool, bool, bool)
+	void CCalendarUI::SetShowH_M_S(bool, bool, bool)
 	{
 
 	}
-	void CCalenderUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
+	void CCalendarUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
 		if (_tcscmp(pstrName, _T("font")) == 0) SetFont(_ttoi(pstrValue));
 		else if (_tcscmp(pstrName, _T("text")) == 0) SetText(pstrValue);
@@ -310,7 +310,7 @@ namespace DuiLib {
 		} else CHorizontalLayoutUI::SetAttribute(pstrName, pstrValue);
 
 	}
-	void CCalenderUI::Notify(TNotifyUI& msg)
+	void CCalendarUI::Notify(TNotifyUI& msg)
 	{
 		if (m_pButton == msg.pSender && msg.sType == DUI_MSGTYPE_CLICK) {
 			if (m_pClalenderWnd == NULL) {
@@ -322,12 +322,12 @@ namespace DuiLib {
 		}
 	}
 
-	void CCalenderUI::SetTime(SYSTEMTIME &time,bool notify)
+	void CCalendarUI::SetTime(SYSTEMTIME &time,bool notify)
 	{
 		SetText(COleDateTime(time).Format(_T("%YÄê%mÔÂ%dÈÕ   %H:%M")),notify);
 	}
 
-	CDuiString CCalenderUI::GetTimeStr(const char *format)
+	CDuiString CCalendarUI::GetTimeStr(const char *format)
 	{
 		SYSTEMTIME tm;
 		StringToSYSTEMTIME(m_pLable->GetText().GetData(), tm);
@@ -336,7 +336,7 @@ namespace DuiLib {
 		return p3.GetBuffer();
 
 	}
-	bool  CCalenderUI::StringToSYSTEMTIME(const char*lpszValue, SYSTEMTIME &time)
+	bool  CCalendarUI::StringToSYSTEMTIME(const char*lpszValue, SYSTEMTIME &time)
 	{
 		if (!lpszValue) {
 			return FALSE;
@@ -349,7 +349,7 @@ namespace DuiLib {
 		return TRUE;
 	}
 
-	SYSTEMTIME CCalenderUI::getYesterday()
+	SYSTEMTIME CCalendarUI::getYesterday()
 	{
 		SYSTEMTIME st;
 		time_t   yest;
@@ -364,32 +364,31 @@ namespace DuiLib {
 		st.wSecond = tm1->tm_sec;
 		return st;
 	}
-	void CCalenderUI::SetFont(int iFont)
+	void CCalendarUI::SetFont(int iFont)
 	{
 		m_pLable->SetFont(iFont);
 	}
-	void CCalenderUI::SetText(LPCTSTR pstrText,bool notify)
+	void CCalendarUI::SetText(LPCTSTR pstrText,bool notify)
 	{
 		CDuiString oldText = m_pLable->GetText();
-
+		m_pLable->SetText(pstrText);
 		if (notify && oldText != pstrText) {
 			GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
 		}
-		m_pLable->SetText(pstrText);
 	}
-	void CCalenderUI::SetTextColor(DWORD clrColor)
+	void CCalendarUI::SetTextColor(DWORD clrColor)
 	{
 		m_pLable->SetTextColor(clrColor);
 	}
-	void CCalenderUI::SetButtonNormalImage(LPCTSTR pStrImage)
+	void CCalendarUI::SetButtonNormalImage(LPCTSTR pStrImage)
 	{
 		m_pButton->SetNormalImage(pStrImage);
 	}
-	void CCalenderUI::SetButtonHotImage(LPCTSTR pStrImage)
+	void CCalendarUI::SetButtonHotImage(LPCTSTR pStrImage)
 	{
 		m_pButton->SetHotImage(pStrImage);
 	}
-	void CCalenderUI::SetButtonPushedImage(LPCTSTR pStrImage)
+	void CCalendarUI::SetButtonPushedImage(LPCTSTR pStrImage)
 	{
 		m_pButton->SetPushedImage(pStrImage);
 	}

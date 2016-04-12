@@ -116,4 +116,5 @@
 
 #include "Control/UIAutoCompleteCombo.h"
 #include "Control/UICalendar.h"
+#include "Control/UIWnd.h"
 

@@ -37,7 +37,11 @@ public:
 	CDuiString GetEditText();
 	void SetEditText(LPCTSTR pstrValue);
 
+	void SetOutPinying(bool bOutPy);
 
+
+	LPCTSTR GetComboSelectItemData();
+		LPCTSTR GetComboSelectItemText();
 
 	/* 重新的combui 方法*/
 	/*********************************************************/
@@ -70,9 +74,10 @@ private:
 	/*
 	搜索的条件
 	*/
-	//CStdStringPtrMap  m_itemPinyin;/*pinyin*/
+	CStdStringPtrMap  m_itemPinyin;/*pinyin*/
 
 	std::map<std::string, std::string> itemPyMap;/*首字母*/
 	CHzToPyIner              *m_pHzToPy;
 	bool					m_bInited;
+	bool                    m_OutPy; /*外部输入拼音*/
 };
