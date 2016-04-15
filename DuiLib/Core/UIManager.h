@@ -128,10 +128,16 @@ typedef struct UILIB_API tagTDrawInfo
 
 typedef struct UILIB_API tagTPercentInfo
 {
+	bool   bRelative;
 	double left;
 	double top;
 	double right;
 	double bottom;
+	tagTPercentInfo()
+	{
+		bRelative = false;
+		left = top = right = bottom = 0.0;
+	}
 } TPercentInfo;
 
 typedef struct UILIB_API tagTResInfo

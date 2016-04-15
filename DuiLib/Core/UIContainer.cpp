@@ -775,10 +775,18 @@ namespace DuiLib
 		LONG width = m_rcItem.right - m_rcItem.left;
 		LONG height = m_rcItem.bottom - m_rcItem.top;
 		RECT rcCtrl = { 0 };
-		rcCtrl.left = (LONG)(width*rcPercent.left) + szXY.cx;
-		rcCtrl.top = (LONG)(height*rcPercent.top) + szXY.cy;
-		rcCtrl.right = (LONG)(width*rcPercent.right) + szXY.cx + sz.cx;
-		rcCtrl.bottom = (LONG)(height*rcPercent.bottom) + szXY.cy + sz.cy;
+		if(rcPercent.bRelative){      // set control 控件在布局中 比例位置 大小不变.
+            rcCtrl.left = (LONG)(width*rcPercent.left)-pControl->GetFixedWidth()/2;
+            rcCtrl.top  = (LONG)(height*rcPercent.top) - pControl->GetFixedHeight()/2;
+            rcCtrl.right = rcCtrl.left + pControl->GetFixedWidth();
+            rcCtrl.bottom  = rcCtrl.top + pControl->GetFixedHeight();
+			printf("name = %s %d\n", pControl->GetName().GetData(),pControl->GetWidth());
+		}else {
+            rcCtrl.left = (LONG)(width*rcPercent.left) + szXY.cx;
+            rcCtrl.top = (LONG)(height*rcPercent.top) + szXY.cy;
+            rcCtrl.right = (LONG)(width*rcPercent.right) + szXY.cx + sz.cx;
+            rcCtrl.bottom = (LONG)(height*rcPercent.bottom) + szXY.cy + sz.cy;
+		}
 		pControl->SetPos(rcCtrl, false);
 	}
 

@@ -284,6 +284,7 @@ void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
 			LONG height = rcParentPos.bottom - rcParentPos.top;
 			RECT rcPercent = {(LONG)(width*m_piFloatPercent.left), (LONG)(height*m_piFloatPercent.top),
 				(LONG)(width*m_piFloatPercent.right), (LONG)(height*m_piFloatPercent.bottom)};
+			rcPercent = { 0, 0, 0, 0 };
 			m_cXY.cx = rc.left - rcPercent.left;
 			m_cXY.cy = rc.top - rcPercent.top;
 			m_cxyFixed.cx = rc.right - rcPercent.right - m_cXY.cx;
@@ -479,6 +480,7 @@ TPercentInfo CControlUI::GetFloatPercent() const
 void CControlUI::SetFloatPercent(TPercentInfo piFloatPercent)
 {
 	m_piFloatPercent = piFloatPercent;
+	m_piFloatPercent.bRelative = true;
 	NeedParentUpdate();
 }
 
@@ -880,7 +882,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 			SetFloat(_tcscmp(pstrValue, _T("true")) == 0);
 		}
 		else {
-			TPercentInfo piFloatPercent = { 0 };
+			TPercentInfo piFloatPercent ;
 			LPTSTR pstr = NULL;
 			piFloatPercent.left = _tcstod(pstrValue, &pstr);  ASSERT(pstr);
 			piFloatPercent.top = _tcstod(pstr + 1, &pstr);    ASSERT(pstr);
