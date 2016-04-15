@@ -41,7 +41,9 @@ public:
 
 
 	LPCTSTR GetComboSelectItemData();
-		LPCTSTR GetComboSelectItemText();
+	LPCTSTR GetComboSelectItemText();
+
+	void SelectComboItemByUserData(LPCTSTR userData);
 
 	/* 重新的combui 方法*/
 	/*********************************************************/

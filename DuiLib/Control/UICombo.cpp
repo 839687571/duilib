@@ -151,8 +151,8 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         m_pLayout->SetInset(CDuiRect(1, 1, 1, 1));
         m_pLayout->SetBkColor(0xFF636774);
-        m_pLayout->SetBorderColor(0xFFC6C7D2);
-        m_pLayout->SetBorderSize(1);
+      //  m_pLayout->SetBorderColor(0xFFC6C7D2);
+      //  m_pLayout->SetBorderSize(1);
         m_pLayout->SetAutoDestroy(false);
         m_pLayout->EnableScrollBar();
         m_pLayout->ApplyAttributeList(m_pOwner->GetDropBoxAttributeList());

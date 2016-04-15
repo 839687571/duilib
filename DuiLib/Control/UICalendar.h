@@ -111,7 +111,9 @@ namespace DuiLib {
 
 		bool StringToSYSTEMTIME(const char*lpszValue, SYSTEMTIME &time);
 
-		SYSTEMTIME getYesterday();
+		SYSTEMTIME getYesterday(int dateType = 0/*0: 复用当前时分秒,1: 最早时间 2: 最晚时间*/);
+		SYSTEMTIME getToday();
+		
 
 		void SetFont(int iFont);
 		void SetText(LPCTSTR pstrText,bool notify = false);

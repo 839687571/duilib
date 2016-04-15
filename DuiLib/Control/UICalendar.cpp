@@ -349,7 +349,7 @@ namespace DuiLib {
 		return TRUE;
 	}
 
-	SYSTEMTIME CCalendarUI::getYesterday()
+	SYSTEMTIME CCalendarUI::getYesterday(int dateType)
 	{
 		SYSTEMTIME st;
 		time_t   yest;
@@ -359,11 +359,52 @@ namespace DuiLib {
 		st.wYear = tm1->tm_year + 1900;
 		st.wMonth = tm1->tm_mon + 1;
 		st.wDay = tm1->tm_mday;
-		st.wHour = tm1->tm_hour + 8;
-		st.wMinute = tm1->tm_min;
-		st.wSecond = tm1->tm_sec;
+		switch (dateType) {
+		case 0:
+		{
+				  st.wHour = tm1->tm_hour + 8;
+				  st.wMinute = tm1->tm_min;
+				  st.wSecond = tm1->tm_sec;
+				  break;
+		}
+		case 1:
+		{
+				  st.wHour = 0+8;
+				  st.wMinute = 0;
+				  st.wSecond = 0;
+				  break;
+		}
+
+		case 2:
+		{
+				  st.wHour = 23+8;
+				  st.wMinute = 59;
+				  st.wSecond = 59;
+				  break;
+		}
+			
+		default:
+		break;
+		}
+
 		return st;
 	}
+
+	SYSTEMTIME CCalendarUI::getToday()
+    {
+    	SYSTEMTIME st;
+    	time_t   today;
+    	tm *tm1;
+    	today = time(NULL) ;
+    	tm1 = gmtime(&today);
+    	st.wYear = tm1->tm_year + 1900;
+    	st.wMonth = tm1->tm_mon + 1;
+    	st.wDay = tm1->tm_mday;
+    	st.wHour = tm1->tm_hour;
+    	st.wMinute = tm1->tm_min;
+    	st.wSecond = tm1->tm_sec;
+    	return st;
+    }
 	void CCalendarUI::SetFont(int iFont)
 	{
 		m_pLable->SetFont(iFont);

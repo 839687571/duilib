@@ -184,18 +184,19 @@ void CAutoCompleteComboUI::SetItemData(LPCTSTR pText, LPCTSTR pUserData ,int ind
 bool CAutoCompleteComboUI::OnEiditNotifyEx(void* pMsg)
 {
     TNotifyUI* pNotify = (TNotifyUI*)pMsg;
-
+	CDuiString textEdit = ((CEditUI*)pNotify->pSender)->GetText();
+	printf("text changge %s\n", textEdit.GetData());
 	if (pNotify->sType == DUI_MSGTYPE_TEXTCHANGED) {
-		CDuiString textEdit = ((CEditUI*)pNotify->pSender)->GetText();
-		if (!textEdit.IsEmpty()) {
- 			TCHAR firstWord = textEdit.GetAt(0);
-			if ( firstWord<'a' || firstWord>'z') {
-				if (firstWord >= '0'&&firstWord <= '9')
-					;
-				else
-				return false;
- 			}
-		}
+		///
+		//if (!textEdit.IsEmpty()) {
+ 			//TCHAR firstWord = textEdit.GetAt(0);
+			//if ( firstWord<'a' || firstWord>'z') {
+			//	if (firstWord >= '0'&&firstWord <= '9')
+			//		;
+			//	else
+			//	return false;
+ 			//}
+		//}
 
 		if (GetCount()>0){	
 			{
@@ -330,8 +331,10 @@ bool CAutoCompleteComboUI::OnComboNotify(void* pMsg)
 			CDuiString test = pSelItem->GetText();
 			printf("%s\n", test);
 		}
-	
+
+		m_pEdit->SetEnableTextChangeEvent(false);
 		m_pEdit->SetText(pNotify->pSender->GetText());
+		m_pEdit->SetEnableTextChangeEvent(true);
 	}
 	return true;
 }
@@ -413,6 +416,9 @@ LPCTSTR CAutoCompleteComboUI::GetComboSelectItemData()
 	if (GetEditText().IsEmpty()) {
 		return NULL;
 	}
+// 	if ()
+// 	{
+// 	}
 	return pSelItem->GetUserData().GetData();
 }
 
@@ -430,6 +436,23 @@ LPCTSTR CAutoCompleteComboUI::GetComboSelectItemText()
 	//}
 	return pSelItem->GetText().GetData();
 
+}
+
+void SelectComboItemByUserData(LPCTSTR userData)
+{
+//    if(data.empty()){
+//        pCombo->SelectItem(0); 
+//    }
+//	int itemSum = pCombo->GetCount();
+//	for (int i = 0; i < itemSum;i++) {
+//		CListLabelElementUI* pSelItem = static_cast<CListLabelElementUI*>(pCombo->GetItemAt(i));
+//		CDuiString userData = pSelItem->GetUserData();
+//		if (userData == data.c_str()){
+//			pCombo->SelectItem(i);
+//			return;
+//		}
+//	}
+//	pCombo->SelectItem(0);
 }
 void CAutoCompleteComboUI::SetEnabled(bool bEnable)
 {
