@@ -363,13 +363,15 @@ namespace DuiLib {
 		case 0:
 		{
 				  st.wHour = tm1->tm_hour + 8;
+				  if (st.wHour >= 24)
+					  st.wHour = 23;
 				  st.wMinute = tm1->tm_min;
 				  st.wSecond = tm1->tm_sec;
 				  break;
 		}
 		case 1:
 		{
-				  st.wHour = 0+8;
+				  st.wHour = 0;
 				  st.wMinute = 0;
 				  st.wSecond = 0;
 				  break;
@@ -377,7 +379,7 @@ namespace DuiLib {
 
 		case 2:
 		{
-				  st.wHour = 23+8;
+				  st.wHour = 23;
 				  st.wMinute = 59;
 				  st.wSecond = 59;
 				  break;
@@ -400,7 +402,7 @@ namespace DuiLib {
     	st.wYear = tm1->tm_year + 1900;
     	st.wMonth = tm1->tm_mon + 1;
     	st.wDay = tm1->tm_mday;
-    	st.wHour = tm1->tm_hour;
+    	st.wHour = tm1->tm_hour+ 8; 
     	st.wMinute = tm1->tm_min;
     	st.wSecond = tm1->tm_sec;
     	return st;

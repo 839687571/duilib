@@ -380,9 +380,7 @@ private:
 	int m_nOpacity;
     HDC m_hDcPaint;
     HDC m_hDcOffscreen;
-    HDC m_hDcBackground;
     HBITMAP m_hbmpOffscreen;
-    HBITMAP m_hbmpBackground;
     HWND m_hwndTooltip;
     TOOLINFO m_ToolTip;
     bool m_bShowUpdateRect;

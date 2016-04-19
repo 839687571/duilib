@@ -91,9 +91,7 @@ CPaintManagerUI::CPaintManagerUI() :
 m_hWndPaint(NULL),
 m_hDcPaint(NULL),
 m_hDcOffscreen(NULL),
-m_hDcBackground(NULL),
 m_hbmpOffscreen(NULL),
-m_hbmpBackground(NULL),
 m_hwndTooltip(NULL),
 m_bShowUpdateRect(false),
 m_uTimerID(0x1000),
@@ -186,9 +184,7 @@ CPaintManagerUI::~CPaintManagerUI()
     // Reset other parts...
     if( m_hwndTooltip != NULL ) ::DestroyWindow(m_hwndTooltip);
     if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
-    if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
     if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
-    if( m_hbmpBackground != NULL ) ::DeleteObject(m_hbmpBackground);
     if( m_hDcPaint != NULL ) ::ReleaseDC(m_hWndPaint, m_hDcPaint);
     m_aPreMessages.Remove(m_aPreMessages.Find(this));
 }
@@ -668,13 +664,9 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						if (!::IsIconic(m_hWndPaint))  //redrain修复bug
 							m_pRoot->SetPos(rcClient,true);
                         if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
-                        if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
                         if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
-                        if( m_hbmpBackground != NULL ) ::DeleteObject(m_hbmpBackground);
                         m_hDcOffscreen = NULL;
-                        m_hDcBackground = NULL;
                         m_hbmpOffscreen = NULL;
-                        m_hbmpBackground = NULL;
                         m_pBmpOffscreenBits = NULL;
                     }
                     else {

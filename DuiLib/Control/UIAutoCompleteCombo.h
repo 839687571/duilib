@@ -67,6 +67,9 @@ private:
 	CDuiString  m_strBkcolorValue;
 	int         m_iFont;
 
+	RECT textPaddingRc;
+	
+
 	// tip
 	CDuiString m_sTipValue;
 	CDuiString m_sSrcTipValue;

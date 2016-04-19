@@ -572,6 +572,7 @@ void  CComboUI::InActivate()
 }
 bool CComboUI::Activate(BOOL bTakeFocus)
 {
+    SelectItem(-1);
     if( !CControlUI::Activate() ) return false;
 	if (m_pWindow)
 	{

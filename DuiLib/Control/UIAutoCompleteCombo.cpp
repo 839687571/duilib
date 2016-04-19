@@ -139,6 +139,7 @@ CAutoCompleteComboUI::CAutoCompleteComboUI()
 	AddFixCountItem(5);
 	m_OutPy = true;
 	m_dwTextColor = -2;
+	textPaddingRc={0};
 }
 
 
@@ -300,6 +301,13 @@ bool CAutoCompleteComboUI::OnInitControl(void* pMsg)
 	if (m_dwTextColor != -2)
 	{
 		m_pEdit->SetTextColor(m_dwTextColor);
+	}
+	if (textPaddingRc.left != 0 ||
+		textPaddingRc.top != 0 ||
+		textPaddingRc.right != 0 ||
+		textPaddingRc.bottom != 0)  {
+		m_pEdit->SetTextPadding(textPaddingRc);
+
 	}
 
 	m_bInited = true;
@@ -492,8 +500,16 @@ void CAutoCompleteComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     		}else {
                 SetOutPinying(true);
     		}
-	}
-
+	}  else  if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
+        RECT rcTextPadding = { 0 };
+        LPTSTR pstr = NULL;
+        rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+        rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+        rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
+        rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+       // SetTextPadding(rcTextPadding);
+       textPaddingRc = rcTextPadding;
+    }
 
 	CComboUI::SetAttribute(pstrName, pstrValue);
 }

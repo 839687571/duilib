@@ -317,6 +317,7 @@ namespace DuiLib
 	void CTreeNodeUI::SetItemText( LPCTSTR pstrValue )
 	{
 		pItemButton->SetText(pstrValue);
+		pItemButton->SetFont(1);
 	}
 
 	//************************************
