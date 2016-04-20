@@ -539,6 +539,30 @@ namespace DuiLib
 		return static_cast<CTreeNodeUI*>(mTreeNodes.GetAt(_nIndex));
 	}
 
+    void  CTreeNodeUI::SetChildNodeIndex(CTreeNodeUI* _pChildNode,int _nIndex)
+    {
+//        int iOrginIndex = GetItemIndex(_pChildNode);
+//        if( iOrginIndex == -1 ) return false;
+//        if( iOrginIndex == _nIndex ) return true;
+
+//        IListItemUI* pSelectedListItem = NULL;
+//    //    if( m_iCurSel >= 0 ) pSelectedListItem = 
+//     //       static_cast<IListItemUI*>(GetItemAt(m_iCurSel)->GetInterface(_T("ListItem")));
+//     //   if( !CContainerUI::SetItemIndex(pControl, iIndex) ) return false;
+//     
+//        int iMinIndex = min(iOrginIndex, _nIndex);
+//        int iMaxIndex = max(iOrginIndex, _nIndex);
+//        
+//        for(int i = iMinIndex; i < iMaxIndex + 1; ++i) {
+//            CControlUI* p = GetItemAt(i);
+//            IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
+//            if( pListItem != NULL ) {
+//                pListItem->SetIndex(i);
+//            }
+//        }
+//        if( m_iCurSel >= 0 && pSelectedListItem != NULL ) m_iCurSel = pSelectedListItem->GetIndex();
+        //return true;
+    }
 	//************************************
 	// 函数名称: SetVisibleFolderBtn
 	// 返回类型: void

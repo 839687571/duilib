@@ -46,6 +46,8 @@ namespace DuiLib
 		void	SetTreeView(CTreeViewUI* _CTreeViewUI);
 		CTreeViewUI* GetTreeView();
 		CTreeNodeUI* GetChildNode(int _nIndex);
+		void  SetChildNodeIndex(CTreeNodeUI* _pChildNode,int _nIndex);
+		
 		void	SetVisibleFolderBtn(bool _IsVisibled);
 		bool	GetVisibleFolderBtn();
 		void	SetVisibleCheckBtn(bool _IsVisibled);

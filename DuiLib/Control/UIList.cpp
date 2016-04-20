@@ -2631,7 +2631,32 @@ CListContainerElementUI *CListContainerElementUI::GetListElementUIFromPt(POINT p
 	} else
 		return NULL;
 }
+void CListContainerElementUI::SetPos(RECT rc, bool bNeedInvalidate)
+{
+	CContainerUI::SetPos(rc);
+	if( m_pOwner == NULL ) return;		
+	
+	if (m_pHeader == NULL)
+	{
+		return;
+	}
+	TListInfoUI* pInfo = m_pOwner->GetListInfo();
+	int nCount = m_items.GetSize();
+	for (int i = 0; i < nCount; i++)
+	{
+		CListHeaderItemUI *pHeaderItem = static_cast<CListHeaderItemUI*>(m_pHeader->GetItemAt(i));
+		CControlUI *pHorizontalLayout = static_cast<CControlUI*>(m_items[i]);
 
+		if (pHorizontalLayout != NULL && pHeaderItem != NULL)
+		{
+			RECT rtHeader = pHeaderItem->GetPos();
+			RECT rt = pHorizontalLayout->GetPos();
+			rt.left = rtHeader.left;
+			rt.right = rtHeader.right;
+			pHorizontalLayout->SetPos(rt);
+		}
+	}
+}
 void CListContainerElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
     if( _tcscmp(pstrName, _T("selected")) == 0 ) Select();
@@ -2649,7 +2674,40 @@ void CListContainerElementUI::DoPaint(HDC hDC, const RECT& rcPaint)
 
 void CListContainerElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
 {
-    return;
+    // 这个时候 有多个控件上文字, //项目需要的 是显示第一个名称为list_container_lbl_Text控件的文字.
+
+	CControlUI *pFirstCtrl = FindSubControl("list_container_lbl_Text");
+	if (!pFirstCtrl) return;
+
+	printf("cur ctr name= %s,text= %s\n", pFirstCtrl->GetName().GetData(), pFirstCtrl->GetText().GetData());
+	CDuiString strText = pFirstCtrl->GetText();
+	if (strText.IsEmpty()) return; 
+
+    if( m_pOwner == NULL ) return;
+    TListInfoUI* pInfo = m_pOwner->GetListInfo();
+    DWORD iTextColor = pInfo->dwTextColor;
+    if( (m_uButtonState & UISTATE_HOT) != 0 ) {
+        iTextColor = pInfo->dwHotTextColor;
+    }
+    if( IsSelected() ) {
+        iTextColor = pInfo->dwSelectedTextColor;
+    }
+    if( !IsEnabled() ) {
+        iTextColor = pInfo->dwDisabledTextColor;
+    }
+    int nLinks = 0;
+    RECT rcText = rcItem;
+    rcText.left += pInfo->rcTextPadding.left;
+    rcText.right -= pInfo->rcTextPadding.right;
+    rcText.top += pInfo->rcTextPadding.top;
+    rcText.bottom -= pInfo->rcTextPadding.bottom;
+
+    if( pInfo->bShowHtml )
+		CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, strText, iTextColor, \
+        NULL, NULL, nLinks, DT_SINGLELINE | pInfo->uTextStyle);
+    else
+		CRenderEngine::DrawText(hDC, m_pManager, rcText, strText, iTextColor, \
+        pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
 }
 
 void CListContainerElementUI::DrawItemBk(HDC hDC, const RECT& rcItem)

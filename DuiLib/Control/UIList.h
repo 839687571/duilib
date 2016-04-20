@@ -470,32 +470,8 @@ public:
 	CListContainerElementUI *GetListElementUIFromPt(POINT pt);
 	//add by whmiao 
 	// 每个列表项和表头对齐.
- 	void SetPos(RECT rc, bool bNeedInvalidate=true)
-	{
-		CContainerUI::SetPos(rc);
-		if( m_pOwner == NULL ) return;		
-		
-		if (m_pHeader == NULL)
-		{
-			return;
-		}
-		TListInfoUI* pInfo = m_pOwner->GetListInfo();
-		int nCount = m_items.GetSize();
-		for (int i = 0; i < nCount; i++)
-		{
-			CListHeaderItemUI *pHeaderItem = static_cast<CListHeaderItemUI*>(m_pHeader->GetItemAt(i));
-			CControlUI *pHorizontalLayout = static_cast<CControlUI*>(m_items[i]);
+ 	void SetPos(RECT rc, bool bNeedInvalidate=true);
 
-			if (pHorizontalLayout != NULL && pHeaderItem != NULL)
-			{
-				RECT rtHeader = pHeaderItem->GetPos();
-				RECT rt = pHorizontalLayout->GetPos();
-				rt.left = rtHeader.left;
-				rt.right = rtHeader.right;
-				pHorizontalLayout->SetPos(rt);
-			}
-		}
- 	}
 	CListHeaderUI *m_pHeader;
 protected:
     int m_iIndex;
