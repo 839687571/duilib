@@ -12,8 +12,11 @@ namespace DuiLib {
 	class CCalendarWnd : public CWindowWnd, public INotifyUI {
 	public:
 		CCalendarWnd();
+
+	private:
 		~CCalendarWnd();
 
+	public:
 
 		LPCTSTR GetWindowClassName() const { return _T("CalendarWnd"); };
 
@@ -85,6 +88,8 @@ namespace DuiLib {
 		SYSTEMTIME m_sysTime;
 
 		CCalendarUI *m_pOwner;
+		
+		bool          m_bClosed;
 	};
 
 

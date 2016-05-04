@@ -14,6 +14,7 @@
 namespace DuiLib {
 
 	CCalendarWnd::CCalendarWnd() :m_pOwner(NULL)
+		, m_bClosed(false)
 	{
 	}
 
@@ -80,11 +81,17 @@ namespace DuiLib {
 				m_sysTime = NextMinute(m_sysTime);
 				DrawCalendar(m_sysTime);
 			} else if (msg.pSender->GetName() == _T("btnConfirm") || msg.pSender->GetName() == _T("btnDateTimePicker")) {
-				m_pOwner->SetTime(m_sysTime,true);
-				PostMessage(WM_CLOSE);
-
+                m_pOwner->SetTime(m_sysTime,true);
+				
+				if (!m_bClosed) {
+					PostMessage(WM_CLOSE);
+					m_bClosed = true;
+				}
 			}
 		}
+// 		if (!m_bClosed) {
+// 			__super::Notify(msg);
+// 		}
 	}
 
 	/*
@@ -139,32 +146,36 @@ namespace DuiLib {
 			CControlUI* pRoot = builder.Create(_T("Calendar.xml"), (UINT)0, NULL, &m_pm);
 			ASSERT(pRoot && "Failed to parse XML");
 			m_pm.AttachDialog(pRoot);
-			//m_pm.AddPreMessageFilter(this);
 			m_pm.AddNotifier(this);
 			return 0;
 		}
 
-		else if (uMsg == WM_DESTROY) {
-			//::PostQuitMessage(0L);
-		} else if (uMsg == WM_ERASEBKGND) {
+	     else if (uMsg == WM_ERASEBKGND) {
 			//return 1;
 		} else if (uMsg == WM_CLOSE) {
 			printf("close \n");
 		} else if (uMsg == WM_KILLFOCUS) {
-			POINT pt = { 0 };
-			::GetCursorPos(&pt);
-			::ScreenToClient(m_pm.GetPaintWindow(), &pt);
-			CControlUI* pControl = m_pm.FindControl(pt);
-			if (pControl == NULL) {
-				PostMessage(WM_CLOSE);
-				return 0;
+
+			if (!m_bClosed) {
+				POINT pt = { 0 };
+				::GetCursorPos(&pt);
+				::ScreenToClient(m_pm.GetPaintWindow(), &pt);
+				CControlUI* pControl = m_pm.FindControl(pt);
+				if (pControl == NULL) {
+					printf("-----------------------post close \n");
+					PostMessage(WM_CLOSE);
+					return 0;
+				}
+				m_bClosed = true;
 			}
+
 		} else if (uMsg == WM_LBUTTONUP) {
 			printf("btn up \n");
 		}
 		LRESULT lRes = 0;
 		if (m_pm.MessageHandler(uMsg, wParam, lParam, lRes)) return lRes;
-		return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
+		//return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
+		return __super::HandleMessage(uMsg, wParam, lParam);
 	}
 	void CCalendarWnd::OnFinalMessage(HWND /*hWnd*/)
 	{
@@ -363,8 +374,11 @@ namespace DuiLib {
 		case 0:
 		{
 				  st.wHour = tm1->tm_hour + 8;
-				  if (st.wHour >= 24)
-					  st.wHour = 23;
+				  if (st.wHour >= 24){
+			       // st.wDay = tm1->tm_mday+1;
+                	st.wHour = st.wHour-23;
+				  }
+
 				  st.wMinute = tm1->tm_min;
 				  st.wSecond = tm1->tm_sec;
 				  break;
