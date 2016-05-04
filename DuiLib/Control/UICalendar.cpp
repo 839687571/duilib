@@ -84,7 +84,7 @@ namespace DuiLib {
                 m_pOwner->SetTime(m_sysTime,true);
 				
 				if (!m_bClosed) {
-					PostMessage(WM_CLOSE);
+					PostMessage(WM_KILLFOCUS);
 					m_bClosed = true;
 				}
 			}
