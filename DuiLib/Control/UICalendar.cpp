@@ -82,11 +82,10 @@ namespace DuiLib {
 				DrawCalendar(m_sysTime);
 			} else if (msg.pSender->GetName() == _T("btnConfirm") || msg.pSender->GetName() == _T("btnDateTimePicker")) {
                 m_pOwner->SetTime(m_sysTime,true);
-				
-				if (!m_bClosed) {
+				//if (!m_bClosed) {
 					PostMessage(WM_KILLFOCUS);
-					m_bClosed = true;
-				}
+				//	m_bClosed = true;
+				//}
 			}
 		}
 // 		if (!m_bClosed) {
