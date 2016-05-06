@@ -96,7 +96,7 @@ namespace DuiLib {
 	class  UILIB_API CCalendarUI :public CHorizontalLayoutUI, INotifyUI {
 	public:
 		CCalendarUI();
-		//virtual ~CCalendarUI();
+		virtual ~CCalendarUI();
 
 		friend class CCalendarWnd;
 

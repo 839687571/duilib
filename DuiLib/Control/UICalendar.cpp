@@ -272,9 +272,10 @@ namespace DuiLib {
 		Add(m_pButton);
 	}
 
-	// CCalendarUI::~CCalendarUI()
-	// {
-	// }
+     CCalendarUI::~CCalendarUI()
+     {
+            GetManager()->RemoveNotifier(this);
+     }
 	LPCTSTR CCalendarUI::GetClass() const
 	{
 		return _T("CalenderUI");
