@@ -201,6 +201,7 @@ bool CAutoCompleteComboUI::OnEiditNotifyEx(void* pMsg)
 
 		if (GetCount()>0){	
 			{
+				SelectItem(-1);
 				Activate(FALSE);
 			}
 		}

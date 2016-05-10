@@ -179,6 +179,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     else if( uMsg == WM_KEYDOWN ) {
         switch( wParam ) {
         case VK_ESCAPE:
+			m_iOldSel = 0;
             m_pOwner->SelectItem(m_iOldSel, true);
             EnsureVisible(m_iOldSel);
             // FALL THROUGH...
@@ -572,7 +573,6 @@ void  CComboUI::InActivate()
 }
 bool CComboUI::Activate(BOOL bTakeFocus)
 {
-    SelectItem(-1);
     if( !CControlUI::Activate() ) return false;
 	if (m_pWindow)
 	{
