@@ -105,7 +105,8 @@ namespace DuiLib
 
 	SIZE CTextUI::EstimateSize(SIZE szAvailable)
 	{
-		RECT rcText = { 0, 0, MAX(szAvailable.cx, m_cxyFixed.cx), 9999 };
+
+		RECT rcText = { 0, 0, m_bAutoCalcWidth ? 9999 : m_cxyFixed.cx, 9999 };
 		rcText.left += m_rcTextPadding.left;
 		rcText.right -= m_rcTextPadding.right;
 		if( m_bShowHtml ) {   
@@ -117,9 +118,13 @@ namespace DuiLib
 		}
 		SIZE cXY = {rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right,
 			rcText.bottom - rcText.top + m_rcTextPadding.top + m_rcTextPadding.bottom};
+		
+		if (m_bAutoCalcWidth)
+		{
+			m_cxyFixed.cx = cXY.cx;
+		}
 
-		if( m_cxyFixed.cy != 0 ) cXY.cy = m_cxyFixed.cy;
-		return cXY;
+		return CControlUI::EstimateSize(szAvailable);
 	}
 
 	void CTextUI::PaintText(HDC hDC)
@@ -146,7 +151,7 @@ namespace DuiLib
 				m_rcLinks, m_sLinks, m_nLinks, m_uTextStyle);
 			else
 				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
-				m_iFont, m_uTextStyle);
+				m_iFont, m_uTextStyle |DT_WORDBREAK | DT_EDITCONTROL);
 		}
 		else {
 			if( m_bShowHtml )
