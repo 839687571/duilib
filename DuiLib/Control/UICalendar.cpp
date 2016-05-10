@@ -14,7 +14,6 @@
 namespace DuiLib {
 
 	CCalendarWnd::CCalendarWnd() :m_pOwner(NULL)
-		, m_bClosed(false)
 	{
 	}
 
@@ -82,15 +81,12 @@ namespace DuiLib {
 				DrawCalendar(m_sysTime);
 			} else if (msg.pSender->GetName() == _T("btnConfirm") || msg.pSender->GetName() == _T("btnDateTimePicker")) {
                 m_pOwner->SetTime(m_sysTime,true);
-				if (!m_bClosed) {
+				if (::IsWindow(m_hWnd)) {
 					PostMessage(WM_CLOSE);
-					m_bClosed = true;
 				}
 			}
 		}
-// 		if (!m_bClosed) {
-// 			__super::Notify(msg);
-// 		}
+
 	}
 
 	/*
@@ -155,17 +151,14 @@ namespace DuiLib {
 			printf("close \n");
 		} else if (uMsg == WM_KILLFOCUS) {
 
-			if (!m_bClosed) {
-				POINT pt = { 0 };
-				::GetCursorPos(&pt);
-				::ScreenToClient(m_pm.GetPaintWindow(), &pt);
-				CControlUI* pControl = m_pm.FindControl(pt);
-				if (pControl == NULL) {
-					printf("-----------------------post close \n");
-					PostMessage(WM_CLOSE);
-					return 0;
-				}
-				m_bClosed = true;
+			POINT pt = { 0 };
+			::GetCursorPos(&pt);
+			::ScreenToClient(m_pm.GetPaintWindow(), &pt);
+			CControlUI* pControl = m_pm.FindControl(pt);
+			if (pControl == NULL) {
+				printf("-----------------------post close \n");
+				PostMessage(WM_CLOSE);
+				return 0;
 			}
 
 		} else if (uMsg == WM_LBUTTONUP) {

@@ -73,10 +73,11 @@ namespace DuiLib
 		bool		GetEnabledStroke();
 		void		SetEnabledShadow(bool _EnabledShadowe);
 		bool		GetEnabledShadow();
-        void SetEnableAutoTip(bool bAutoTip);
-        bool GetEnableAutoTip() const;
-        CDuiString GetToolTip() const;
-
+        void        SetEnableAutoTip(bool bAutoTip);
+        bool        GetEnableAutoTip() const;
+        CDuiString  GetToolTip() const;
+		virtual bool GetAutoCalcWidth() const;
+		virtual void SetAutoCalcWidth(bool bAutoCalcWidth);
 		
 	protected:
 		DWORD	m_dwTextColor;
@@ -85,6 +86,7 @@ namespace DuiLib
 		UINT	m_uTextStyle;
 		RECT	m_rcTextPadding;
 		bool	m_bShowHtml;
+		bool	m_bAutoCalcWidth;
 
 		int						m_hAlign;
 		int						m_vAlign;
@@ -98,12 +100,12 @@ namespace DuiLib
 		bool					m_EnableEffect;
 		bool					m_EnabledStroke;
 		bool					m_EnabledShadow;
-        bool                 m_EnableAutoTip;
+        bool                	m_EnableAutoTip;
 		DWORD					m_dwTextColor1;
 		DWORD					m_dwTextShadowColorA;
 		DWORD					m_dwTextShadowColorB;
 		DWORD					m_dwStrokeColor;
-		Gdiplus::RectF					m_ShadowOffset;
+		Gdiplus::RectF			m_ShadowOffset;
 		CDuiString				m_TextValue;
 		ULONG_PTR				m_gdiplusToken;
 		Gdiplus::GdiplusStartupInput		m_gdiplusStartupInput;

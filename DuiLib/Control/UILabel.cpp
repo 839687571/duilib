@@ -160,6 +160,18 @@ namespace DuiLib
     {
         return m_EnableAutoTip;
     }
+
+ 	bool CLabelUI::GetAutoCalcWidth() const
+	{
+		return m_bAutoCalcWidth;
+	}
+
+	void CLabelUI::SetAutoCalcWidth(bool bAutoCalcWidth)
+	{
+		m_bAutoCalcWidth = bAutoCalcWidth;
+	}
+
+	
 	SIZE CLabelUI::EstimateSize(SIZE szAvailable)
 	{
 		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);
@@ -300,6 +312,9 @@ namespace DuiLib
 			}
 		}
         else if( _tcscmp(pstrName, _T("autotip")) == 0 ) SetEnableAutoTip(_tcscmp(pstrValue, _T("true")) == 0);
+       else if( _tcscmp(pstrName, _T("autocalcwidth")) == 0 ) {
+			SetAutoCalcWidth(_tcscmp(pstrValue, _T("true")) == 0);
+		}
 		else CControlUI::SetAttribute(pstrName, pstrValue);
 	}
 

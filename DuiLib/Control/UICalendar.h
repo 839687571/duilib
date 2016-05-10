@@ -88,8 +88,7 @@ namespace DuiLib {
 		SYSTEMTIME m_sysTime;
 
 		CCalendarUI *m_pOwner;
-		
-		bool          m_bClosed;
+
 	};
 
 
