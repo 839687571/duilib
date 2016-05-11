@@ -47,6 +47,8 @@ public:
 	void SetBkImageFade(int fade);
 	DWORD GetFocusBorderColor() const;
 	void SetFocusBorderColor(DWORD dwBorderColor);
+	DWORD GetDisabledBorderColor() const;
+	void SetDisabledBorderColor(DWORD dwBorderColor);
     bool IsColorHSL() const;
     void SetColorHSL(bool bColorHSL);
     SIZE GetBorderRound() const;
@@ -211,6 +213,7 @@ protected:
 	TDrawInfo m_diFore;
     DWORD m_dwBorderColor;
 	DWORD m_dwFocusBorderColor;
+	DWORD m_dwDisabledBorderColor;
     bool m_bColorHSL;
     int m_nBorderSize;
 	int m_nBorderStyle;

@@ -22,6 +22,7 @@ m_dwBackColor2(0),
 m_dwBackColor3(0),
 m_dwBorderColor(0),
 m_dwFocusBorderColor(0),
+m_dwDisabledBorderColor(0),
 m_bColorHSL(false),
 m_nBorderSize(0),
 m_nBorderStyle(PS_SOLID),
@@ -195,6 +196,19 @@ void CControlUI::SetFocusBorderColor(DWORD dwBorderColor)
 
     m_dwFocusBorderColor = dwBorderColor;
     Invalidate();
+}
+
+DWORD CControlUI::GetDisabledBorderColor() const
+{
+	return m_dwDisabledBorderColor;
+}
+
+void CControlUI::SetDisabledBorderColor(DWORD dwBorderColor)
+{
+	if (m_dwDisabledBorderColor == dwBorderColor) return;
+
+	m_dwDisabledBorderColor = dwBorderColor;
+	Invalidate();
 }
 
 bool CControlUI::IsColorHSL() const
@@ -829,6 +843,12 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
         SetFocusBorderColor(clrColor);
     }
+	else if (_tcscmp(pstrName, _T("disabledbordercolor")) == 0) {
+		if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetDisabledBorderColor(clrColor);
+	}
     else if( _tcscmp(pstrName, _T("colorhsl")) == 0 ) SetColorHSL(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("bordersize")) == 0 ) {
 		CDuiString nValue = pstrValue;
@@ -999,6 +1019,8 @@ void CControlUI::PaintBorder(HDC hDC)
 		{
 			if (IsFocused() && m_dwFocusBorderColor != 0)
 				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwFocusBorderColor));
+			else if (!IsEnabled() && m_dwDisabledBorderColor != 0)
+				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwDisabledBorderColor));
 			else
 				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwBorderColor));
 		}
@@ -1006,6 +1028,8 @@ void CControlUI::PaintBorder(HDC hDC)
 		{
 			if (IsFocused() && m_dwFocusBorderColor != 0 && m_nBorderSize > 0)
 				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(m_dwFocusBorderColor));
+			else if (!IsEnabled() && m_dwDisabledBorderColor != 0 && m_nBorderSize > 0)
+				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(m_dwDisabledBorderColor));
 			else if(m_rcBorderSize.left > 0 || m_rcBorderSize.top > 0 || m_rcBorderSize.right > 0 || m_rcBorderSize.bottom > 0)
 			{
 				RECT rcBorder;
