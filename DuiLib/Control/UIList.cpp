@@ -949,7 +949,11 @@ void CListUI::EndDrag(CListContainerElementUI* dstElement)
 	RECT rt;
 	rt.left = rt.right = rt.top = rt.bottom = 0;
 
-	if (m_pDragingCtrl == NULL || dstElement == NULL) return;
+	if (m_pDragingCtrl == NULL ) return;
+	if (dstElement == NULL) {
+		m_pDragingCtrl->SetVisible(false);
+		m_pNodeNeedMove = NULL;
+	}
 	if (m_pNodeNeedMove != NULL && _tcsicmp(dstElement->GetClass(), _T("TreeNodeUI")) == 0) {
 		CTreeNodeUI *pTreeDestNode = (CTreeNodeUI*)dstElement;
 		CTreeNodeUI *pTreeSrcNode = (CTreeNodeUI*)m_pNodeNeedMove;
