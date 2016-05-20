@@ -81,9 +81,6 @@ namespace DuiLib {
 				DrawCalendar(m_sysTime);
 			} else if (msg.pSender->GetName() == _T("btnConfirm") || msg.pSender->GetName() == _T("btnDateTimePicker")) {
                 m_pOwner->SetTime(m_sysTime,true);
-				if (::IsWindow(m_hWnd)) {
-					PostMessage(WM_CLOSE);
-				}
 			}
 		}
 
@@ -144,12 +141,7 @@ namespace DuiLib {
 			m_pm.AddNotifier(this);
 			return 0;
 		}
-
-	     else if (uMsg == WM_ERASEBKGND) {
-			//return 1;
-		} else if (uMsg == WM_CLOSE) {
-			printf("close \n");
-		} else if (uMsg == WM_KILLFOCUS) {
+         else if (uMsg == WM_KILLFOCUS) {
 
 			POINT pt = { 0 };
 			::GetCursorPos(&pt);
@@ -161,19 +153,17 @@ namespace DuiLib {
 				return 0;
 			}
 
-		} else if (uMsg == WM_LBUTTONUP) {
-			printf("btn up \n");
 		}
 		LRESULT lRes = 0;
 		if (m_pm.MessageHandler(uMsg, wParam, lParam, lRes)) return lRes;
-		//return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
-		return __super::HandleMessage(uMsg, wParam, lParam);
+		return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 	}
 	void CCalendarWnd::OnFinalMessage(HWND /*hWnd*/)
 	{
 		m_pOwner->m_pClalenderWnd = NULL;
+		m_pOwner->Invalidate();
 		delete this;
-		printf("finnal \n");
+		printf("CCalendarWnd is finnish \n");
 	}
 	//绘制日历
 
@@ -300,8 +290,6 @@ namespace DuiLib {
 	{
 		if (_tcscmp(pstrName, _T("font")) == 0) SetFont(_ttoi(pstrValue));
 		else if (_tcscmp(pstrName, _T("text")) == 0) SetText(pstrValue);
-		//else if (_tcscmp(pstrName, _T("width")) == 0) SetFixedWidth(_ttoi(pstrValue));
-		//else if (_tcscmp(pstrName, _T("height")) == 0) SetFixedHeight(_ttoi(pstrValue));
 
 		else if (_tcscmp(pstrName, _T("buttonnormalimage")) == 0) SetButtonNormalImage(pstrValue);
 		else if (_tcscmp(pstrName, _T("buttonhotimage")) == 0) SetButtonHotImage(pstrValue);
@@ -328,7 +316,15 @@ namespace DuiLib {
 
 	void CCalendarUI::SetTime(SYSTEMTIME &time,bool notify)
 	{
+		if(m_pClalenderWnd){
+			//FIX ME: can not get destroy msg will popup a window
+			// and get destroy msg after popup window destroyed
+			m_pClalenderWnd->ShowWindow(FALSE);
+            m_pClalenderWnd->Close();
+            m_pClalenderWnd = NULL;
+	    }
 		SetText(COleDateTime(time).Format(_T("%Y年%m月%d日   %H:%M")),notify);
+		printf("----------SetTime return ;\n");
 	}
 
 	CDuiString CCalendarUI::GetTimeStr(const char *format)
@@ -423,7 +419,7 @@ namespace DuiLib {
 		CDuiString oldText = m_pLable->GetText();
 		m_pLable->SetText(pstrText);
 		if (notify && oldText != pstrText) {
-			GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
+			GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED,0,0,true);
 		}
 	}
 	void CCalendarUI::SetTextColor(DWORD clrColor)
