@@ -63,7 +63,7 @@ namespace DuiLib
 
 		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
-		CStdPtrArray GetTreeNodes();
+		CStdPtrArray &GetTreeNodes();
 
 		int			 GetTreeIndex();
 		int			 GetNodeIndex();

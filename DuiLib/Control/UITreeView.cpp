@@ -523,7 +523,7 @@ namespace DuiLib
 	// 返回类型: UiLib::CStdPtrArray
 	// 函数说明: 
 	//************************************
-	CStdPtrArray CTreeNodeUI::GetTreeNodes()
+	CStdPtrArray& CTreeNodeUI::GetTreeNodes()
 	{
 		return mTreeNodes;
 	}
