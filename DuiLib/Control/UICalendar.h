@@ -112,6 +112,7 @@ namespace DuiLib {
 
 		// format like:%YƒÍ%m‘¬%d»’   %H:%M 2."%Y-%m-%d %H-%M-%S" "%Y-%m-%d %H:%M:%S"
 		CDuiString GetTimeStr(const char *format = "%Y-%m-%d %H:%M:%S");
+		SYSTEMTIME GetTime();
 
 		bool StringToSYSTEMTIME(const char*lpszValue, SYSTEMTIME &time);
 

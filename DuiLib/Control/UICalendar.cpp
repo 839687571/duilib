@@ -327,6 +327,13 @@ namespace DuiLib {
 		printf("----------SetTime return ;\n");
 	}
 
+	SYSTEMTIME CCalendarUI::GetTime()
+	{
+		SYSTEMTIME tm;
+		StringToSYSTEMTIME(m_pLable->GetText().GetData(), tm);
+		return tm;
+	}
+
 	CDuiString CCalendarUI::GetTimeStr(const char *format)
 	{
 		SYSTEMTIME tm;
