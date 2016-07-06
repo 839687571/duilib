@@ -166,6 +166,19 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
 	}
 	Invalidate();
 }
+
+void  CControlUI::UpdateBkImage(LPCTSTR pStrImage)
+{
+	m_pManager->RemoveImage(pStrImage);
+	m_diBk.Clear();
+	m_diBk.sDrawString = pStrImage;
+	DrawImage(NULL, m_diBk);
+	if( m_bFloat && m_cxyFixed.cx == 0 && m_cxyFixed.cy == 0 && m_diBk.pImageInfo ) {
+		m_cxyFixed.cx = m_diBk.pImageInfo->nX;
+		m_cxyFixed.cy = m_diBk.pImageInfo->nY;
+	}
+	Invalidate();
+}
 void  CControlUI::SetBkImageFade(int fade)
 {
     if(fade<0 || fade>255) return ;

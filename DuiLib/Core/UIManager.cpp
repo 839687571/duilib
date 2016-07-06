@@ -112,7 +112,7 @@ m_nOpacity(255),
 m_bAutoDeleteControls(false),
 m_bUnfocusPaintWindow(false),
 m_bIsRestore(false),
-m_pBmpOffscreenBits(false)
+m_pBmpOffscreenBits(NULL)
 {
 	if (m_SharedResInfo.m_DefaultFontInfo.sFontName.IsEmpty())
 	{

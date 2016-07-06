@@ -44,6 +44,7 @@ public:
     void SetBkColor3(DWORD dwBackColor);
     LPCTSTR GetBkImage();
     void SetBkImage(LPCTSTR pStrImage);
+	void  UpdateBkImage(LPCTSTR pStrImage); /*路径没有改变图片内容改变*/
 	void SetBkImageFade(int fade);
 	DWORD GetFocusBorderColor() const;
 	void SetFocusBorderColor(DWORD dwBorderColor);

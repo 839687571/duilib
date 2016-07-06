@@ -456,6 +456,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 			{
 #ifdef _DEBUG
 				DUITRACE(_T("Î´Öª¿Ø¼þ:%s"),pstrClass);
+				continue;
 #else
 				continue;
 #endif
