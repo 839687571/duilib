@@ -304,7 +304,12 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
     //    goto err;
 
 	PCreateTextServices TextServicesProc;
-	HMODULE hmod = LoadLibrary(_T("msftedit.dll"));
+#ifdef _UNICODE		
+	HMODULE hmod = LoadLibrary(_T("Msftedit.dll"));
+#else
+	HMODULE hmod = LoadLibrary(_T("Riched20.dll"));
+#endif
+
 	if (hmod)
 	{
 		TextServicesProc = (PCreateTextServices)GetProcAddress(hmod,"CreateTextServices");

@@ -343,6 +343,12 @@ namespace DuiLib {
 		return p3.GetBuffer();
 
 	}
+	void CCalendarUI::SetTimeStr(LPCTSTR str)
+	{   
+        SYSTEMTIME tm;
+		StringToSYSTEMTIME(str, tm);
+		SetTime(tm,false);
+	}
 	bool  CCalendarUI::StringToSYSTEMTIME(const char*lpszValue, SYSTEMTIME &time)
 	{
 		if (!lpszValue) {

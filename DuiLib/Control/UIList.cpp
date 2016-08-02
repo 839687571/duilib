@@ -2683,7 +2683,7 @@ void CListContainerElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
 	CControlUI *pFirstCtrl = FindSubControl("list_container_lbl_Text");
 	if (!pFirstCtrl) return;
 
-	printf("cur ctr name= %s,text= %s\n", pFirstCtrl->GetName().GetData(), pFirstCtrl->GetText().GetData());
+	////printf("cur ctr name= %s,text= %s\n", pFirstCtrl->GetName().GetData(), pFirstCtrl->GetText().GetData());
 	CDuiString strText = pFirstCtrl->GetText();
 	if (strText.IsEmpty()) return; 
 
