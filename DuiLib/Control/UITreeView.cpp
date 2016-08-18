@@ -901,6 +901,10 @@ namespace DuiLib
 			pControl->SetMinWidth(m_uItemMinWidth);
 
 		CListUI::AddAt(pControl,iIndex);
+		if (!pControl->GetStyleName().IsEmpty())
+        {
+            pControl->SetStyleName(pControl->GetStyleName());
+        }
 
 		if(pControl->GetCountChild() > 0)
 		{

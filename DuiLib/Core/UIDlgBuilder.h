@@ -25,6 +25,8 @@ public:
 
     void GetLastErrorMessage(LPTSTR pstrMessage, SIZE_T cchMax) const;
     void GetLastErrorLocation(LPTSTR pstrSource, SIZE_T cchMax) const;
+
+	
 private:
     CControlUI* _Parse(CMarkupNode* parent, CControlUI* pParent = NULL, CPaintManagerUI* pManager = NULL);
 
