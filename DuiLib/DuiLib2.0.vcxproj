@@ -287,6 +287,7 @@
     <ClCompile Include="Utils\GdiplusPrep.cpp" />
     <ClCompile Include="Utils\GifHandler.cpp" />
     <ClCompile Include="Utils\UIAnimation.cpp" />
+    <ClCompile Include="Utils\UIShadow.cpp" />
     <ClCompile Include="Utils\WinImplBase.cpp" />
     <ClCompile Include="Utils\stb_image.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -360,6 +361,7 @@
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\UIAnimation.h" />
     <ClInclude Include="Utils\UIDelegate.h" />
+    <ClInclude Include="Utils\UIShadow.h" />
     <ClInclude Include="Utils\Utils.h" />
     <ClInclude Include="Utils\WebBrowserEventHandler.h" />
     <ClInclude Include="Utils\WinImplBase.h" />

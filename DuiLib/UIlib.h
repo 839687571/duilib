@@ -70,6 +70,7 @@
 #include "Utils/Utils.h"
 #include "Utils/UIDelegate.h"
 #include "Utils/UIAnimation.h"
+#include "Utils/UIShadow.h"
 #include "Control/ListEx.h"
 #include "Core/UIDefine.h"
 #include "Core/UIManager.h"

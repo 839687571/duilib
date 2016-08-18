@@ -247,6 +247,7 @@ namespace DuiLib {
 	void CPaintManagerUI::SetInstance(HINSTANCE hInst)
 	{
 		m_hInstance = hInst;
+		CShadowUI::Initialize(hInst); 
 	}
 
 	void CPaintManagerUI::SetCurrentPath(LPCTSTR pStrPath)
@@ -490,6 +491,11 @@ namespace DuiLib {
 	void CPaintManagerUI::SetShowUpdateRect(bool show)
 	{
 		m_bShowUpdateRect = show;
+	}
+
+	CShadowUI* CPaintManagerUI::GetShadow()
+	{
+		return &m_shadow;
 	}
 
 	bool CPaintManagerUI::PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& /*lRes*/)
@@ -1261,6 +1267,9 @@ namespace DuiLib {
 		m_bFirstLayout = true;
 		m_bFocusNeeded = true;
 		m_bAutoDeleteControls = bAutoDeleteControl;
+
+		m_shadow.Create(this);
+
 		// Initiate all control
 		return InitControls(pControl);
 	}

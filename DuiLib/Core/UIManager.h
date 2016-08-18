@@ -374,6 +374,8 @@ public:
 	void RemoveAllStyles();
 //stytles end
 
+	CShadowUI* GetShadow();
+
     static void MessageLoop();
     static bool TranslateMessage(const LPMSG pMsg);
 	static void Term();
@@ -481,6 +483,9 @@ private:
 	
 	//add 2015-09- 24 tooltip refresh bug
 	POINT m_toolTipLastPt;;
+
+	//shadow 
+	CShadowUI m_shadow;
 
 public:
 	CStdPtrArray m_aTranslateAccelerator;
