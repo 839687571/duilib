@@ -252,6 +252,7 @@ HANDLE CPaintManagerUI::GetResourceZipHandle()
 void CPaintManagerUI::SetInstance(HINSTANCE hInst)
 {
     m_hInstance = hInst;
+		CShadowUI::Initialize(hInst); 
 }
 
 void CPaintManagerUI::SetCurrentPath(LPCTSTR pStrPath)
@@ -493,63 +494,71 @@ bool CPaintManagerUI::IsShowUpdateRect() const
 	return m_bShowUpdateRect;
 }
 
-void CPaintManagerUI::SetShowUpdateRect(bool show)
-{
-    m_bShowUpdateRect = show;
-}
+	void CPaintManagerUI::SetShowUpdateRect(bool show)
+	{
+		m_bShowUpdateRect = show;
+	}
+	CShadowUI* CPaintManagerUI::GetShadow()
+	{
+		return &m_shadow;
+	}
 
-bool CPaintManagerUI::PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& /*lRes*/)
-{
-    for( int i = 0; i < m_aPreMessageFilters.GetSize(); i++ ) 
-    {
-        bool bHandled = false;
-        LRESULT lResult = static_cast<IMessageFilterUI*>(m_aPreMessageFilters[i])->MessageHandler(uMsg, wParam, lParam, bHandled);
-        if( bHandled ) {
-            return true;
-        }
-    }
-    switch( uMsg ) {
-    case WM_KEYDOWN:
-        {
+	bool CPaintManagerUI::PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& /*lRes*/)
+	{
+		for (int i = 0; i < m_aPreMessageFilters.GetSize(); i++) {
+			bool bHandled = false;
+			LRESULT lResult = static_cast<IMessageFilterUI*>(m_aPreMessageFilters[i])->MessageHandler(uMsg, wParam, lParam, bHandled);
+			if (bHandled) {
+				return true;
+			}
+		}
+		switch (uMsg) {
+		case WM_KEYDOWN:
+		{
+			// Tabbing between controls
+			if (wParam == VK_TAB) {
+				if (m_pFocus && m_pFocus->IsVisible() && m_pFocus->IsEnabled() && _tcsstr(m_pFocus->GetClass(), _T("RichEditUI")) != NULL) {
+					if (static_cast<CRichEditUI*>(m_pFocus)->IsWantTab()) return false;
+				}
+				SetNextTabControl(::GetKeyState(VK_SHIFT) >= 0);
+				return true;
+			}
+		}
+		break;
+		case WM_SYSCHAR:
+		{
+			// Handle ALT-shortcut key-combinations
+			FINDSHORTCUT fs = { 0 };
+			fs.ch = toupper((int)wParam);
+			CControlUI* pControl = m_pRoot->FindControl(__FindControlFromShortcut, &fs, UIFIND_ENABLED | UIFIND_ME_FIRST | UIFIND_TOP_FIRST);
+			if (pControl != NULL) {
+				pControl->SetFocus();
+				pControl->Activate();
+				return true;
+			}
+		}
+		break;
+		case WM_SYSKEYDOWN:
+		{
+			if (m_pFocus != NULL) {
+				TEventUI event = { 0 };
+				event.Type = UIEVENT_SYSKEY;
+				event.chKey = (TCHAR)wParam;
+				event.ptMouse = m_ptLastMousePos;
+				event.wKeyState = MapKeyState();
+				event.dwTimestamp = ::GetTickCount();
+				m_pFocus->Event(event);
+			}
+		}
+		break;
+		}
+		return false;
+	}
+			// Tabbing between controls
+			// Handle ALT-shortcut key-combinations
+
            // Tabbing between controls
-           if( wParam == VK_TAB ) {
-               if( m_pFocus && m_pFocus->IsVisible() && m_pFocus->IsEnabled() && _tcsstr(m_pFocus->GetClass(), _T("RichEditUI")) != NULL ) {
-                   if( static_cast<CRichEditUI*>(m_pFocus)->IsWantTab() ) return false;
-               }
-               SetNextTabControl(::GetKeyState(VK_SHIFT) >= 0);
-               return true;
-           }
-        }
-        break;
-    case WM_SYSCHAR:
-        {
            // Handle ALT-shortcut key-combinations
-           FINDSHORTCUT fs = { 0 };
-           fs.ch = toupper((int)wParam);
-           CControlUI* pControl = m_pRoot->FindControl(__FindControlFromShortcut, &fs, UIFIND_ENABLED | UIFIND_ME_FIRST | UIFIND_TOP_FIRST);
-           if( pControl != NULL ) {
-               pControl->SetFocus();
-               pControl->Activate();
-               return true;
-           }
-        }
-        break;
-    case WM_SYSKEYDOWN:
-        {
-           if( m_pFocus != NULL ) {
-               TEventUI event = { 0 };
-               event.Type = UIEVENT_SYSKEY;
-               event.chKey = (TCHAR)wParam;
-               event.ptMouse = m_ptLastMousePos;
-               event.wKeyState = MapKeyState();
-               event.dwTimestamp = ::GetTickCount();
-               m_pFocus->Event(event);
-           }
-        }
-        break;
-    }
-    return false;
-}
 
 bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes)
 {
@@ -1098,6 +1107,20 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             m_pEventClick = NULL;
         }
         break;
+		case WM_RELOADSTYLE:
+		{
+			TEventUI event		= { 0 };
+			event.Type			= UIEVENT_RELOADSTYLE;
+			event.pSender		= m_pRoot;
+			event.wParam		= wParam;
+			event.lParam		= lParam;
+			event.ptMouse.x		= 0;
+			event.ptMouse.y		= 0;
+			event.wKeyState		= 0;
+			event.dwTimestamp	= ::GetTickCount();
+			EventAllControl(event,m_pRoot);
+		}
+		break;
     case WM_MOUSEWHEEL:
         {
             POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
@@ -1251,31 +1274,48 @@ void CPaintManagerUI::Invalidate(RECT& rcItem)
      m_rcInvalidate = rcItem;
 }
 
-bool CPaintManagerUI::AttachDialog(CControlUI* pControl,bool bAutoDeleteControl)
-{
-    ASSERT(::IsWindow(m_hWndPaint));
+	bool CPaintManagerUI::AttachDialog(CControlUI* pControl, bool bAutoDeleteControl)
+	{
+		ASSERT(::IsWindow(m_hWndPaint));
+		// Reset any previous attachment
+		SetFocus(NULL);
+		m_pEventKey = NULL;
+		m_pEventHover = NULL;
+		m_pEventClick = NULL;
+		// Remove the existing control-tree. We might have gotten inside this function as
+		// a result of an event fired or similar, so we cannot just delete the objects and
+		// pull the internal memory of the calling code. We'll delay the cleanup.
+		if (m_pRoot != NULL) {
+			m_aPostPaintControls.Empty();
+			AddDelayedCleanup(m_pRoot);
+		}
+		// Set the dialog root element
+		m_pRoot = pControl;
+		// Go ahead...
+		m_bUpdateNeeded = true;
+		m_bFirstLayout = true;
+		m_bFocusNeeded = true;
+		m_bAutoDeleteControls = bAutoDeleteControl;
+
+		m_shadow.Create(this);
+
+		// Initiate all control
+		return InitControls(pControl);
+	}
+		// Reset any previous attachment
+		// Remove the existing control-tree. We might have gotten inside this function as
+		// a result of an event fired or similar, so we cannot just delete the objects and
+		// pull the internal memory of the calling code. We'll delay the cleanup.
+		// Set the dialog root element
+		// Go ahead...
+		// Initiate all control
     // Reset any previous attachment
-    SetFocus(NULL);
-    m_pEventKey = NULL;
-    m_pEventHover = NULL;
-    m_pEventClick = NULL;
     // Remove the existing control-tree. We might have gotten inside this function as
     // a result of an event fired or similar, so we cannot just delete the objects and
     // pull the internal memory of the calling code. We'll delay the cleanup.
-    if( m_pRoot != NULL ) {
-        m_aPostPaintControls.Empty();
-        AddDelayedCleanup(m_pRoot);
-    }
     // Set the dialog root element
-    m_pRoot = pControl;
     // Go ahead...
-    m_bUpdateNeeded = true;
-    m_bFirstLayout = true;
-    m_bFocusNeeded = true;
-	m_bAutoDeleteControls = bAutoDeleteControl;
     // Initiate all control
-    return InitControls(pControl);
-}
 
 bool CPaintManagerUI::InitControls(CControlUI* pControl, CControlUI* pParent /*= NULL*/)
 {
@@ -1362,6 +1402,229 @@ void CPaintManagerUI::RemoveAllOptionGroups()
 	m_mOptionGroup.RemoveAll();
 }
 
+	bool CPaintManagerUI::AddControlStyle(LPCTSTR pStrStyleName, LPCTSTR pStrKey, LPCTSTR pStrVal, LPCTSTR pStylesName /*= NULL*/)
+	{
+		CStdStringPtrMap* pCurPtrMap = m_pControlsStyle;
+		if (pStylesName)
+			pCurPtrMap = static_cast<CStdStringPtrMap*>(m_mStyles.Find(pStylesName));
+		if (!pCurPtrMap) {
+			pCurPtrMap = new CStdStringPtrMap();
+			m_mStyles.Set(pStylesName, (LPVOID)pCurPtrMap);
+		}
+		CStdStringPtrMap* pPtrMap = static_cast<CStdStringPtrMap*>(GetControlStyles(pStrStyleName, pStylesName));
+		if (!pPtrMap) {
+			pPtrMap = new CStdStringPtrMap();
+			pCurPtrMap->Set(pStrStyleName, (LPVOID)pPtrMap);
+		}
+		if (pPtrMap) {
+			CDuiString* nVal = new CDuiString(pStrVal);
+			if (pPtrMap->Find(pStrKey) == NULL)
+				pPtrMap->Set(pStrKey, nVal);
+			else
+				delete nVal;
+			nVal = NULL;
+			return true;
+		}
+		return false;
+	}
+	bool CPaintManagerUI::AddControlStyle(LPCTSTR pStrStyleName, CStdStringPtrMap* _StyleMap, LPCTSTR pStylesName /*= NULL*/)
+	{
+		CStdStringPtrMap* pCurPtrMap = m_pControlsStyle;
+		if (pStylesName)
+			pCurPtrMap = static_cast<CStdStringPtrMap*>(m_mStyles.Find(pStylesName));
+		if (!pCurPtrMap) {
+			pCurPtrMap = new CStdStringPtrMap();
+			m_mStyles.Set(pStylesName, (LPVOID)pCurPtrMap);
+		}
+		LPVOID pStyle = pCurPtrMap->Find(pStrStyleName);
+		if (pStyle)
+			return false;
+		return NULL != pCurPtrMap->Set(pStrStyleName, (LPVOID)_StyleMap);
+	}
+	bool CPaintManagerUI::SetControlStyle(LPCTSTR pStrStyleName, LPCTSTR pStrKey, LPCTSTR pStrVal, LPCTSTR pStylesName /*= NULL*/)
+	{
+		CStdStringPtrMap* pCurPtrMap = m_pControlsStyle;
+		if (pStylesName)
+			pCurPtrMap = static_cast<CStdStringPtrMap*>(m_mStyles.Find(pStylesName));
+		if (!pCurPtrMap) {
+			pCurPtrMap = new CStdStringPtrMap();
+			m_mStyles.Set(pStylesName, (LPVOID)pCurPtrMap);
+		}
+		CStdStringPtrMap* pPtrMap = static_cast<CStdStringPtrMap*>(GetControlStyles(pStrStyleName, pStylesName));
+		if (!pPtrMap) {
+			pPtrMap = new CStdStringPtrMap();
+			pCurPtrMap->Set(pStrStyleName, (LPVOID)pPtrMap);
+		}
+		if (pPtrMap) {
+			CDuiString* nVal = new CDuiString(pStrVal);
+			if (pPtrMap->Find(pStrKey))
+				delete pPtrMap->Find(pStrKey);
+			pPtrMap->Set(pStrKey, nVal);
+			return true;
+		}
+		return false;
+	}
+	bool CPaintManagerUI::SetControlStyle(LPCTSTR pStrStyleName, CStdStringPtrMap* _StyleMap, LPCTSTR pStylesName /*= NULL*/)
+	{
+		CStdStringPtrMap* pCurPtrMap = m_pControlsStyle;
+		if (pStylesName)
+			pCurPtrMap = static_cast<CStdStringPtrMap*>(m_mStyles.Find(pStylesName));
+		if (!pCurPtrMap) {
+			pCurPtrMap = new CStdStringPtrMap();
+			m_mStyles.Set(pStylesName, (LPVOID)pCurPtrMap);
+		}
+		LPVOID pStyle = pCurPtrMap->Find(pStrStyleName);
+		if (pStyle)
+			RemoveControlStyle(pStrStyleName, NULL, pStylesName);
+		pCurPtrMap->Set(pStrStyleName, (LPVOID)_StyleMap);
+		return true;
+	}
+	CDuiString CPaintManagerUI::GetControlStyle(LPCTSTR pStrStyleName, LPCTSTR pStrKey, LPCTSTR pStylesName /*= NULL*/)
+	{
+		if (pStrStyleName == NULL || pStrKey == NULL)
+			return _T("");
+		CStdStringPtrMap* pPtrMap = static_cast<CStdStringPtrMap*>(GetControlStyles(pStrStyleName, pStylesName));
+		if (NULL == pPtrMap)
+			return _T("");
+		CDuiString* nStrVal = static_cast<CDuiString*>(pPtrMap->Find(pStrKey));
+		return NULL == nStrVal ? _T("") : nStrVal->GetData();
+	}
+	CStdStringPtrMap* CPaintManagerUI::GetControlsStyles(LPCTSTR pStylesName /*= NULL*/) const
+	{
+		CStdStringPtrMap* pCurPtrMap = m_pControlsStyle;
+		if (pStylesName)
+			pCurPtrMap = static_cast<CStdStringPtrMap*>(m_mStyles.Find(pStylesName));
+		if (!pCurPtrMap)
+			return NULL;
+		return pCurPtrMap;
+	}
+	CStdStringPtrMap* CPaintManagerUI::GetControlStyles(LPCTSTR pStrStyleName, LPCTSTR pStylesName /*= NULL*/) const
+	{
+		CStdStringPtrMap* pCurPtrMap = m_pControlsStyle;
+		if (pStylesName)
+			pCurPtrMap = static_cast<CStdStringPtrMap*>(m_mStyles.Find(pStylesName));
+		if (!pCurPtrMap)
+			return NULL;
+		if (pCurPtrMap->GetSize() == 0 || pStrStyleName == NULL)
+			return NULL;
+		CStdStringPtrMap* pControlStyle = static_cast<CStdStringPtrMap*>(pCurPtrMap->Find(pStrStyleName));
+		return pControlStyle ? pControlStyle : NULL;
+	}
+	bool CPaintManagerUI::RemoveControlStyle(LPCTSTR pStrStyleName, LPCTSTR pStrKey /*= NULL*/, LPCTSTR pStylesName /*= NULL*/)
+	{
+		if (pStrStyleName == NULL)
+			return false;
+		CStdStringPtrMap* pCurPtrMap = m_pControlsStyle;
+		if (pStylesName)
+			pCurPtrMap = static_cast<CStdStringPtrMap*>(m_mStyles.Find(pStylesName));
+		if (!pCurPtrMap)
+			return false;
+		CStdStringPtrMap* pPtrMap = GetControlStyles(pStrStyleName, pStylesName);
+		if (pStrKey == NULL && pCurPtrMap->Remove(pStrStyleName)) {
+			delete pPtrMap;
+			pPtrMap = NULL;
+			return true;
+		}
+		if (pPtrMap) {
+			CDuiString* pVal = static_cast<CDuiString*>(pPtrMap->Find(pStrKey));
+			if (pVal && pPtrMap->Remove(pStrKey)) {
+				delete pVal;
+				pVal = NULL;
+				return true;
+			}
+		}
+		return false;
+	}
+	void CPaintManagerUI::RemoveAllControlStyle(LPCTSTR pStrStyleName /*= NULL*/, LPCTSTR pStylesName /*= NULL*/)
+	{
+		CStdStringPtrMap* pCurPtrMap = m_pControlsStyle;
+		if (pStylesName)
+			pCurPtrMap = static_cast<CStdStringPtrMap*>(m_mStyles.Find(pStylesName));
+		if (!pCurPtrMap)
+			return;
+		if (pStrStyleName) {
+			CStdStringPtrMap* pPtrMap = GetControlStyles(pStrStyleName, pStylesName);
+			if (!pPtrMap)
+				return;
+			CDuiString* pVal = NULL;
+			for (int i = 0; i < pPtrMap->GetSize(); i++) {
+				if (LPCTSTR key = pPtrMap->GetAt(i)) {
+					pVal = static_cast<CDuiString*>(pPtrMap->Find(key));
+					if (pVal)
+						delete pVal;
+					pVal = NULL;
+				}
+			}
+			pPtrMap->RemoveAll();
+			delete pPtrMap;
+			pPtrMap = NULL;
+			pCurPtrMap->Remove(pStrStyleName);
+			return;
+		}
+		for (int i = 0; i < pCurPtrMap->GetSize(); i++) {
+			if (LPCTSTR key = pCurPtrMap->GetAt(i)) {
+				RemoveAllControlStyle(key, pStylesName);
+			}
+		}
+		pCurPtrMap->RemoveAll();
+	}
+	bool CPaintManagerUI::SetCurStyles(LPCTSTR pStylesName /*= NULL*/, bool _NowUpdate /*= true*/)
+	{
+		if (!pStylesName) {
+			m_pControlsStyle = &m_mControlsStyle;
+			m_sCurStylesName.Empty();
+			if (_NowUpdate)
+				::PostMessage(m_hWndPaint, WM_RELOADSTYLE, NULL, NULL);
+			return true;
+		}
+		if (pStylesName) {
+			CStdStringPtrMap* pStyleMap = static_cast<CStdStringPtrMap*>(m_mStyles.Find(pStylesName));
+			if (pStyleMap) {
+				m_pControlsStyle = pStyleMap;
+				m_sCurStylesName = pStylesName;
+				if (_NowUpdate)
+					::PostMessage(m_hWndPaint, WM_RELOADSTYLE, NULL, NULL);
+				return true;
+			}
+		}
+		return false;
+	}
+	bool CPaintManagerUI::SetCurStyles(int _iStyleIndex /*= 0*/, bool _NowUpdate /*= true*/)
+	{
+		if (_iStyleIndex < 0)
+			return false;
+		return SetCurStyles(m_mStyles.GetAt(_iStyleIndex), _NowUpdate);
+	}
+	UINT CPaintManagerUI::GetStylesCount()
+	{
+		return (UINT)m_mStyles.GetSize();
+	}
+	CDuiString CPaintManagerUI::GetCurStylesName()
+	{
+		return m_sCurStylesName.GetData();
+	}
+	bool CPaintManagerUI::RemoveStyles(LPCTSTR pStylesName)
+	{
+		if (m_sCurStylesName == pStylesName)
+			return false;
+		for (int nIndex = 0; nIndex < m_mStyles.GetSize(); nIndex++) {
+			CDuiString nKey = m_mStyles.GetAt(nIndex);
+			if (nKey == pStylesName)
+				continue;
+			RemoveAllControlStyle(NULL, nKey.GetData());
+			return m_mStyles.Remove(nKey);
+		}
+		return false;
+	}
+	void CPaintManagerUI::RemoveAllStyles()
+	{
+		SetCurStyles(NULL);
+		for (int nIndex = 0; nIndex < m_mStyles.GetSize(); nIndex++) {
+			CDuiString nKey = m_mStyles.GetAt(nIndex);
+			RemoveStyles(nKey.GetData());
+		}
+		m_mStyles.RemoveAll();
+	}
 void CPaintManagerUI::MessageLoop()
 {
     MSG msg = { 0 };
@@ -1585,7 +1848,21 @@ bool CPaintManagerUI::SetNextTabControl(bool bForward)
     m_bFocusNeeded = false;
     return true;
 }
+	void CPaintManagerUI::EventAllControl( TEventUI& event,CControlUI* pControl /*= NULL*/ )
+	{
+		IContainerUI* pContainer = static_cast<IContainerUI*>(pControl->GetInterface(_T("IContainer")));
+		if(pContainer){
+			int nCountNode = pContainer->GetCount();
+			for(int nIndex = 0;nIndex < nCountNode;nIndex++)
+			{
+				CControlUI* nControl = pContainer->GetItemAt(nIndex);
+				if(nControl)
+					nControl->Event(event);
 
+				EventAllControl(event,nControl);
+			}
+		}
+	}
 bool CPaintManagerUI::AddNotifier(INotifyUI* pNotifier)
 {
   //  ASSERT(m_aNotifiers.Find(pNotifier)<0);
@@ -1986,6 +2263,10 @@ HFONT CPaintManagerUI::GetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool
 				return pFontInfo->hFont;
 		}
 	}
+	
+ 
+	
+
 
 	return NULL;
 }
@@ -2001,9 +2282,7 @@ int CPaintManagerUI::GetFontIndex(HFONT hFont, bool bShared)
 				if (pFontInfo && pFontInfo->hFont == hFont) return _ttoi(key);
 			}
 		}
-	}
-	else
-	{
+		} else {
 		for( int i = 0; i< m_ResInfo.m_CustomFonts.GetSize(); i++ ) {
 			if(LPCTSTR key = m_ResInfo.m_CustomFonts.GetAt(i)) {
 				pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(key));

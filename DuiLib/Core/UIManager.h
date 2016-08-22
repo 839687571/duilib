@@ -3,6 +3,7 @@
 
 #pragma once
 
+#define WM_RELOADSTYLE	WM_USER+1681
 namespace DuiLib {
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -41,6 +42,7 @@ typedef enum EVENTTYPE_UI
     UIEVENT_TIMER,
     UIEVENT_NOTIFY,
     UIEVENT_COMMAND,
+    UIEVENT_RELOADSTYLE,
     UIEVENT__LAST,
 };
 
@@ -295,6 +297,9 @@ public:
 	static void RemoveAllMultiLanguageString();
 	static void ProcessMultiLanguageTokens(CDuiString& pStrMultiLanguage);
 
+	void EventAllControl(TEventUI& event,CControlUI* pControl = NULL);
+
+
 		//skilla 2014.12.21
     bool AttachDialog(CControlUI* pControl,bool bAutoDeleteControl = true);
     bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
@@ -349,6 +354,26 @@ public:
     CControlUI* FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const;
     CControlUI* FindSubControlByClass(CControlUI* pParent, LPCTSTR pstrClass, int iIndex = 0);
     CStdPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
+	
+//Ìí¼Ó stytles Ö§³Ö porting redrain duiblib
+	bool AddControlStyle(LPCTSTR pStrStyleName,LPCTSTR pStrKey,LPCTSTR pStrVal,LPCTSTR pStylesName = NULL);
+	bool AddControlStyle(LPCTSTR pStrStyleName,CStdStringPtrMap* _StyleMap,LPCTSTR pStylesName = NULL);
+	bool SetControlStyle(LPCTSTR pStrStyleName,LPCTSTR pStrKey,LPCTSTR pStrVal,LPCTSTR pStylesName = NULL);
+	bool SetControlStyle(LPCTSTR pStrStyleName,CStdStringPtrMap* _StyleMap,LPCTSTR pStylesName = NULL);
+	CDuiString GetControlStyle(LPCTSTR pStrStyleName,LPCTSTR pStrKey,LPCTSTR pStylesName = NULL);
+	CStdStringPtrMap* GetControlsStyles(LPCTSTR pStylesName = NULL) const;
+	CStdStringPtrMap* GetControlStyles(LPCTSTR pStrStyleName,LPCTSTR pStylesName = NULL) const;
+	bool RemoveControlStyle(LPCTSTR pStrStyleName,LPCTSTR pStrKey = NULL,LPCTSTR pStylesName = NULL);
+	void RemoveAllControlStyle(LPCTSTR pStrStyleName = NULL,LPCTSTR pStylesName = NULL);
+	bool SetCurStyles(LPCTSTR pStylesName = NULL,bool _NowUpdate = true);
+	bool SetCurStyles(int _iStyleIndex = 0,bool _NowUpdate = true);
+	UINT GetStylesCount();
+	CDuiString GetCurStylesName();
+	bool RemoveStyles(LPCTSTR pStylesName);
+	void RemoveAllStyles();
+//stytles end
+
+	CShadowUI* GetShadow();
 
     static void MessageLoop();
     static bool TranslateMessage(const LPMSG pMsg);
@@ -449,8 +474,15 @@ private:
     static CStdPtrArray m_aPreMessages;
     static CStdPtrArray m_aPlugins;
 
+	CStdStringPtrMap m_mControlsStyle;
+	CStdStringPtrMap* m_pControlsStyle;
+	CStdStringPtrMap m_mStyles;
+	CDuiString m_sCurStylesName;
 	//add 2015-09- 24 tooltip refresh bug
 	POINT m_toolTipLastPt;;
+
+	//shadow 
+	CShadowUI m_shadow;
 
 public:
 	CStdPtrArray m_aTranslateAccelerator;

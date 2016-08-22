@@ -160,7 +160,82 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 				if (id >= 0 && pMultiLanguage ) {
 					pManager->AddMultiLanguageString(id, pMultiLanguage);
 				}
+			}else if( _tcscmp(pstrClass, _T("Styles")) == 0){
+					nAttributes = node.GetAttributeCount();
+					CDuiString pStrStylesName;
+					bool nIsDefaultStyles = false;
+					for( int i = 0; i < nAttributes; i++ ) {
+						pstrName = node.GetAttributeName(i);
+						pstrValue = node.GetAttributeValue(i);
+						if( _tcscmp(pstrName, _T("name")) == 0 ){
+							pStrStylesName = pstrValue;
 			}
+						else if( _tcscmp(pstrName, _T("default")) == 0 && _tcscmp(pstrValue, _T("true")) == 0 ){
+							nIsDefaultStyles = true;
+						}
+						else if( _tcscmp(pstrName, _T("inherit")) == 0 && pstrValue ){
+							if(CStdStringPtrMap* pStylesMap = pManager->GetControlsStyles(pstrValue))
+							{
+								for(int nIndex = 0;nIndex < pStylesMap->GetSize();nIndex++)
+								{
+									CDuiString nKey				= pStylesMap->GetAt(nIndex);
+									CStdStringPtrMap* pStyleMap	= static_cast<CStdStringPtrMap*>(pStylesMap->Find(nKey.GetData()));
+									if(pStyleMap)
+									{
+										for(int nSubIndex = 0;nSubIndex < pStyleMap->GetSize();nSubIndex++)
+										{
+											CDuiString nSubKey	= pStyleMap->GetAt(nSubIndex);
+											CDuiString* nSubVal = static_cast<CDuiString*>(pStyleMap->Find(nSubKey.GetData()));
+											pManager->SetControlStyle(nKey.GetData(),nSubKey.GetData(),nSubVal->GetData(),pStrStylesName.GetData());
+										}
+									}
+								}
+							}
+						}
+						else if( _tcscmp(pstrName, _T("stylefile")) == 0 ){
+							CMarkup nStyleFile;
+							if(nStyleFile.LoadFromFile(pstrValue)){
+								for(CMarkupNode nStyleNode = nStyleFile.GetRoot().GetChild();nStyleNode.IsValid();nStyleNode = nStyleNode.GetSibling())
+								{
+									LPCTSTR pstrClass = nStyleNode.GetName();
+									if( _tcscmp(pstrClass, _T("Style")) != 0 || !nStyleNode.HasAttribute(_T("stylename")))
+										continue;
+									CDuiString nControlStyleName = nStyleNode.GetAttributeValue(_T("stylename"));
+									if(nControlStyleName.GetLength() <= 0)
+										continue;
+									int nStyleAttributes = nStyleNode.GetAttributeCount();
+									for( int nIndex = 0; nIndex < nStyleAttributes; nIndex++ ) {
+										pstrName = nStyleNode.GetAttributeName(nIndex);
+										pstrValue = nStyleNode.GetAttributeValue(nIndex);
+										if( _tcscmp(pstrName, _T("stylename")) == 0 )
+											continue;
+										pManager->SetControlStyle(nControlStyleName.GetData(),pstrName,pstrValue,pStrStylesName.GetData());
+									}
+								}
+							}
+						}
+					}
+					for(CMarkupNode nStyleNode = node.GetChild();nStyleNode.IsValid();nStyleNode = nStyleNode.GetSibling())
+					{
+						LPCTSTR pstrClass = nStyleNode.GetName();
+						if( _tcscmp(pstrClass, _T("Style")) != 0 || !nStyleNode.HasAttribute(_T("stylename")))
+							continue;
+						CDuiString nControlStyleName = nStyleNode.GetAttributeValue(_T("stylename"));
+						if(nControlStyleName.GetLength() <= 0)
+							continue;
+						int nStyleAttributes = nStyleNode.GetAttributeCount();
+						for( int i = 0; i < nStyleAttributes; i++ ) {
+							pstrName = nStyleNode.GetAttributeName(i);
+							pstrValue = nStyleNode.GetAttributeValue(i);
+							if( _tcscmp(pstrName, _T("stylename")) == 0 )
+								continue;
+							pManager->SetControlStyle(nControlStyleName.GetData(),pstrName,pstrValue,pStrStylesName.GetData());
+						}
+					}
+					if(nIsDefaultStyles && !pStrStylesName.IsEmpty())
+						pManager->SetCurStyles(pStrStylesName.GetData(),false);
+					continue;
+				}
         }
 
         pstrClass = root.GetName();
@@ -250,7 +325,43 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                         LPTSTR pstr = NULL;
                         DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
                         pManager->SetDefaultSelectedBkColor(clrColor);
-                    } 
+                    }
+                    else if( _tcscmp(pstrName, _T("shadowsize")) == 0 ) {
+							pManager->GetShadow()->SetSize(_ttoi(pstrValue));
+						}
+						else if( _tcscmp(pstrName, _T("shadowsharpness")) == 0 ) {
+							pManager->GetShadow()->SetSharpness(_ttoi(pstrValue));
+						}
+						else if( _tcscmp(pstrName, _T("shadowdarkness")) == 0 ) {
+							pManager->GetShadow()->SetDarkness(_ttoi(pstrValue));
+						}
+						else if( _tcscmp(pstrName, _T("shadowposition")) == 0 ) {
+							LPTSTR pstr = NULL;
+							int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+							int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+							pManager->GetShadow()->SetPosition(cx, cy);
+						}
+						else if( _tcscmp(pstrName, _T("shadowcolor")) == 0 ) {
+							if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+							LPTSTR pstr = NULL;
+							DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+							pManager->GetShadow()->SetColor(clrColor);
+						}
+						else if( _tcscmp(pstrName, _T("shadowcorner")) == 0 ) {
+							RECT rcCorner = { 0 };
+							LPTSTR pstr = NULL;
+							rcCorner.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+							rcCorner.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+							rcCorner.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
+							rcCorner.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+							pManager->GetShadow()->SetShadowCorner(rcCorner);
+						}
+						else if( _tcscmp(pstrName, _T("shadowimage")) == 0 ) {
+							pManager->GetShadow()->SetImage(pstrValue);
+						}
+						else if( _tcscmp(pstrName, _T("showshadow")) == 0 ) {
+							pManager->GetShadow()->ShowShadow(_tcscmp(pstrValue, _T("true")) == 0);
+						} 
                 }
             }
         }
