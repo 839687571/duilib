@@ -266,35 +266,7 @@ void CControlUI::SetBorderRound(SIZE cxyRound)
     m_cxyBorderRound = cxyRound;
     Invalidate();
 }
-	const CDuiString& CControlUI::GetStyleName()
-	{
-		return m_sStyleName;
-	}
 
-	void CControlUI::SetStyleName( LPCTSTR pStrStyleName,CPaintManagerUI* pm /*= NULL*/ )
-	{
-		if(!pStrStyleName || _tclen(pStrStyleName) <= 0 || (!GetManager() && !pm))
-			return;
-
-		CStdStringPtrMap* pStyleMap = NULL;
-
-		if(pm)
-			pStyleMap = pm->GetControlStyles(pStrStyleName);
-		else 
-			pStyleMap = GetManager()->GetControlStyles(pStrStyleName);
-
-		if(!pStyleMap)
-			return;
-
-		for(int nIndex = 0;nIndex < pStyleMap->GetSize();nIndex++)
-		{
-			CDuiString nKey = pStyleMap->GetAt(nIndex);
-			CDuiString* nVal = static_cast<CDuiString*>(pStyleMap->Find(nKey));
-			SetAttribute(nKey.GetData(),nVal->GetData());
-		}
-		m_sStyleName = pStrStyleName;
-		Invalidate();
-	}
 bool CControlUI::DrawImage(HDC hDC, TDrawInfo& drawInfo)
 {
 	return CRenderEngine::DrawImage(hDC, m_pManager, m_rcItem, m_rcPaint, drawInfo);
@@ -798,13 +770,6 @@ void CControlUI::DoEvent(TEventUI& event)
             return;
         }
     }
-	if(event.Type == UIEVENT_RELOADSTYLE)
-	{
-		if(!m_sStyleName.IsEmpty())
-			SetStyleName(m_sStyleName.GetData());
-
-		return ;
-	}
     if( m_pParent != NULL ) m_pParent->DoEvent(event);
 }
 
@@ -962,7 +927,6 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	}
     else if( _tcscmp(pstrName, _T("shortcut")) == 0 ) SetShortcut(pstrValue[0]);
     else if( _tcscmp(pstrName, _T("menu")) == 0 ) SetContextMenuUsed(_tcscmp(pstrValue, _T("true")) == 0);
-    else if( _tcscmp(pstrName, _T("style")) == 0 ) SetStyleName(pstrValue);
 	else if( _tcscmp(pstrName, _T("virtualwnd")) == 0 ) SetVirtualWnd(pstrValue);
 }
 

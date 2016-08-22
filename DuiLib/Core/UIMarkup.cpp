@@ -377,6 +377,11 @@ bool CMarkup::LoadFromMem(BYTE* pByte, DWORD dwSize, int encoding)
 bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
 {
     Release();
+
+#ifdef _DEBUG
+	DUITRACE(_T("LoadXML = : %s"), pstrFilename);
+#endif
+
     CDuiString sFile = CPaintManagerUI::GetResourcePath();
     if( CPaintManagerUI::GetResourceZip().IsEmpty() ) {
         sFile += pstrFilename;

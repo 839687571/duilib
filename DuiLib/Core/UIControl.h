@@ -171,9 +171,6 @@ public:
 	void SetVirtualWnd(LPCTSTR pstrValue);
 	CDuiString GetVirtualWnd() const;
 
-	virtual const CDuiString& GetStyleName();
-	virtual void SetStyleName(LPCTSTR pStrStyleName,CPaintManagerUI* pm = NULL);
-
 public:
     CEventSource OnInit;
     CEventSource OnDestroy;
@@ -225,8 +222,6 @@ protected:
     SIZE m_cxyBorderRound;
     RECT m_rcPaint;
 	RECT m_rcBorderSize;
-
-	CDuiString m_sStyleName;
 };
 
 } // namespace DuiLib
