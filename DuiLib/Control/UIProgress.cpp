@@ -26,7 +26,10 @@ namespace DuiLib
 		CControlUI::SetEnabled(bEnable);
 		if( !IsEnabled() ) {
 			m_uButtonState = UISTATE_DISABLED;
+		} else {
+			m_uButtonState = 0;
 		}
+		Invalidate();
 	}
 
 	
