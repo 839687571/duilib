@@ -7,6 +7,7 @@ namespace DuiLib
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
 		SetFixedHeight(12);
+		m_uButtonState = 0;
 	}
 
 	LPCTSTR CProgressUI::GetClass() const
@@ -20,6 +21,15 @@ namespace DuiLib
 		return CLabelUI::GetInterface(pstrName);
 	}
 
+	void CProgressUI::SetEnabled(bool bEnable)
+	{
+		CControlUI::SetEnabled(bEnable);
+		if( !IsEnabled() ) {
+			m_uButtonState = UISTATE_DISABLED;
+		}
+	}
+
+	
 	bool CProgressUI::IsHorizontal()
 	{
 		return m_bHorizontal;
@@ -79,9 +89,18 @@ namespace DuiLib
 		Invalidate();
 	}
 
+	void CProgressUI::SetDisabledImage(LPCTSTR pStrImage)
+	{
+		if( m_diDisabled.sDrawString == pStrImage && m_diDisabled.pImageInfo != NULL ) return;
+		m_diDisabled.Clear();
+		m_diDisabled.sDrawString = pStrImage;
+		Invalidate();
+	}	
+
 	void CProgressUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
 		if( _tcscmp(pstrName, _T("foreimage")) == 0 ) SetForeImage(pstrValue);
+		else if( _tcscmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
 		else if( _tcscmp(pstrName, _T("hor")) == 0 ) SetHorizontal(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("min")) == 0 ) SetMinValue(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("max")) == 0 ) SetMaxValue(_ttoi(pstrValue));
@@ -92,6 +111,22 @@ namespace DuiLib
 
 	void CProgressUI::PaintStatusImage(HDC hDC)
 	{
+
+		if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
+			RECT rc = { 0 };
+			if (m_bHorizontal) {
+				rc.right = (100 - m_nMin) * (m_rcItem.right - m_rcItem.left) / (m_nMax - m_nMin);
+				rc.bottom = m_rcItem.bottom - m_rcItem.top;
+			} else {
+				rc.top = (m_rcItem.bottom - m_rcItem.top) * (m_nMax - 100) / (m_nMax - m_nMin);
+				rc.right = m_rcItem.right - m_rcItem.left;
+				rc.bottom = m_rcItem.bottom - m_rcItem.top;
+			}
+			m_diDisabled.rcDestOffset = rc;
+	
+			if (DrawImage(hDC, m_diDisabled)) return;
+		}
+		
 		if( m_nMax <= m_nMin ) m_nMax = m_nMin + 1;
 		if( m_nValue > m_nMax ) m_nValue = m_nMax;
 		if( m_nValue < m_nMin ) m_nValue = m_nMin;

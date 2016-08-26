@@ -13,6 +13,8 @@ namespace DuiLib
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 
+		void SetEnabled(bool bEnable = true);
+
 		bool IsHorizontal();
 		void SetHorizontal(bool bHorizontal = true);
 		bool IsStretchForeImage();
@@ -26,8 +28,12 @@ namespace DuiLib
 		LPCTSTR GetForeImage() const;
 		void SetForeImage(LPCTSTR pStrImage);
 
+		void SetDisabledImage(LPCTSTR pStrImage);
+
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		void PaintStatusImage(HDC hDC);
+
+
 
 	protected:
 		bool m_bHorizontal;
@@ -36,7 +42,10 @@ namespace DuiLib
 		int m_nMin;
 		int m_nValue;
 
+		UINT m_uButtonState;
+
 		TDrawInfo m_diFore;
+		TDrawInfo m_diDisabled;
 	};
 
 } // namespace DuiLib

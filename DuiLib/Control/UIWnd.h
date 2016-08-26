@@ -10,14 +10,16 @@ namespace DuiLib {
 
 		virtual void SetVisible(bool bVisible = true)
 		{
-			__super::SetVisible(bVisible);
+			
 			::ShowWindow(m_hWnd, bVisible);
+			__super::SetVisible(bVisible);
 		}
 
 		virtual void SetInternVisible(bool bVisible = true)
 		{
-			__super::SetInternVisible(bVisible);
+
 			::ShowWindow(m_hWnd, bVisible);
+		    __super::SetInternVisible(bVisible);
 		}
 
 		/*virtual void SetPos(RECT rc)

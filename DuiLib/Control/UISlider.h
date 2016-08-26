@@ -14,8 +14,6 @@ namespace DuiLib
 		UINT GetControlFlags() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 
-		void SetEnabled(bool bEnable = true);
-
 		int GetChangeStep();
 		void SetChangeStep(int step);
 		void SetThumbSize(SIZE szXY);
@@ -26,6 +24,8 @@ namespace DuiLib
 		void SetThumbHotImage(LPCTSTR pStrImage);
 		LPCTSTR GetThumbPushedImage() const;
 		void SetThumbPushedImage(LPCTSTR pStrImage);
+		void  SetThumbDisabledImage(LPCTSTR pStrImage);
+
 
 		void DoEvent(TEventUI& event);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
@@ -33,12 +33,12 @@ namespace DuiLib
 
 	protected:
 		SIZE m_szThumb;
-		UINT m_uButtonState;
 		int m_nStep;
 
 		TDrawInfo m_diThumb;
 		TDrawInfo m_diThumbHot;
 		TDrawInfo m_diThumbPushed;
+		TDrawInfo m_diThumbDisabled;
 	};
 }
 
