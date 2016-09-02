@@ -283,6 +283,7 @@
     </ClCompile>
     <ClCompile Include="UIlib.cpp" />
     <ClCompile Include="Utils\Algorithms.cpp" />
+    <ClCompile Include="Utils\DialogImplBase.cpp" />
     <ClCompile Include="Utils\Effects.cpp" />
     <ClCompile Include="Utils\GdiplusPrep.cpp" />
     <ClCompile Include="Utils\GifHandler.cpp" />
@@ -353,6 +354,7 @@
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UIlib.h" />
     <ClInclude Include="Utils\Algorithms.h" />
+    <ClInclude Include="Utils\DialogImplBase.h" />
     <ClInclude Include="Utils\downloadmgr.h" />
     <ClInclude Include="Utils\Effects.h" />
     <ClInclude Include="Utils\FlashEventHandler.h" />
@@ -394,6 +396,9 @@
     <ClInclude Include="Control\UIText.h" />
     <ClInclude Include="Control\UITreeView.h" />
     <ClInclude Include="Control\UIWebBrowser.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Utils\flash11.tlh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

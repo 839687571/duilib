@@ -114,7 +114,6 @@ namespace DuiLib
 
 	void CProgressUI::PaintStatusImage(HDC hDC)
 	{
-
 		if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
 			RECT rc = { 0 };
 			if (m_bHorizontal) {

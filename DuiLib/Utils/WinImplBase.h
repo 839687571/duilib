@@ -72,6 +72,48 @@ namespace DuiLib
 		virtual LONG GetStyle();
         virtual BOOL IsInStaticControl(CControlUI *pControl); // ????????:???????,??????,??????????,???TRUE,????FALSE
 	};
+
+
+// HOW TO USE 
+
+/*
+
+    CPaintManagerUI::SetInstance(hInstance);
+    CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("skin"));
+	CXmlWnd *pFrame = new CXmlWnd("my.xml");
+	if (pFrame) {
+		HWND hwnd = pFrame->Create(NULL, BT_GetAppName(), UI_WNDSTYLE_FRAME, WS_EX_WINDOWEDGE | WS_EX_ACCEPTFILES);
+		if (hwnd) {
+			pFrame->ShowModal();
+			delete pFrame;
+		}
+	}
+
+*/
+	class CXmlWnd : public WindowImplBase
+	{
+	public:
+		explicit CXmlWnd(LPCTSTR pszXMLName)
+	        : m_strXMLName(pszXMLName){}
+
+	public:
+	    virtual LPCTSTR GetWindowClassName() const
+	    {
+	        return _T("XmlWnd");
+	    }
+
+	    virtual CDuiString GetSkinFile()
+	    {
+	        return m_strXMLName;
+	    }
+
+	    virtual CDuiString GetSkinFolder()
+	    {
+	        return _T("");
+	    }
+	 	CDuiString m_strXMLName;
+
+		};
 }
 
 #endif // WIN_IMPL_BASE_HPP
