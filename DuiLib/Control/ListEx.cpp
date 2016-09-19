@@ -156,4 +156,18 @@ int CListUIEx::InsertItem(int nItem, int nHeight,std::string listName)
 		return static_cast<CHorizontalLayoutUI*>(pListItem->GetItemAt(iSubIndex));
 	}
 
+
+	CControlUI * CListUIEx::FindListSubControl(LPCTSTR name)
+	{
+		int select = 0;
+		int iListCount = this->GetCount();
+		for (int i = 0; i < iListCount; i++) {
+			CHorizontalLayoutUI *layout = (CHorizontalLayoutUI*)this->GetItemAt(i);
+			CControlUI *pCtrl = (CCheckBoxUI *)layout->FindSubControl(name);
+			if (pCtrl != NULL ) {
+				return pCtrl;
+			}
+		}
+		return NULL;
+	}
 }

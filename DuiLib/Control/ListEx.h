@@ -81,6 +81,11 @@ namespace DuiLib {
 		CHorizontalLayoutUI* GetListSubItem(int iIndex, int iSubIndex);
 		BOOL SetHeaderItemData(int nColumn, CControlUI* pControl);
 
+
+		// 
+		CControlUI * FindListSubControl(LPCTSTR name);
+		
+
 	private:
 
 	};
