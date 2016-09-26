@@ -524,7 +524,8 @@ namespace DuiLib
 	{
 		// NOTE: This is actually a helper-function for the list/combo/ect controls
 		//       that allow them to find the next enabled/available selectable item
-		if( GetCount() == 0 ) return -1;
+		int ret = 0;
+		if (GetCount() == 0) return ret;
 		iIndex = CLAMP(iIndex, 0, GetCount() - 1);
 		if( bForward ) {
 			for( int i = iIndex; i < GetCount(); i++ ) {
@@ -532,7 +533,7 @@ namespace DuiLib
 					&& GetItemAt(i)->IsVisible()
 					&& GetItemAt(i)->IsEnabled() ) return i;
 			}
-			return -1;
+			return iIndex-1;
 		}
 		else {
 			for( int i = iIndex; i >= 0; --i ) {
