@@ -40,7 +40,7 @@ namespace DuiLib {
 		CListHeaderItemUI *pHeaderItem
 		)
 	{
-		CListHeaderUI *pHeader = CListUI::GetHeader();
+		CListHeaderUI *pHeader = (CListHeaderUI*) CListUI::GetHeader();
 		if (pHeader == NULL) {
 			return FALSE;
 		}
@@ -56,7 +56,7 @@ namespace DuiLib {
 
 	BOOL CListUIEx::SetHeaderItemData(int nColumn, CControlUI* pControl)
 	{
-		CListHeaderUI *pHeader = CListUI::GetHeader();
+		CListHeaderUI *pHeader = (CListHeaderUI*)CListUI::GetHeader();
 		if (pHeader == NULL) {
 			return FALSE;
 		}
@@ -73,7 +73,7 @@ int CListUIEx::InsertItem(int nItem, int nHeight,std::string listName)
         pListItem->SetName(listName.c_str());
 	}
 
-	pListItem->m_pHeader = CListUI::GetHeader();
+	pListItem->m_pHeader = (CListHeaderUI*)CListUI::GetHeader();
 	if (NULL != pListItem->m_pHeader)
 	{
 		int nHeaderCount = pListItem->m_pHeader->GetCount();
@@ -99,7 +99,7 @@ int CListUIEx::InsertItem(int nItem, int nHeight,std::string listName)
 	int CListUIEx::InsertItem(int nItem, int nHeight, CListContainerElementUI *pListItem)
 	{
 		pListItem->SetFixedHeight(nHeight);
-		pListItem->m_pHeader = CListUI::GetHeader();
+		pListItem->m_pHeader = (CListHeaderUI*)CListUI::GetHeader();
 		if (!CListUI::AddAt(pListItem, nItem)) {
 			delete pListItem;
 			pListItem = NULL;
@@ -170,4 +170,7 @@ int CListUIEx::InsertItem(int nItem, int nHeight,std::string listName)
 		}
 		return NULL;
 	}
+
+
+
 }

@@ -268,6 +268,7 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     m_ListInfo.dwHotBkColor = 0xFFE9F5FF;
     m_ListInfo.dwDisabledTextColor = 0xFFCCCCCC;
     m_ListInfo.dwDisabledBkColor = 0xFFFFFFFF;
+    m_ListInfo.dwSelectedBorderColor = 0xFF3A8DED;
     m_ListInfo.dwLineColor = 0;
     m_ListInfo.bShowHtml = false;
     m_ListInfo.bMultiExpandable = false;

@@ -223,6 +223,10 @@ namespace DuiLib
 			else CControlUI::DoEvent(event);
 			return;
 		}
+		if (event.Type == UIEVENT_KEYDOWN)
+		{
+			int k = 0;
+		}
 
 		if( event.Type == UIEVENT_SETFOCUS ) 
 		{
@@ -705,6 +709,7 @@ namespace DuiLib
 		CRenderClip::GenerateClip(hDC, rcTemp, clip);
 		CControlUI::DoPaint(hDC, rcPaint);
 
+		////printf("name = %s m_items size = %d\n", this->GetName().GetData(), m_items.GetSize());
 		if( m_items.GetSize() > 0 ) {
 			RECT rc = m_rcItem;
 			rc.left += m_rcInset.left;

@@ -240,6 +240,7 @@ protected:                                                                \
 #define  DUI_CTR_CONTROL                         (_T("Control"))
 #define  DUI_CTR_ACTIVEX                         (_T("ActiveX"))
 #define  DUI_CTR_GIF_BUTTON					   (_T("GifButton"))
+#define  DUI_CTR_HORIZLIST                       (_T("HorizList"))
 
 
 #define  DUI_CTR_LISTITEM                        (_T("ListItem"))

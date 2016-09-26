@@ -340,6 +340,7 @@
     <ClCompile Include="Control\UIText.cpp" />
     <ClCompile Include="Control\UITreeView.cpp" />
     <ClCompile Include="Control\UIWebBrowser.cpp" />
+    <ClCompile Include="Control\VerticalListUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Control\ListEx.h" />
@@ -396,6 +397,7 @@
     <ClInclude Include="Control\UIText.h" />
     <ClInclude Include="Control\UITreeView.h" />
     <ClInclude Include="Control\UIWebBrowser.h" />
+    <ClInclude Include="Control\VerticalListUI.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Utils\flash11.tlh" />

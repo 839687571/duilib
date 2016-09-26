@@ -29,6 +29,7 @@ typedef struct tagTListInfoUI
     bool bAlternateBk;
     DWORD dwSelectedTextColor;
     DWORD dwSelectedBkColor;
+	DWORD dwSelectedBorderColor;
     TDrawInfo diSelected;
     DWORD dwHotTextColor;
     DWORD dwHotBkColor;
@@ -64,12 +65,12 @@ public:
 class IListUI : public IListOwnerUI
 {
 public:
-    virtual CListHeaderUI* GetHeader() const = 0;
-    virtual CContainerUI* GetList() const = 0;
-    virtual IListCallbackUI* GetTextCallback() const = 0;
-    virtual void SetTextCallback(IListCallbackUI* pCallback) = 0;
-    virtual bool ExpandItem(int iIndex, bool bExpand = true) = 0;
-    virtual int GetExpandedItem() const = 0;
+	virtual CContainerUI* GetHeader() const = 0;
+	virtual CContainerUI* GetList() const = 0;
+		virtual IListCallbackUI* GetTextCallback() const = 0;
+		virtual void SetTextCallback(IListCallbackUI* pCallback) = 0;
+		virtual bool ExpandItem(int iIndex, bool bExpand = true) = 0;
+		virtual int GetExpandedItem() const = 0;
 };
 
 class IListItemUI
@@ -109,7 +110,7 @@ public:
     bool SelectItem(int iIndex, bool bTakeFocus = false);
     bool SelectItemActivate(int iIndex);    // Ë«»÷Ñ¡ÖÐ
 
-    CListHeaderUI* GetHeader() const;  
+	CContainerUI* GetHeader() const;
     CContainerUI* GetList() const;
     TListInfoUI* GetListInfo();
 
@@ -256,7 +257,7 @@ public:
 	void SetScaleHeader(bool bIsScale);
 	bool IsScaleHeader() const;
 
-private:
+
 	bool m_bIsScaleHeader;
 };
 
@@ -466,6 +467,8 @@ public:
 	void SetDrag(bool bCanDrag);
 	bool         m_bDrag;	
 	POINT        m_StartPt;
+
+	void SetOnlyBk(bool  obkcolor);
 	
 	CListContainerElementUI *GetListElementUIFromPt(POINT pt);
 	//add by whmiao 
@@ -479,6 +482,7 @@ protected:
     UINT m_uButtonState;
     IListOwnerUI* m_pOwner;
 	CListUI      *m_pOwnerList;
+	bool     m_bOnlyBk ;
 };
 
 } // namespace DuiLib

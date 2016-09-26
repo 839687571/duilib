@@ -512,6 +512,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                 else if( _tcsicmp(pstrClass, DUI_CTR_TABLAYOUT) == 0 )         pControl = new CTabLayoutUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_SCROLLBAR) == 0 )         pControl = new CScrollBarUI; 
 				else if (_tcscmp(pstrClass, DUI_CTR_GIF_BUTTON) == 0)		  pControl = new CGifButtonUI;
+				else if (_tcscmp(pstrClass, DUI_CTR_HORIZLIST) == 0)		  pControl = new CHorizListUI;
                 break;
             case 10:
                 if( _tcsicmp(pstrClass, DUI_CTR_LISTHEADER) == 0 )             pControl = new CListHeaderUI;
