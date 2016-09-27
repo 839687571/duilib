@@ -20,6 +20,10 @@ namespace DuiLib
 		void DoEvent(TEventUI& event);
 		SIZE EstimateSize(SIZE szAvailable);
 
+		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+
+		CDuiRect  GetTextRect(SIZE szAvailable);
+
 		void PaintText(HDC hDC);
 
 	protected:
@@ -28,6 +32,7 @@ namespace DuiLib
 		RECT m_rcLinks[MAX_LINK];
 		CDuiString m_sLinks[MAX_LINK];
 		int m_nHoverLink;
+		bool  bVcenterForce;
 	};
 
 } // namespace DuiLib

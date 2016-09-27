@@ -102,7 +102,12 @@ namespace DuiLib
 
 		CLabelUI::DoEvent(event);
 	}
-
+	void CTextUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
+	{
+	 if( _tcscmp(pstrName, _T("vcenterforce")) == 0 ) {
+				bVcenterForce = _tcscmp(pstrValue, _T("true")) == 0;
+	   }else CLabelUI::SetAttribute(pstrName, pstrValue);
+	}
 	SIZE CTextUI::EstimateSize(SIZE szAvailable)
 	{
 		RECT rcText = { 0, 0, MAX(szAvailable.cx, m_cxyFixed.cx), 9999 };
@@ -121,7 +126,24 @@ namespace DuiLib
 		if( m_cxyFixed.cy != 0 ) cXY.cy = m_cxyFixed.cy;
 		return cXY;
 	}
+	CDuiRect  CTextUI::GetTextRect(SIZE szAvailable)
+	{
+		RECT rcText = { 0, 0, MAX(szAvailable.cx, m_cxyFixed.cx), 9999 };
+		rcText.left += m_rcTextPadding.left;
+		rcText.right -= m_rcTextPadding.right;
+		if( m_bShowHtml ) {   
+			int nLinks = 0;
+			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, NULL, NULL, nLinks, DT_CALCRECT | m_uTextStyle);
+		}
+		else {
+			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, m_iFont, DT_CALCRECT | m_uTextStyle);
+		}
+		SIZE cXY = {rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right,
+			rcText.bottom - rcText.top + m_rcTextPadding.top + m_rcTextPadding.bottom};
+	
+		return rcText;
 
+	}
 	void CTextUI::PaintText(HDC hDC)
 	{
 		if( m_sText.IsEmpty() ) {
@@ -140,6 +162,17 @@ namespace DuiLib
 		rc.right -= m_rcTextPadding.right;
 		rc.top += m_rcTextPadding.top;
 		rc.bottom -= m_rcTextPadding.bottom;
+
+		int iadd = 0;
+
+		if(bVcenterForce){
+			SIZE szAvailable = { rc.right - rc.left, rc.bottom - rc.top };
+			CDuiRect rcText = GetTextRect(szAvailable);
+			iadd = ((rc.bottom - rc.top) - (rcText.bottom - rcText.top)) / 2;
+		}
+		
+		rc.top += iadd;
+	
 		if( IsEnabled() ) {
 			if( m_bShowHtml )
 				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
