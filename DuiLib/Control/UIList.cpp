@@ -2740,7 +2740,6 @@ void CListContainerElementUI::DrawItemBk(HDC hDC, const RECT& rcItem)
 	}
 	if( IsSelected() ) {
 		iBackColor = pInfo->dwSelectedBkColor;
-		////m_dwBorderColor = pInfo->dwSelectedBorderColor;
 	}
 	if( !IsEnabled() ) {
 		iBackColor = pInfo->dwDisabledBkColor;

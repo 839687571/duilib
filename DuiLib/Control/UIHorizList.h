@@ -79,10 +79,11 @@ namespace DuiLib {
 			m_ListInfo.dwSelectedTextColor = 0xFF000000;
 			m_ListInfo.dwSelectedBkColor = 0xFFC1E3FF;
 			m_ListInfo.dwHotTextColor = 0xFF000000;
-			m_ListInfo.dwHotBkColor = 0xFFE9F5FF;
+			m_ListInfo.dwHotBkColor = 0xFFff00ff;
 			m_ListInfo.dwDisabledTextColor = 0xFFCCCCCC;
 			m_ListInfo.dwDisabledBkColor = 0xFFFFFFFF;
-			m_ListInfo.dwSelectedBorderColor = 0xFF3A8DED;
+			///m_ListInfo.dwSelectedBorderColor = 0xFF3A8DED;
+			m_ListInfo.dwSelectedBorderColor = 0xFFff0000;
 			m_ListInfo.dwLineColor = 0;
 			m_ListInfo.bShowHtml = false;
 			m_ListInfo.bMultiExpandable = false;
