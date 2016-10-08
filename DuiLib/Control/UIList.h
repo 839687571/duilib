@@ -463,6 +463,7 @@ public:
     void DrawItemText(HDC hDC, const RECT& rcItem);    
     void DrawItemBk(HDC hDC, const RECT& rcItem);
 	void DrawItemDivLien(HDC hDC, const RECT& rcItem);
+	void DrawItemBorder(HDC hDC, const RECT& rcItem);
 	// drag related
 	void SetDrag(bool bCanDrag);
 	bool         m_bDrag;	

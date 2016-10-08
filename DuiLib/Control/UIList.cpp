@@ -26,6 +26,7 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
     m_ListInfo.dwHotBkColor = 0xFFE9F5FF;
     m_ListInfo.dwDisabledTextColor = 0xFFCCCCCC;
     m_ListInfo.dwDisabledBkColor = 0xFFFFFFFF;
+    m_ListInfo.dwSelectedBorderColor = 0;
     m_ListInfo.dwLineColor = 0;
     m_ListInfo.bShowHtml = false;
     m_ListInfo.bMultiExpandable = false;
@@ -2532,6 +2533,7 @@ bool CListContainerElementUI::Expand(bool /*bExpand = true*/)
 
 void CListContainerElementUI::DoEvent(TEventUI& event)
 {
+	printf("type = %d\n",event.Type);
     if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
         if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
         else CContainerUI::DoEvent(event);
@@ -2686,6 +2688,7 @@ void CListContainerElementUI::DoPaint(HDC hDC, const RECT& rcPaint)
     DrawItemBk(hDC, m_rcItem);
 	DrawItemDivLien(hDC, m_rcItem);
     CContainerUI::DoPaint(hDC, rcPaint);
+    DrawItemBorder(hDC, m_rcItem);
 }
 
 void CListContainerElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
@@ -2797,4 +2800,20 @@ void CListContainerElementUI::DrawItemDivLien(HDC hDC, const RECT& rcItem)
 		//TRACE();
 	}
 }
+	void CListContainerElementUI::DrawItemBorder(HDC hDC, const RECT& rcItem)
+	{
+		ASSERT(m_pOwner);
+		if (m_pOwner == NULL) return;
+
+
+		TListInfoUI* pInfo = m_pOwner->GetListInfo();
+		DWORD iBorderColor = pInfo->dwSelectedBorderColor;
+
+		if( IsSelected() ) {
+			if (/*IsFocused() && */iBorderColor != 0 /*&& m_nBorderSize > 0*/)
+				CRenderEngine::DrawRect(hDC, m_rcItem, 2, GetAdjustColor(iBorderColor));	
+		}
+	
+
+	}
 } // namespace DuiLib
