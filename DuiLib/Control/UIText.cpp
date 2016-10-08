@@ -169,6 +169,7 @@ namespace DuiLib
 			SIZE szAvailable = { rc.right - rc.left, rc.bottom - rc.top };
 			CDuiRect rcText = GetTextRect(szAvailable);
 			iadd = ((rc.bottom - rc.top) - (rcText.bottom - rcText.top)) / 2;
+			if(iadd <0) iadd = 0;
 		}
 		
 		rc.top += iadd;
