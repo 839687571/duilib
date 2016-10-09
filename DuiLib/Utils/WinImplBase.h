@@ -90,7 +90,7 @@ namespace DuiLib
 	}
 
 */
-	class CXmlWnd : public WindowImplBase
+	class UILIB_API CXmlWnd : public WindowImplBase
 	{
 	public:
 		explicit CXmlWnd(LPCTSTR pszXMLName)
