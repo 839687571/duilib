@@ -6,7 +6,7 @@ namespace DuiLib {
 //
 //
 
-class CComboWnd : public CWindowWnd
+class CComboWnd : public CWindowWnd, public INotifyUI
 {
 public:
     void Init(CComboUI* pOwner,BOOL child=FALSE);
@@ -18,12 +18,15 @@ public:
     void EnsureVisible(int iIndex);
     void Scroll(int dx, int dy);
 
+    void Notify(TNotifyUI& msg);
+
 	void ReSize(CComboUI* pOwner);
 
 #if(_WIN32_WINNT >= 0x0501)
 	virtual UINT GetClassStyle() const;
 #endif
 
+	CContainerUI *GetMianLayout();
 public:
     CPaintManagerUI m_pm;
     CComboUI* m_pOwner;
@@ -88,6 +91,8 @@ void CComboWnd::Init(CComboUI* pOwner,BOOL child)
     while( ::GetParent(hWndParent) != NULL ) hWndParent = ::GetParent(hWndParent);
     ::ShowWindow(m_hWnd, SW_SHOW);
     ::SendMessage(hWndParent, WM_NCACTIVATE, TRUE, 0L);
+
+ //   EnsureVisible(m_iOldSel);
 }
 
 void   CComboWnd::ReSize(CComboUI* pOwner)
@@ -129,7 +134,13 @@ void CComboWnd::OnFinalMessage(HWND hWnd)
     m_pOwner->Invalidate();
     delete this;
 }
-
+void CComboWnd::Notify(TNotifyUI& msg)
+{
+	if (msg.sType == _T("windowinit"))
+	{
+		EnsureVisible(m_iOldSel);
+	}
+}
 LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     if( uMsg == WM_CREATE ) {
@@ -160,7 +171,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_pLayout->Add(static_cast<CControlUI*>(m_pOwner->GetItemAt(i)));
         }
         m_pm.AttachDialog(m_pLayout);
-        
+		m_pm.AddNotifier(this);
         return 0;
     }
     else if( uMsg == WM_CLOSE ) {
@@ -179,7 +190,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     else if( uMsg == WM_KEYDOWN ) {
         switch( wParam ) {
         case VK_ESCAPE:
-			m_iOldSel = 0;
+			////m_iOldSel = 0;
             m_pOwner->SelectItem(m_iOldSel, true);
             EnsureVisible(m_iOldSel);
             // FALL THROUGH...
@@ -196,7 +207,8 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
     }
     else if( uMsg == WM_MOUSEWHEEL ) {
-       /* int zDelta = (int) (short) HIWORD(wParam);
+       /* 
+	   int zDelta = (int) (short) HIWORD(wParam);
         TEventUI event = { 0 };
         event.Type = UIEVENT_SCROLLWHEEL;
         event.wParam = MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
@@ -204,7 +216,8 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         event.dwTimestamp = ::GetTickCount();
         m_pOwner->DoEvent(event);
         EnsureVisible(m_pOwner->GetCurSel());
-        return 0;*/
+        return 0;
+		*/
     }
     else if( uMsg == WM_KILLFOCUS ) {
 		if (m_hWnd != (HWND)wParam)
@@ -248,6 +261,11 @@ UINT CComboWnd::GetClassStyle() const
 	return __super::GetClassStyle() | CS_DROPSHADOW;
 }
 #endif
+
+CContainerUI *CComboWnd::GetMianLayout()
+{
+	return m_pLayout;
+}
 ////////////////////////////////////////////////////////
 
 
@@ -268,7 +286,7 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     m_ListInfo.dwHotBkColor = 0xFFE9F5FF;
     m_ListInfo.dwDisabledTextColor = 0xFFCCCCCC;
     m_ListInfo.dwDisabledBkColor = 0xFFFFFFFF;
-    m_ListInfo.dwSelectedBorderColor = 0xFF3A8DED;
+    m_ListInfo.dwSelectedBorderColor = 0;
     m_ListInfo.dwLineColor = 0;
     m_ListInfo.bShowHtml = false;
     m_ListInfo.bMultiExpandable = false;
@@ -531,11 +549,17 @@ void CComboUI::DoEvent(TEventUI& event)
     }
     if( event.Type == UIEVENT_SCROLLWHEEL )
     {
-        bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
-		SetSelectCloseFlag(false);
-        SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
-		SetSelectCloseFlag(true);
-        return;
+        //bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
+		//SetSelectCloseFlag(false);
+        //SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
+		//SetSelectCloseFlag(true);
+        //return;
+		if (m_pWindow != NULL){
+			CContainerUI *container = m_pWindow->GetMianLayout();
+			if(container != NULL){
+				container->DoEvent(event);
+			}
+		} 
     }
     if( event.Type == UIEVENT_CONTEXTMENU )
     {

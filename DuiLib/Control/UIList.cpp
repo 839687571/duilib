@@ -2533,7 +2533,7 @@ bool CListContainerElementUI::Expand(bool /*bExpand = true*/)
 
 void CListContainerElementUI::DoEvent(TEventUI& event)
 {
-	printf("type = %d\n",event.Type);
+	///printf("type = %d\n",event.Type);
     if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
         if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
         else CContainerUI::DoEvent(event);
